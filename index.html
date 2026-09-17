@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ps" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#075985">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>د تذکرې معلومات سکین</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header>
+  <h1>د تذکرې معلومات سکین</h1>
+  <p>د تذکرې عکس واخله او معلومات جلا جلا ترلاسه کړه</p>
+</header>
+
+
+<main>
+
+<section id="scanPage" class="card">
+
+  <h2>📷 تذکره سکین کړه</h2>
+
+  <div class="camera-box">
+
+    <video
+      id="camera"
+      autoplay
+      playsinline
+      muted>
+    </video>
+
+    <div class="frame"></div>
+
+    <div id="cameraMessage">
+      د کیمرې د فعالولو لپاره اجازه ورکړئ
+    </div>
+
+  </div>
+
+
+  <div class="buttons">
+
+    <button
+      id="startCamera"
+      class="primary">
+      📷 کیمره فعاله کړه
+    </button>
+
+
+    <button
+      id="takePhoto"
+      class="primary"
+      disabled>
+      📸 د تذکرې عکس واخله
+    </button>
+
+
+    <label class="secondary">
+
+      🖼️ له ګالرۍ عکس وټاکه
+
+      <input
+        id="fileInput"
+        type="file"
+        accept="image/*"
+        capture="environment"
+        hidden>
+
+    </label>
+
+  </div>
+
+
+  <canvas
+    id="canvas"
+    hidden>
+  </canvas>
+
+
+  <img
+    id="preview"
+    alt="د تذکرې عکس"
+    hidden>
+
+
+  <button
+    id="scanButton"
+    class="scan"
+    disabled>
+
+    🔎 د تذکرې معلومات سکین کړه
+
+  </button>
+
+
+  <div
+    id="progressBox"
+    hidden>
+
+    <p id="status">
+      چمتو کېږي...
+    </p>
+
+    <progress
+      id="progress"
+      value="0"
+      max="100">
+    </progress>
+
+  </div>
+
+
+  <div class="privacy">
+
+    🔒 <b>محرمیت:</b>
+
+    د تذکرې عکس د دې اپ خپل سرور یا ډیټابېس ته
+    نه لېږل کېږي. OCR د براوزر دننه ترسره کېږي.
+
+  </div>
+
+
+  <div class="tips">
+
+    <b>د ښه نتیجې لپاره:</b>
+
+    <ul>
+      <li>تذکره مستقیمه ونیسه.</li>
+      <li>د تذکرې ټول څلور کونجونه ښکاره وي.</li>
+      <li>رڼا ښه وي او عکس روښانه وي.</li>
+      <li>د عکس پر سر سیوری مه پرېږده.</li>
+    </ul>
+
+  </div>
+
+</section>
+
+
+
+<section
+  id="resultPage"
+  class="card"
+  hidden>
+
+  <h2>📋 د تذکرې معلومات</h2>
+
+  <p class="hint">
+
+    لاندې معلومات د OCR له لارې راایستل شوي.
+    د کاپي کولو مخکې یې وګوره؛ که کومه تېروتنه وي،
+    په خانه کې یې اصلاح کولی شې.
+
+  </p>
+
+
+  <!-- ID NUMBER -->
+
+  <div class="field">
+
+    <label for="idNumber">
+      د تذکرې نمبر
+    </label>
+
+    <div class="row">
+
+      <input
+        id="idNumber"
+        type="text"
+        autocomplete="off"
+        dir="ltr">
+
+      <button
+        type="button"
+        data-copy="idNumber">
+        کاپي
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- FULL NAME -->
+
+  <div class="field">
+
+    <label for="fullName">
+      نوم
+    </label>
+
+    <div class="row">
+
+      <input
+        id="fullName"
+        type="text"
+        autocomplete="off">
+
+      <button
+        type="button"
+        data-copy="fullName">
+        کاپي
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- FATHER -->
+
+  <div class="field">
+
+    <label for="fatherName">
+      د پلار نوم
+    </label>
+
+    <div class="row">
+
+      <input
+        id="fatherName"
+        type="text"
+        autocomplete="off">
+
+      <button
+        type="button"
+        data-copy="fatherName">
+        کاپي
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- GRANDFATHER -->
+
+  <div class="field">
+
+    <label for="grandfatherName">
+      د نیکه نوم
+    </label>
+
+    <div class="row">
+
+      <input
+        id="grandfatherName"
+        type="text"
+        autocomplete="off">
+
+      <button
+        type="button"
+        data-copy="grandfatherName">
+        کاپي
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- RAW OCR -->
+
+  <div class="field">
+
+    <label for="rawText">
+      ټول راایستل شوی متن
+    </label>
+
+    <textarea
+      id="rawText"
+      rows="10"
+      spellcheck="false"></textarea>
+
+
+    <button
+      type="button"
+      id="copyAll"
+      class="copyAll">
+
+      📋 ټول معلومات کاپي کړه
+
+    </button>
+
+  </div>
+
+
+  <button
+    type="button"
+    id="newScan"
+    class="scan">
+
+    🔄 بیا تذکره سکین کړه
+
+  </button>
+
+</section>
+
+</main>
+
+
+<footer>
+
+  دا اپ د OCR پر بنسټ دی او د رسمي هویت تصدیق نه کوي.
+
+</footer>
+
+
+
+<!--
+  Tesseract.js OCR
+  پښتو + دري + English
+-->
+
+<script
+  src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js">
+</script>
+
+
+<!-- اصلي JavaScript -->
+
+<script src="script.js"></script>
+
+
+</body>
+</html>
