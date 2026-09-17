@@ -1,73 +1,142 @@
+/*
+=========================================================
+ د افغانستان د تذکرې Scanner - Improved Version
+=========================================================
+
+ دا فایل یوازې د پخواني script.js پر ځای واچوئ.
+
+ معلومات:
+ 1. د تذکرې نمبر
+ 2. نوم
+ 3. د پلار نوم
+ 4. د نیکه نوم
+
+ OCR په Browser کې ترسره کېږي.
+ د اپ خپل Database / Server ته معلومات نه لېږل کېږي.
+=========================================================
+*/
+
+
 let stream = null;
 let selectedImage = null;
 
-const camera = document.getElementById("camera");
-const canvas = document.getElementById("canvas");
-const preview = document.getElementById("preview");
-const startCamera = document.getElementById("startCamera");
-const takePhoto = document.getElementById("takePhoto");
-const fileInput = document.getElementById("fileInput");
-const scanButton = document.getElementById("scanButton");
-const progressBox = document.getElementById("progressBox");
-const statusEl = document.getElementById("status");
-const progress = document.getElementById("progress");
+
+/* ===============================
+   ELEMENTS
+================================ */
+
+const camera =
+    document.getElementById("camera");
+
+const canvas =
+    document.getElementById("canvas");
+
+const preview =
+    document.getElementById("preview");
+
+const startCamera =
+    document.getElementById("startCamera");
+
+const takePhoto =
+    document.getElementById("takePhoto");
+
+const fileInput =
+    document.getElementById("fileInput");
+
+const scanButton =
+    document.getElementById("scanButton");
+
+const progressBox =
+    document.getElementById("progressBox");
+
+const statusEl =
+    document.getElementById("status");
+
+const progress =
+    document.getElementById("progress");
 
 
-function setStatus(text, value) {
-    if (statusEl) statusEl.textContent = text;
-    if (progress) progress.value = value || 0;
+
+/* ===============================
+   STATUS
+================================ */
+
+function status(text, value) {
+
+    if (statusEl)
+        statusEl.textContent = text;
+
+    if (progress)
+        progress.value = value || 0;
 }
 
 
-/* =========================
+
+/* ===============================
    CAMERA
-========================= */
+================================ */
 
 async function openCamera() {
 
     try {
 
-        if (!navigator.mediaDevices ||
-            !navigator.mediaDevices.getUserMedia) {
+        if (
+            !navigator.mediaDevices ||
+            !navigator.mediaDevices.getUserMedia
+        ) {
 
-            alert("ستاسو براوزر د کیمرې ملاتړ نه کوي.");
+            alert(
+                "ستاسو براوزر د کیمرې ملاتړ نه کوي."
+            );
 
             return;
         }
 
-        stream = await navigator.mediaDevices.getUserMedia({
 
-            video: {
-                facingMode: {
-                    ideal: "environment"
+        stream =
+            await navigator.mediaDevices.getUserMedia({
+
+                video: {
+
+                    facingMode: {
+                        ideal: "environment"
+                    },
+
+                    width: {
+                        ideal: 1920
+                    },
+
+                    height: {
+                        ideal: 1080
+                    }
+
                 },
 
-                width: {
-                    ideal: 1920
-                },
+                audio: false
 
-                height: {
-                    ideal: 1080
-                }
-            },
-
-            audio: false
-        });
+            });
 
 
         camera.srcObject = stream;
 
         await camera.play();
 
-        takePhoto.disabled = false;
 
-        const msg =
-            document.getElementById("cameraMessage");
+        if (takePhoto)
+            takePhoto.disabled = false;
 
-        if (msg) {
 
-            msg.textContent =
+        const message =
+            document.getElementById(
+                "cameraMessage"
+            );
+
+
+        if (message) {
+
+            message.textContent =
                 "تذکره د چوکاټ منځ ته راوله";
+
         }
 
     }
@@ -77,10 +146,13 @@ async function openCamera() {
         console.error(error);
 
         alert(
-            "کیمرې ته اجازه ورکړئ یا له ګالرۍ عکس وټاکئ."
+            "کیمرې ته اجازه ورکړئ."
         );
+
     }
+
 }
+
 
 
 if (startCamera) {
@@ -89,65 +161,79 @@ if (startCamera) {
         "click",
         openCamera
     );
+
 }
 
 
-/* =========================
+
+/* ===============================
    TAKE PHOTO
-========================= */
+================================ */
 
 if (takePhoto) {
 
-    takePhoto.addEventListener("click", function () {
+    takePhoto.addEventListener(
+        "click",
+        function () {
 
-        if (!stream) return;
-
-
-        const width =
-            camera.videoWidth || 1920;
-
-        const height =
-            camera.videoHeight || 1080;
+            if (!stream)
+                return;
 
 
-        canvas.width = width;
-
-        canvas.height = height;
-
-
-        const ctx =
-            canvas.getContext("2d");
+            const width =
+                camera.videoWidth || 1920;
 
 
-        ctx.drawImage(
-            camera,
-            0,
-            0,
-            width,
-            height
-        );
+            const height =
+                camera.videoHeight || 1080;
 
 
-        selectedImage =
-            canvas.toDataURL(
-                "image/jpeg",
-                0.95
+            canvas.width = width;
+
+            canvas.height = height;
+
+
+            const ctx =
+                canvas.getContext("2d");
+
+
+            ctx.drawImage(
+                camera,
+                0,
+                0,
+                width,
+                height
             );
 
 
-        preview.src = selectedImage;
+            selectedImage =
+                canvas.toDataURL(
+                    "image/jpeg",
+                    0.96
+                );
 
-        preview.hidden = false;
 
-        scanButton.disabled = false;
+            preview.src =
+                selectedImage;
 
-    });
+
+            preview.hidden =
+                false;
+
+
+            scanButton.disabled =
+                false;
+
+        }
+    );
+
 }
 
 
-/* =========================
+
+/* ===============================
    GALLERY
-========================= */
+================================ */
 
 if (fileInput) {
 
@@ -158,7 +244,9 @@ if (fileInput) {
             const file =
                 fileInput.files[0];
 
-            if (!file) return;
+
+            if (!file)
+                return;
 
 
             const reader =
@@ -182,6 +270,7 @@ if (fileInput) {
 
                     scanButton.disabled =
                         false;
+
                 };
 
 
@@ -189,12 +278,14 @@ if (fileInput) {
 
         }
     );
+
 }
 
 
-/* =========================
-   DIGIT CONVERTER
-========================= */
+
+/* ===============================
+   DIGITS
+================================ */
 
 function normalizeDigits(text) {
 
@@ -221,6 +312,7 @@ function normalizeDigits(text) {
         "٧": "7",
         "٨": "8",
         "٩": "9"
+
     };
 
 
@@ -230,14 +322,17 @@ function normalizeDigits(text) {
             function (c) {
 
                 return map[c] || c;
+
             }
         );
+
 }
 
 
-/* =========================
+
+/* ===============================
    CLEAN TEXT
-========================= */
+================================ */
 
 function cleanText(text) {
 
@@ -250,7 +345,9 @@ function cleanText(text) {
         .replace(/\n{2,}/g, "\n")
 
         .trim();
+
 }
+
 
 
 function getLines(text) {
@@ -259,106 +356,102 @@ function getLines(text) {
 
         .split("\n")
 
-        .map(function (line) {
+        .map(function (x) {
 
-            return line
+            return x
                 .replace(/[|¦]/g, " ")
                 .trim();
 
         })
 
-        .filter(function (line) {
+        .filter(function (x) {
 
-            return line.length > 0;
+            return x.length > 0;
 
         });
+
 }
 
 
-/* =========================
+
+/* ===============================
    IMAGE PROCESSING
-========================= */
+================================ */
 
 function processImage(
-    dataURL,
+    source,
     mode
 ) {
 
-    return new Promise(function (
-        resolve,
-        reject
-    ) {
+    return new Promise(
+        function (resolve, reject) {
 
-        const img =
-            new Image();
+            const img =
+                new Image();
 
 
-        img.onload =
-            function () {
+            img.onload =
+                function () {
 
-                const maxSize = 2800;
+                    let scale = 1;
 
 
-                let scale =
-                    Math.min(
-                        maxSize /
+                    const biggest =
                         Math.max(
                             img.width,
                             img.height
-                        ),
-
-                        2.5
-                    );
+                        );
 
 
-                if (scale < 1)
-                    scale = 1;
+                    if (biggest < 2200) {
+
+                        scale =
+                            2200 / biggest;
+
+                    }
 
 
-                const width =
-                    Math.round(
-                        img.width * scale
-                    );
+                    if (scale > 2.5)
+                        scale = 2.5;
 
 
-                const height =
-                    Math.round(
-                        img.height * scale
-                    );
+                    const width =
+                        Math.round(
+                            img.width * scale
+                        );
 
 
-                const c =
-                    document.createElement(
-                        "canvas"
-                    );
+                    const height =
+                        Math.round(
+                            img.height * scale
+                        );
 
 
-                c.width = width;
-
-                c.height = height;
-
-
-                const ctx =
-                    c.getContext(
-                        "2d",
-                        {
-                            willReadFrequently:
-                                true
-                        }
-                    );
+                    const c =
+                        document.createElement(
+                            "canvas"
+                        );
 
 
-                ctx.drawImage(
-                    img,
-                    0,
-                    0,
-                    width,
-                    height
-                );
+                    c.width =
+                        width;
+
+                    c.height =
+                        height;
 
 
-                const imageData =
-                    ctx.getImageData(
+                    const ctx =
+                        c.getContext(
+                            "2d",
+                            {
+                                willReadFrequently:
+                                    true
+                            }
+                        );
+
+
+                    ctx.drawImage(
+                        img,
                         0,
                         0,
                         width,
@@ -366,95 +459,122 @@ function processImage(
                     );
 
 
-                const data =
-                    imageData.data;
+                    const imageData =
+                        ctx.getImageData(
+                            0,
+                            0,
+                            width,
+                            height
+                        );
 
 
-                for (
-                    let i = 0;
-                    i < data.length;
-                    i += 4
-                ) {
-
-                    let gray =
-                        0.299 * data[i] +
-                        0.587 * data[i + 1] +
-                        0.114 * data[i + 2];
+                    const data =
+                        imageData.data;
 
 
-                    let value =
-                        gray;
+                    for (
+                        let i = 0;
+                        i < data.length;
+                        i += 4
+                    ) {
+
+                        let gray =
+
+                            0.299 * data[i] +
+
+                            0.587 * data[i + 1] +
+
+                            0.114 * data[i + 2];
 
 
-                    if (mode === "contrast") {
-
-                        value =
-                            (gray - 128) * 1.7 +
-                            128;
+                        let value =
+                            gray;
 
 
-                        value =
-                            Math.max(
-                                0,
-                                Math.min(
-                                    255,
-                                    value
-                                )
-                            );
+                        if (
+                            mode ===
+                            "contrast"
+                        ) {
+
+                            value =
+                                (gray - 128) *
+                                1.8 +
+                                128;
+
+
+                            value =
+                                Math.max(
+                                    0,
+                                    Math.min(
+                                        255,
+                                        value
+                                    )
+                                );
+
+                        }
+
+
+                        if (
+                            mode === "bw"
+                        ) {
+
+                            value =
+                                gray > 145
+                                    ? 255
+                                    : 0;
+
+                        }
+
+
+                        data[i] =
+                            value;
+
+                        data[i + 1] =
+                            value;
+
+                        data[i + 2] =
+                            value;
+
                     }
 
 
-                    if (mode === "bw") {
-
-                        value =
-                            gray > 145
-                                ? 255
-                                : 0;
-                    }
+                    ctx.putImageData(
+                        imageData,
+                        0,
+                        0
+                    );
 
 
-                    data[i] =
-                        value;
+                    resolve(
+                        c.toDataURL(
+                            "image/jpeg",
+                            0.96
+                        )
+                    );
 
-                    data[i + 1] =
-                        value;
-
-                    data[i + 2] =
-                        value;
-                }
-
-
-                ctx.putImageData(
-                    imageData,
-                    0,
-                    0
-                );
+                };
 
 
-                resolve(
-                    c.toDataURL(
-                        "image/jpeg",
-                        0.95
-                    )
-                );
-            };
+            img.onerror =
+                reject;
 
 
-        img.onerror = reject;
+            img.src =
+                source;
 
-        img.src = dataURL;
+        }
+    );
 
-    });
 }
 
 
-/* =========================
-   OCR
-========================= */
 
-async function runOCR(
+/* ===============================
+   OCR
+================================ */
+
+async function OCR(
     image,
-    language,
     psm
 ) {
 
@@ -462,54 +582,134 @@ async function runOCR(
 
         image,
 
-        language,
+        "pus+fas+eng",
 
         {
 
             psm: psm || 6,
 
             logger:
-                function (message) {
+                function (m) {
 
                     if (
-                        typeof message.progress ===
+                        typeof m.progress ===
                         "number"
                     ) {
 
-                        const value =
-                            Math.round(
-                                message.progress *
-                                100
-                            );
-
-
-                        setStatus(
-                            message.status ||
+                        status(
+                            m.status ||
                             "متن لوستل کېږي...",
-                            value
+                            Math.round(
+                                m.progress * 100
+                            )
                         );
+
                     }
+
                 }
+
         }
+
     );
+
 }
 
 
-/* =========================
-   ID NUMBER
-========================= */
 
-function findIDNumber(text) {
+/* ===============================
+   NAME CHECK
+================================ */
+
+function isPossibleName(value) {
+
+    if (!value)
+        return false;
+
+
+    value =
+        value.trim();
+
+
+    if (value.length < 2)
+        return false;
+
+
+    if (value.length > 60)
+        return false;
+
 
     const normalized =
-        normalizeDigits(text);
+        normalizeDigits(value);
 
 
-    const lines =
-        getLines(normalized);
+    if (
+        /\d{3,}/.test(
+            normalized
+        )
+    )
+        return false;
 
 
-    /* لومړی د تذکرې نمبر د لیبل سره پیدا کړه */
+    if (
+        /جمهوري|اسلامي|افغانستان|وزارت|امور|داخله|تذکره|تابعیت|سکونت|ولایت|ولسوالي|ولسوالۍ|زیږون|جنسیت|اسلام|افغان|پکتیکا|کابل|غزني/i
+            .test(value)
+    )
+        return false;
+
+
+    return (
+        /[\u0600-\u06FF]/.test(
+            value
+        ) ||
+        /[A-Za-z]/.test(
+            value
+        )
+    );
+
+}
+
+
+
+/* ===============================
+   REMOVE OCR NOISE
+================================ */
+
+function cleanName(value) {
+
+    if (!value)
+        return "";
+
+
+    value =
+        value
+
+            .replace(
+                /[|¦_~`]+/g,
+                " "
+            )
+
+            .replace(
+                /\s+/g,
+                " "
+            )
+
+            .trim();
+
+
+    return value;
+
+}
+
+
+
+/* ===============================
+   LABEL SEARCH
+================================ */
+
+function findValueAfterLabel(
+    lines,
+    labels
+) {
 
     for (
         let i = 0;
@@ -521,13 +721,125 @@ function findIDNumber(text) {
             lines[i];
 
 
+        for (
+            let j = 0;
+            j < labels.length;
+            j++
+        ) {
+
+            const label =
+                labels[j];
+
+
+            const position =
+                line.indexOf(
+                    label
+                );
+
+
+            if (
+                position !== -1
+            ) {
+
+                let value =
+                    line.substring(
+                        position +
+                        label.length
+                    );
+
+
+                value =
+                    value.replace(
+                        /^[\s:：\-–—|]+/,
+                        ""
+                    );
+
+
+                value =
+                    cleanName(
+                        value
+                    );
+
+
+                if (
+                    isPossibleName(
+                        value
+                    )
+                ) {
+
+                    return value;
+
+                }
+
+
+                /*
+                 که value په بل line کې وي
+                */
+
+                if (
+                    lines[i + 1] &&
+                    isPossibleName(
+                        lines[i + 1]
+                    )
+                ) {
+
+                    return cleanName(
+                        lines[i + 1]
+                    );
+
+                }
+
+            }
+
+        }
+
+    }
+
+
+    return "";
+
+}
+
+
+
+/* ===============================
+   ID NUMBER
+================================ */
+
+function findID(text) {
+
+    const normalized =
+        normalizeDigits(
+            text
+        );
+
+
+    const lines =
+        getLines(
+            normalized
+        );
+
+
+    /*
+      لومړی د تذکرې د نمبر لیبل
+      سره شمېره پیدا کوو.
+    */
+
+    for (
+        let i = 0;
+        i < lines.length;
+        i++
+    ) {
+
         if (
             /تذکر|تذکره|تذکرې|شماره|نمبر|ID/i
-                .test(line)
+                .test(
+                    lines[i]
+                )
         ) {
 
             const numbers =
-                line.match(
+                lines[i].match(
                     /\d[\d\s\-\/]{7,25}\d/g
                 );
 
@@ -537,25 +849,41 @@ function findIDNumber(text) {
                 numbers.length
             ) {
 
-                const n =
-                    numbers[0]
-                        .replace(
-                            /[^\d]/g,
-                            ""
-                        );
-
-
-                if (
-                    n.length >= 8 &&
-                    n.length <= 20
+                for (
+                    let n = 0;
+                    n < numbers.length;
+                    n++
                 ) {
 
-                    return n;
+                    const number =
+                        numbers[n]
+                            .replace(
+                                /[^\d]/g,
+                                ""
+                            );
+
+
+                    if (
+                        number.length >= 8 &&
+                        number.length <= 20
+                    ) {
+
+                        return number;
+
+                    }
+
                 }
+
             }
 
 
-            if (lines[i + 1]) {
+            /*
+              که نمبر په بل line کې وي
+            */
+
+            if (
+                lines[i + 1]
+            ) {
 
                 const next =
                     lines[i + 1]
@@ -571,15 +899,21 @@ function findIDNumber(text) {
                 ) {
 
                     return next;
+
                 }
+
             }
+
         }
+
     }
 
 
-    /* که لیبل پیدا نه شو */
+    /*
+      د ټول OCR څخه نمبر پیدا کول
+    */
 
-    const all =
+    const numbers =
         normalized.match(
             /\d[\d\s\-\/]{8,25}\d/g
         ) || [];
@@ -587,15 +921,16 @@ function findIDNumber(text) {
 
     for (
         let i = 0;
-        i < all.length;
+        i < numbers.length;
         i++
     ) {
 
         const number =
-            all[i].replace(
-                /[^\d]/g,
-                ""
-            );
+            numbers[i]
+                .replace(
+                    /[^\d]/g,
+                    ""
+                );
 
 
         if (
@@ -604,128 +939,36 @@ function findIDNumber(text) {
         ) {
 
             return number;
+
         }
+
     }
 
 
     return "";
+
 }
 
 
-/* =========================
-   NAME DETECTION
-========================= */
 
-function isName(text) {
-
-    if (!text) return false;
-
-
-    text =
-        text.trim();
-
-
-    if (text.length < 2)
-        return false;
-
-
-    if (
-        /\d{3,}/.test(
-            normalizeDigits(text)
-        )
-    ) {
-
-        return false;
-    }
-
-
-    if (
-        /تذکر|شماره|نمبر|جنسیت|تابعیت|ولایت|ولسوال|زیږون|ولد|ادرس|پته/i
-            .test(text)
-    ) {
-
-        return false;
-    }
-
-
-    return (
-        /[\u0600-\u06FF]/.test(text) ||
-        /[A-Za-z]/.test(text)
-    );
-}
-
-
-/* =========================
-   VALUE AFTER LABEL
-========================= */
-
-function valueAfter(
-    line,
-    labels
-) {
-
-    for (
-        let i = 0;
-        i < labels.length;
-        i++
-    ) {
-
-        const label =
-            labels[i];
-
-
-        const position =
-            line.indexOf(label);
-
-
-        if (position !== -1) {
-
-            let value =
-                line.substring(
-                    position +
-                    label.length
-                );
-
-
-            value =
-                value
-                    .replace(
-                        /^[\s:：\-–—|]+/,
-                        ""
-                    )
-                    .trim();
-
-
-            if (
-                isName(value)
-            ) {
-
-                return value;
-            }
-        }
-    }
-
-
-    return "";
-}
-
-
-/* =========================
+/* ===============================
    EXTRACT INFORMATION
-========================= */
+================================ */
 
 function extractInformation(
     text
 ) {
 
     const lines =
-        getLines(text);
+        getLines(
+            text
+        );
 
 
     const result = {
 
         idNumber:
-            findIDNumber(text),
+            findID(text),
 
         fullName:
             "",
@@ -735,190 +978,164 @@ function extractInformation(
 
         grandfatherName:
             ""
+
     };
 
 
-    /* نوم */
-
-    for (
-        let i = 0;
-        i < lines.length;
-        i++
-    ) {
-
-        let value =
-            valueAfter(
-                lines[i],
-                [
-                    "د نوم",
-                    "نوم",
-                    "اسم",
-                    "نام"
-                ]
-            );
-
-
-        if (value) {
-
-            result.fullName =
-                value;
-
-            break;
-        }
-    }
-
-
-    /* د پلار نوم */
-
-    for (
-        let i = 0;
-        i < lines.length;
-        i++
-    ) {
-
-        let value =
-            valueAfter(
-                lines[i],
-                [
-                    "د پلار نوم",
-                    "پلار نوم",
-                    "نام پدر",
-                    "پدر"
-                ]
-            );
-
-
-        if (!value &&
-            /د پلار نوم|پلار نوم|نام پدر|پدر/
-                .test(lines[i])) {
-
-            if (lines[i + 1]) {
-
-                if (
-                    isName(
-                        lines[i + 1]
-                    )
-                ) {
-
-                    value =
-                        lines[i + 1];
-                }
-            }
-        }
-
-
-        if (value) {
-
-            result.fatherName =
-                value;
-
-            break;
-        }
-    }
-
-
-    /* د نیکه نوم */
-
-    for (
-        let i = 0;
-        i < lines.length;
-        i++
-    ) {
-
-        let value =
-            valueAfter(
-                lines[i],
-                [
-                    "د نیکه نوم",
-                    "نیکه نوم",
-                    "نام پدرکلان",
-                    "پدرکلان",
-                    "پدر بزرگ"
-                ]
-            );
-
-
-        if (!value &&
-            /د نیکه نوم|نیکه نوم|نام پدرکلان|پدرکلان/
-                .test(lines[i])) {
-
-            if (lines[i + 1]) {
-
-                if (
-                    isName(
-                        lines[i + 1]
-                    )
-                ) {
-
-                    value =
-                        lines[i + 1];
-                }
-            }
-        }
-
-
-        if (value) {
-
-            result.grandfatherName =
-                value;
-
-            break;
-        }
-    }
-
-
     /*
-       Fallback:
-       که OCR لیبلونه ونه پېژني،
-       د نومونو احتمالي کرښې پیدا کوي.
+      نوم
     */
 
-    const candidates =
-        lines.filter(
-            function (line) {
-
-                return isName(line);
-            }
+    result.fullName =
+        findValueAfterLabel(
+            lines,
+            [
+                "د نوم",
+                "نوم",
+                "اسم",
+                "نام"
+            ]
         );
 
 
-    if (
-        !result.fullName &&
-        candidates.length > 0
-    ) {
+    /*
+      پلار
+    */
 
-        result.fullName =
-            candidates[0];
-    }
-
-
-    if (
-        !result.fatherName &&
-        candidates.length > 1
-    ) {
-
-        result.fatherName =
-            candidates[1];
-    }
+    result.fatherName =
+        findValueAfterLabel(
+            lines,
+            [
+                "د پلار نوم",
+                "پلار نوم",
+                "نام پدر",
+                "نام پدر",
+                "پدر"
+            ]
+        );
 
 
-    if (
-        !result.grandfatherName &&
-        candidates.length > 2
-    ) {
+    /*
+      نیکه
+    */
 
-        result.grandfatherName =
-            candidates[2];
-    }
+    result.grandfatherName =
+        findValueAfterLabel(
+            lines,
+            [
+                "د نیکه نوم",
+                "نیکه نوم",
+                "نام پدرکلان",
+                "پدرکلان",
+                "پدر بزرگ"
+            ]
+        );
 
 
     return result;
+
 }
 
 
-/* =========================
-   SCAN BUTTON
-========================= */
+
+/* ===============================
+   ALTERNATIVE OCR RESULT
+================================ */
+
+function improveFromAllOCR(
+    results
+) {
+
+    let final = {
+
+        idNumber: "",
+
+        fullName: "",
+
+        fatherName: "",
+
+        grandfatherName: ""
+
+    };
+
+
+    for (
+        let i = 0;
+        i < results.length;
+        i++
+    ) {
+
+        const text =
+            cleanText(
+                results[i]
+            );
+
+
+        if (!text)
+            continue;
+
+
+        const data =
+            extractInformation(
+                text
+            );
+
+
+        if (
+            !final.idNumber &&
+            data.idNumber
+        ) {
+
+            final.idNumber =
+                data.idNumber;
+
+        }
+
+
+        if (
+            !final.fullName &&
+            data.fullName
+        ) {
+
+            final.fullName =
+                data.fullName;
+
+        }
+
+
+        if (
+            !final.fatherName &&
+            data.fatherName
+        ) {
+
+            final.fatherName =
+                data.fatherName;
+
+        }
+
+
+        if (
+            !final.grandfatherName &&
+            data.grandfatherName
+        ) {
+
+            final.grandfatherName =
+                data.grandfatherName;
+
+        }
+
+    }
+
+
+    return final;
+
+}
+
+
+
+/* ===============================
+   MAIN SCAN
+================================ */
 
 if (scanButton) {
 
@@ -934,24 +1151,33 @@ if (scanButton) {
                 false;
 
 
-            setStatus(
-                "د عکس کیفیت برابرېږي...",
-                2
-            );
-
-
             try {
 
                 /*
-                   د OCR لپاره څو مختلف عکسونه
-                   جوړوو ترڅو نتیجه ښه شي.
+                  اصلي عکس
                 */
+
+                status(
+                    "عکس چمتو کېږي...",
+                    3
+                );
+
 
                 const normal =
                     await processImage(
                         selectedImage,
                         "normal"
                     );
+
+
+                /*
+                  Contrast
+                */
+
+                status(
+                    "د عکس کیفیت ښه کېږي...",
+                    8
+                );
 
 
                 const contrast =
@@ -961,130 +1187,162 @@ if (scanButton) {
                     );
 
 
-                const blackWhite =
+                /*
+                  Black / White
+                */
+
+                status(
+                    "د متن بڼه برابریږي...",
+                    15
+                );
+
+
+                const bw =
                     await processImage(
                         selectedImage,
                         "bw"
                     );
 
 
-                let allText = "";
+                const OCRTexts = [];
 
 
-                /* OCR 1 */
+                /*
+                  OCR #1
+                */
 
-                setStatus(
-                    "د پښتو او دري متن لوستل کېږي...",
-                    10
+                status(
+                    "د تذکرې پښتو او دري متن لوستل کېږي...",
+                    20
                 );
 
 
-                const result1 =
-                    await runOCR(
+                const r1 =
+                    await OCR(
                         normal,
-                        "pus+fas+eng",
                         6
                     );
 
 
-                allText +=
-                    "\n" +
-                    result1.data.text;
-
-
-                /* OCR 2 */
-
-                setStatus(
-                    "دوهم ځل متن پېژندل کېږي...",
-                    40
+                OCRTexts.push(
+                    r1.data.text
                 );
 
 
-                const result2 =
-                    await runOCR(
+                /*
+                  OCR #2
+                */
+
+                status(
+                    "د تذکرې معلومات بیا لوستل کېږي...",
+                    45
+                );
+
+
+                const r2 =
+                    await OCR(
                         contrast,
-                        "pus+fas+eng",
                         11
                     );
 
 
-                allText +=
-                    "\n" +
-                    result2.data.text;
+                OCRTexts.push(
+                    r2.data.text
+                );
 
 
-                /* OCR 3 */
+                /*
+                  OCR #3
+                */
 
-                setStatus(
-                    "د تذکرې عددونه او متن بیا لوستل کېږي...",
+                status(
+                    "د تذکرې ساحې بیا پېژندل کېږي...",
                     70
                 );
 
 
-                const result3 =
-                    await runOCR(
-                        blackWhite,
-                        "pus+fas+eng",
+                const r3 =
+                    await OCR(
+                        bw,
                         6
                     );
 
 
-                allText +=
-                    "\n" +
-                    result3.data.text;
+                OCRTexts.push(
+                    r3.data.text
+                );
 
 
-                allText =
-                    cleanText(
-                        allText
-                    );
+                /*
+                  معلومات استخراج
+                */
 
-
-                setStatus(
-                    "معلومات جلا کېږي...",
+                status(
+                    "نوم، پلار نوم، نیکه نوم او نمبر جلا کېږي...",
                     90
                 );
 
 
                 const information =
-                    extractInformation(
-                        allText
+                    improveFromAllOCR(
+                        OCRTexts
                     );
 
 
-                /* خانې ډکول */
+                /*
+                  Fill fields
+                */
 
                 document.getElementById(
                     "idNumber"
                 ).value =
-                    information.idNumber;
+                    information.idNumber ||
+                    "";
 
 
                 document.getElementById(
                     "fullName"
                 ).value =
-                    information.fullName;
+                    information.fullName ||
+                    "";
 
 
                 document.getElementById(
                     "fatherName"
                 ).value =
-                    information.fatherName;
+                    information.fatherName ||
+                    "";
 
 
                 document.getElementById(
                     "grandfatherName"
                 ).value =
-                    information.grandfatherName;
+                    information.grandfatherName ||
+                    "";
 
+
+                /*
+                  ټول OCR متن
+                */
 
                 document.getElementById(
                     "rawText"
                 ).value =
-                    allText;
+                    OCRTexts
+                        .map(
+                            cleanText
+                        )
+                        .filter(
+                            Boolean
+                        )
+                        .join(
+                            "\n\n----------------\n\n"
+                        );
 
 
-                /* نتیجه صفحه */
+                /*
+                  Result page
+                */
 
                 document.getElementById(
                     "scanPage"
@@ -1105,7 +1363,10 @@ if (scanButton) {
 
             catch (error) {
 
-                console.error(error);
+                console.error(
+                    error
+                );
+
 
                 progressBox.hidden =
                     true;
@@ -1113,19 +1374,21 @@ if (scanButton) {
 
                 alert(
                     "سکین ناکام شو.\n\n" +
-                    "مهرباني وکړئ د تذکرې روښانه، " +
-                    "مستقیم او نږدې عکس واخلئ."
+                    "تذکره مستقیمه او روښانه ونیسئ."
                 );
+
             }
 
         }
     );
+
 }
 
 
-/* =========================
-   COPY BUTTONS
-========================= */
+
+/* ===============================
+   COPY INDIVIDUAL
+================================ */
 
 document
     .querySelectorAll(
@@ -1145,7 +1408,8 @@ document
 
 
                     const value =
-                        element.value || "";
+                        element.value ||
+                        "";
 
 
                     try {
@@ -1167,10 +1431,11 @@ document
                         document.execCommand(
                             "copy"
                         );
+
                     }
 
 
-                    const oldText =
+                    const old =
                         button.textContent;
 
 
@@ -1182,7 +1447,7 @@ document
                         function () {
 
                             button.textContent =
-                                oldText;
+                                old;
 
                         },
                         1200
@@ -1195,9 +1460,10 @@ document
     );
 
 
-/* =========================
+
+/* ===============================
    COPY ALL
-========================= */
+================================ */
 
 const copyAll =
     document.getElementById(
@@ -1251,22 +1517,22 @@ if (copyAll) {
 
             catch {
 
-                const textarea =
+                const area =
                     document.createElement(
                         "textarea"
                     );
 
 
-                textarea.value =
+                area.value =
                     text;
 
 
                 document.body.appendChild(
-                    textarea
+                    area
                 );
 
 
-                textarea.select();
+                area.select();
 
 
                 document.execCommand(
@@ -1274,22 +1540,25 @@ if (copyAll) {
                 );
 
 
-                textarea.remove();
+                area.remove();
 
 
                 alert(
                     "ټول معلومات کاپي شول."
                 );
+
             }
 
         }
     );
+
 }
 
 
-/* =========================
+
+/* ===============================
    NEW SCAN
-========================= */
+================================ */
 
 const newScan =
     document.getElementById(
@@ -1332,11 +1601,6 @@ if (newScan) {
 
 
             document.getElementById(
-                "rawText"
-            ).value = "";
-
-
-            document.getElementById(
                 "idNumber"
             ).value = "";
 
@@ -1356,13 +1620,20 @@ if (newScan) {
             ).value = "";
 
 
+            document.getElementById(
+                "rawText"
+            ).value = "";
+
+
             if (stream) {
 
                 stream
                     .getTracks()
                     .forEach(
                         function (track) {
+
                             track.stop();
+
                         }
                     );
 
@@ -1373,8 +1644,10 @@ if (newScan) {
 
                 camera.srcObject =
                     null;
+
             }
 
         }
     );
+
 }
