@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ps" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#075985">
+  <title>د تذکرې معلومات سکین</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>د تذکرې معلومات سکین</h1>
+    <p>عکس واخله، متن راوباسه، بیا یې جلا جلا کاپي کړه</p>
+  </header>
+
+  <main>
+    <section id="scanPage" class="card">
+      <div class="camera-box">
+        <video id="camera" autoplay playsinline></video>
+        <div class="frame"></div>
+        <div id="cameraMessage">د کیمرې د فعالولو لپاره اجازه ورکړئ</div>
+      </div>
+
+      <div class="buttons">
+        <button id="startCamera" class="primary">📷 کیمره فعاله کړه</button>
+        <button id="takePhoto" class="primary" disabled>📸 عکس واخله</button>
+        <label class="secondary">
+          🖼️ له ګالرۍ عکس وټاکه
+          <input id="fileInput" type="file" accept="image/*" hidden>
+        </label>
+      </div>
+
+      <canvas id="canvas" hidden></canvas>
+      <img id="preview" alt="د تذکرې عکس" hidden>
+
+      <button id="scanButton" class="scan" disabled>🔎 سکین پیل کړه</button>
+
+      <div id="progressBox" hidden>
+        <p id="status">چمتو کېږي...</p>
+        <progress id="progress" value="0" max="100"></progress>
+      </div>
+
+      <p class="privacy">
+        🔒 د عکس او معلوماتو د دې اپ له خوا کوم سرور یا ډیټابېس ته د لېږلو کوډ پکې نشته.
+        عکس یوازې د همدې پاڼې په وسیله کې پروسس کېږي.
+      </p>
+    </section>
+
+    <section id="resultPage" class="card" hidden>
+      <h2>📋 راایستل شوي معلومات</h2>
+      <p class="hint">OCR ممکن ځینې توري غلط ولولي. د کاپي کولو مخکې معلومات وګوره او که اړتیا وي سم یې کړه.</p>
+
+      <div class="field">
+        <label>د تذکرې نمبر</label>
+        <div class="row">
+          <input id="idNumber" type="text" autocomplete="off">
+          <button data-copy="idNumber">کاپي</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>نوم</label>
+        <div class="row">
+          <input id="fullName" type="text" autocomplete="off">
+          <button data-copy="fullName">کاپي</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>د پلار نوم</label>
+        <div class="row">
+          <input id="fatherName" type="text" autocomplete="off">
+          <button data-copy="fatherName">کاپي</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>د نیکه نوم</label>
+        <div class="row">
+          <input id="grandfatherName" type="text" autocomplete="off">
+          <button data-copy="grandfatherName">کاپي</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>نور راایستل شوی متن</label>
+        <textarea id="rawText" rows="8"></textarea>
+        <button class="copyAll" id="copyAll">ټول معلومات کاپي کړه</button>
+      </div>
+
+      <button id="newScan" class="scan">↩️ بیا سکین وکړه</button>
+    </section>
+  </main>
+
+  <footer>دا نسخه د محلي OCR لپاره جوړه شوې؛ د رسمي هویت تصدیق نه کوي.</footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
