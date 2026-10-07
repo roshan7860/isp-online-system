@@ -38,15 +38,25 @@ $("saveCustomer").onclick=async()=>{
 };
 
 async function loadCustomers(){
- const q=query(collection(db,"customers"),where("ownerId","==",currentUser.uid),orderBy("createdAt","desc"));
+ try {
+ const q=query(collection(db,"customers"),where("ownerId","==",currentUser.uid));
  const snap=await getDocs(q);
  customers=snap.docs.map(d=>({id:d.id,...d.data()}));
+ customers.sort((a,b)=>{
+   const at=a.createdAt?.toMillis?.() ?? 0;
+   const bt=b.createdAt?.toMillis?.() ?? 0;
+   return bt-at;
+ });
  for(const c of customers){
   const tq=query(collection(db,"transactions"),where("customerId","==",c.id),orderBy("createdAt","desc"));
   const ts=await getDocs(tq); c.transactions=ts.docs.map(d=>({id:d.id,...d.data()}));
   c.balance=(c.transactions||[]).reduce((s,t)=>s+(t.type==="credit"?Number(t.amount): -Number(t.amount)),0);
  }
  renderAll();
+ } catch(e) {
+   console.error("Firestore loadCustomers error:", e);
+   alert("Could not load customers: " + (e.message || e));
+ }
 }
 function renderAll(){
  $("customerCount").textContent=customers.length;
