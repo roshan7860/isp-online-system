@@ -1,1 +1,0 @@
-<?php require 'config/config.php'; if(isset($_SESSION['super_id']))go('admin/dashboard.php'); if(isset($_SESSION['isp_user_id']))go('isp/dashboard.php'); if(isset($_SESSION['customer_id']))go('customer/dashboard.php'); go('auth/login.php');
