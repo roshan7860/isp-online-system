@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, getDocs, query, where, orderBy, serverTimestamp, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
 import { firebaseConfig } from "./firebase-config.js";
 
 const app = initializeApp(firebaseConfig);
@@ -48,8 +48,14 @@ async function loadCustomers(){
    return bt-at;
  });
  for(const c of customers){
-  const tq=query(collection(db,"transactions"),where("customerId","==",c.id),orderBy("createdAt","desc"));
-  const ts=await getDocs(tq); c.transactions=ts.docs.map(d=>({id:d.id,...d.data()}));
+  const tq=query(collection(db,"transactions"),where("customerId","==",c.id));
+  const ts=await getDocs(tq);
+  c.transactions=ts.docs.map(d=>({id:d.id,...d.data()}));
+  c.transactions.sort((a,b)=>{
+    const at=a.createdAt?.toMillis?.() ?? 0;
+    const bt=b.createdAt?.toMillis?.() ?? 0;
+    return bt-at;
+  });
   c.balance=(c.transactions||[]).reduce((s,t)=>s+(t.type==="credit"?Number(t.amount): -Number(t.amount)),0);
  }
  renderAll();
