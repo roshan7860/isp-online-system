@@ -1,24 +1,6 @@
-rules_version = '2';
-
-service cloud.firestore {
-  match /databases/{database}/documents {
-
-    match /customers/{customerId} {
-      allow read, write: if request.auth != null;
-    }
-
-    match /transactions/{transactionId} {
-      allow read, write: if request.auth != null;
-    }
-
-    match /public_accounts/{accountId} {
-      allow read: if true;
-      allow write: if request.auth != null;
-
-      match /transactions/{transactionId} {
-        allow read: if true;
-        allow write: if request.auth != null;
-      }
-    }
-  }
-}
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
+import {
+  getFirestore, collection, addDoc, getDocs, getDoc, query, where,
+  serverTimestamp, doc, updateDoc, deleteDoc, setDoc
+} from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
