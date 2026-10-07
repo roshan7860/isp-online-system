@@ -1,4 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+
 import {
   getAuth,
   signInWithEmailAndPassword,
@@ -22,272 +23,447 @@ import {
 
 import { firebaseConfig } from "./firebase-config.js";
 
+
+/* =========================================
+   FIREBASE
+========================================= */
+
 const app = initializeApp(firebaseConfig);
+
 const auth = getAuth(app);
+
 const db = getFirestore(app);
 
 const $ = id => document.getElementById(id);
 
+
+/* =========================================
+   GLOBAL VARIABLES
+========================================= */
+
 let currentUser = null;
+
 let customers = [];
+
 let selectedCustomer = null;
+
 let editingCustomerId = null;
 
 
-/* =========================
+/* =========================================
    LOGIN
-========================= */
+========================================= */
 
 $("loginBtn").onclick = async () => {
+
   $("loginMsg").textContent = "";
 
+  const email =
+    $("email").value.trim();
+
+  const password =
+    $("password").value;
+
+  if (!email || !password) {
+
+    $("loginMsg").textContent =
+      "Please enter email and password.";
+
+    return;
+  }
+
   try {
+
     await signInWithEmailAndPassword(
       auth,
-      $("email").value.trim(),
-      $("password").value
+      email,
+      password
     );
+
   } catch (e) {
-    $("loginMsg").textContent = e.message;
+
+    console.error("Login error:", e);
+
+    $("loginMsg").textContent =
+      e.message;
+
   }
+
 };
 
 
-/* =========================
+/* =========================================
+   LOGOUT
+========================================= */
+
+$("logoutBtn").onclick = () => {
+
+  signOut(auth);
+
+};
+
+
+/* =========================================
    BASIC BUTTONS
-========================= */
+========================================= */
 
-$("logoutBtn").onclick = () => signOut(auth);
+$("addCustomerBtn").onclick = () => {
 
-$("addCustomerBtn").onclick = () => openCustomerForm();
+  openCustomerForm();
 
-$("closeModal").onclick = () => closeCustomerForm();
+};
+
+
+$("closeModal").onclick = () => {
+
+  closeCustomerForm();
+
+};
+
 
 $("closeDetail").onclick = () => {
-  $("customerPage").classList.add("hidden");
+
+  $("customerPage")
+    .classList
+    .add("hidden");
+
 };
 
-$("search").oninput = renderCustomers;
+
+$("search").oninput = () => {
+
+  renderCustomers();
+
+};
 
 
-/* =========================
+/* =========================================
    AUTH STATE
-========================= */
+========================================= */
 
-onAuthStateChanged(auth, async user => {
+onAuthStateChanged(
+  auth,
+  async user => {
 
-  currentUser = user;
+    currentUser = user;
 
-  if (user) {
+    if (user) {
 
-    $("loginPage").classList.add("hidden");
-    $("app").classList.remove("hidden");
+      $("loginPage")
+        .classList
+        .add("hidden");
 
-    await loadCustomers();
+      $("app")
+        .classList
+        .remove("hidden");
 
-  } else {
+      await loadCustomers();
 
-    $("app").classList.add("hidden");
-    $("loginPage").classList.remove("hidden");
+    } else {
+
+      $("app")
+        .classList
+        .add("hidden");
+
+      $("loginPage")
+        .classList
+        .remove("hidden");
+
+    }
 
   }
+);
 
-});
 
-
-/* =========================
+/* =========================================
    CUSTOMER FORM
-========================= */
+========================================= */
 
 function openCustomerForm(customer = null) {
 
-  editingCustomerId = customer?.id || null;
+  editingCustomerId =
+    customer?.id || null;
+
 
   $("modalTitle").textContent =
-    customer ? "Edit Customer" : "Add Customer";
+    customer
+      ? "Edit Customer"
+      : "Add Customer";
+
 
   $("customerName").value =
     customer?.name || "";
 
+
   $("customerWhatsapp").value =
     customer?.whatsapp || "";
+
 
   $("customerAddress").value =
     customer?.address || "";
 
+
   $("customerMsg").textContent = "";
 
-  $("deleteCustomerBtn").classList.toggle(
-    "hidden",
-    !customer
-  );
 
-  $("modal").classList.remove("hidden");
+  $("deleteCustomerBtn")
+    .classList
+    .toggle(
+      "hidden",
+      !customer
+    );
+
+
+  $("modal")
+    .classList
+    .remove("hidden");
+
 }
 
 
 function closeCustomerForm() {
 
-  $("modal").classList.add("hidden");
+  $("modal")
+    .classList
+    .add("hidden");
 
   editingCustomerId = null;
+
 }
 
 
-/* =========================
+/* =========================================
    SAVE CUSTOMER
-========================= */
+========================================= */
 
-$("saveCustomer").onclick = async () => {
+$("saveCustomer").onclick =
+  async () => {
 
-  const name =
-    $("customerName").value.trim();
+    const name =
+      $("customerName")
+        .value
+        .trim();
 
-  const phone =
-    $("customerWhatsapp").value.trim();
 
-  const address =
-    $("customerAddress").value.trim();
+    const phone =
+      $("customerWhatsapp")
+        .value
+        .trim();
 
-  if (!name) {
 
-    $("customerMsg").textContent =
-      "Customer name is required";
+    const address =
+      $("customerAddress")
+        .value
+        .trim();
 
-    return;
-  }
 
-  try {
+    if (!name) {
 
-    if (editingCustomerId) {
+      $("customerMsg").textContent =
+        "Customer name is required";
 
-      const ref =
-        doc(db, "customers", editingCustomerId);
-
-      await updateDoc(ref, {
-        name,
-        whatsapp: phone,
-        address,
-        updatedAt: serverTimestamp()
-      });
-
-    } else {
-
-      const publicToken =
-        randomToken();
-
-      await addDoc(
-        collection(db, "customers"),
-        {
-          name,
-          whatsapp: phone,
-          address,
-          ownerId: currentUser.uid,
-          publicToken,
-          createdAt: serverTimestamp()
-        }
-      );
-
+      return;
     }
 
-    closeCustomerForm();
 
-    await loadCustomers();
+    try {
 
-  } catch (e) {
+      if (editingCustomerId) {
 
-    $("customerMsg").textContent =
-      e.message;
+        const ref =
+          doc(
+            db,
+            "customers",
+            editingCustomerId
+          );
 
-  }
 
-};
-
-
-/* =========================
-   DELETE CUSTOMER
-========================= */
-
-$("deleteCustomerBtn").onclick = async () => {
-
-  if (!editingCustomerId) return;
-
-  const c =
-    customers.find(
-      x => x.id === editingCustomerId
-    );
-
-  if (
-    !confirm(
-      `Delete customer "${c?.name || ""}" and all transactions?`
-    )
-  ) {
-    return;
-  }
-
-  try {
-
-    const txs =
-      c?.transactions || [];
-
-    for (const t of txs) {
-
-      await deleteDoc(
-        doc(db, "transactions", t.id)
-      );
-
-    }
-
-    if (c?.publicToken) {
-
-      const publicRef =
-        doc(
-          db,
-          "public_accounts",
-          c.publicToken
+        await updateDoc(
+          ref,
+          {
+            name,
+            whatsapp: phone,
+            address,
+            updatedAt:
+              serverTimestamp()
+          }
         );
 
-      await deleteDoc(publicRef)
-        .catch(() => {});
+
+      } else {
+
+        const publicToken =
+          randomToken();
+
+
+        await addDoc(
+          collection(
+            db,
+            "customers"
+          ),
+          {
+            name,
+            whatsapp: phone,
+            address,
+            ownerId:
+              currentUser.uid,
+            publicToken,
+            createdAt:
+              serverTimestamp()
+          }
+        );
+
+      }
+
+
+      closeCustomerForm();
+
+      await loadCustomers();
+
+
+    } catch (e) {
+
+      console.error(
+        "Save customer error:",
+        e
+      );
+
+      $("customerMsg").textContent =
+        e.message;
 
     }
 
-    await deleteDoc(
-      doc(
-        db,
-        "customers",
-        editingCustomerId
+  };
+
+
+/* =========================================
+   DELETE CUSTOMER
+========================================= */
+
+$("deleteCustomerBtn").onclick =
+  async () => {
+
+    if (!editingCustomerId) {
+      return;
+    }
+
+
+    const c =
+      customers.find(
+        x =>
+          x.id ===
+          editingCustomerId
+      );
+
+
+    if (
+      !confirm(
+        `Delete customer "${c?.name || ""}" and all transactions?`
       )
-    );
+    ) {
 
-    closeCustomerForm();
-
-    $("customerPage")
-      .classList.add("hidden");
-
-    await loadCustomers();
-
-  } catch (e) {
-
-    $("customerMsg").textContent =
-      e.message;
-
-  }
-
-};
+      return;
+    }
 
 
-/* =========================
+    try {
+
+      const txs =
+        c?.transactions || [];
+
+
+      for (const t of txs) {
+
+        await deleteDoc(
+          doc(
+            db,
+            "transactions",
+            t.id
+          )
+        );
+
+      }
+
+
+      /* Delete public account */
+
+      if (c?.publicToken) {
+
+        const publicRef =
+          doc(
+            db,
+            "public_accounts",
+            c.publicToken
+          );
+
+
+        await deleteDoc(
+          publicRef
+        ).catch(
+          () => {}
+        );
+
+      }
+
+
+      /* Delete customer */
+
+      await deleteDoc(
+        doc(
+          db,
+          "customers",
+          editingCustomerId
+        )
+      );
+
+
+      closeCustomerForm();
+
+
+      $("customerPage")
+        .classList
+        .add("hidden");
+
+
+      await loadCustomers();
+
+
+    } catch (e) {
+
+      console.error(
+        "Delete customer error:",
+        e
+      );
+
+      $("customerMsg").textContent =
+        e.message;
+
+    }
+
+  };
+
+
+/* =========================================
    LOAD CUSTOMERS
-========================= */
+========================================= */
 
 async function loadCustomers() {
 
   try {
 
+    if (!currentUser) {
+      return;
+    }
+
+
+    /* Get customers */
+
     const q =
       query(
-        collection(db, "customers"),
+        collection(
+          db,
+          "customers"
+        ),
         where(
           "ownerId",
           "==",
@@ -295,33 +471,50 @@ async function loadCustomers() {
         )
       );
 
+
     const snap =
       await getDocs(q);
 
+
     customers =
-      snap.docs.map(d => ({
-        id: d.id,
-        ...d.data()
-      }));
+      snap.docs.map(
+        d => ({
+          id: d.id,
+          ...d.data()
+        })
+      );
 
 
-    /* Sort customers locally */
+    /* Sort customers */
 
     customers.sort(
       (a, b) =>
-        (b.createdAt?.toMillis?.() ?? 0) -
-        (a.createdAt?.toMillis?.() ?? 0)
+        (
+          b.createdAt
+            ?.toMillis?.() ?? 0
+        ) -
+        (
+          a.createdAt
+            ?.toMillis?.() ?? 0
+        )
     );
 
 
-    /* Load transactions */
+    /* Load each customer's transactions */
 
-    for (const c of customers) {
+    for (
+      const c of customers
+    ) {
+
+
+      /* Create public token
+         if missing */
 
       if (!c.publicToken) {
 
         c.publicToken =
           randomToken();
+
 
         await updateDoc(
           doc(
@@ -338,9 +531,14 @@ async function loadCustomers() {
       }
 
 
+      /* Get transactions */
+
       const tq =
         query(
-          collection(db, "transactions"),
+          collection(
+            db,
+            "transactions"
+          ),
           where(
             "customerId",
             "==",
@@ -348,28 +546,41 @@ async function loadCustomers() {
           )
         );
 
+
       const ts =
         await getDocs(tq);
 
 
       c.transactions =
-        ts.docs.map(d => ({
-          id: d.id,
-          ...d.data()
-        }));
+        ts.docs.map(
+          d => ({
+            id: d.id,
+            ...d.data()
+          })
+        );
 
+
+      /* Sort transactions */
 
       c.transactions.sort(
         (a, b) =>
-          (b.createdAt?.toMillis?.() ?? 0) -
-          (a.createdAt?.toMillis?.() ?? 0)
+          (
+            b.createdAt
+              ?.toMillis?.() ?? 0
+          ) -
+          (
+            a.createdAt
+              ?.toMillis?.() ?? 0
+          )
       );
 
 
       /* Calculate balance */
 
       c.balance =
-        (c.transactions || []).reduce(
+        (
+          c.transactions || []
+        ).reduce(
           (s, t) =>
             s +
             (
@@ -380,16 +591,35 @@ async function loadCustomers() {
           0
         );
 
+
+      /*
+        IMPORTANT:
+        Sync public account separately.
+
+        If public account permission
+        fails, dashboard will NOT fail.
+      */
+
+      try {
+
+        await syncPublicCustomer(c);
+
+      } catch (syncError) {
+
+        console.error(
+          "Public account sync failed:",
+          syncError
+        );
+
+      }
+
     }
 
 
-    /* IMPORTANT:
-       Do NOT sync public_accounts here.
-       This prevents Dashboard from failing
-       because of public_accounts permissions.
-    */
+    /* Render dashboard */
 
     renderAll();
+
 
   } catch (e) {
 
@@ -398,9 +628,13 @@ async function loadCustomers() {
       e
     );
 
+
     alert(
       "Could not load customers: " +
-      (e.message || e)
+      (
+        e.message ||
+        e
+      )
     );
 
   }
@@ -408,13 +642,18 @@ async function loadCustomers() {
 }
 
 
-/* =========================
-   PUBLIC CUSTOMER SYNC
-========================= */
+/* =========================================
+   PUBLIC ACCOUNT SYNC
+========================================= */
 
 async function syncPublicCustomer(c) {
 
-  if (!c?.publicToken) return;
+  if (!c?.publicToken) {
+    return;
+  }
+
+
+  /* Main public account */
 
   const ref =
     doc(
@@ -423,27 +662,36 @@ async function syncPublicCustomer(c) {
       c.publicToken
     );
 
-  await setDoc(ref, {
 
-    name: c.name,
+  await setDoc(
+    ref,
+    {
+      name:
+        c.name,
 
-    whatsapp:
-      c.whatsapp || "",
+      whatsapp:
+        c.whatsapp || "",
 
-    address:
-      c.address || "",
+      address:
+        c.address || "",
 
-    balance:
-      Number(c.balance || 0),
+      balance:
+        Number(
+          c.balance || 0
+        ),
 
-    updatedAt:
-      serverTimestamp()
+      updatedAt:
+        serverTimestamp()
+    }
+  );
 
-  });
 
+  /* Public transactions */
 
   for (
-    const t of (c.transactions || [])
+    const t of (
+      c.transactions || []
+    )
   ) {
 
     await setDoc(
@@ -457,18 +705,19 @@ async function syncPublicCustomer(c) {
       ),
 
       {
-
-        type: t.type,
+        type:
+          t.type,
 
         amount:
-          Number(t.amount),
+          Number(
+            t.amount
+          ),
 
         note:
           t.note || "",
 
         createdAt:
           t.createdAt || null
-
       }
 
     );
@@ -478,146 +727,179 @@ async function syncPublicCustomer(c) {
 }
 
 
-/* =========================
+/* =========================================
    DASHBOARD
-========================= */
+========================================= */
 
 function renderAll() {
 
-  $("customerCount").textContent =
-    customers.length;
+  /* Customer count */
+
+  $("customerCount")
+    .textContent =
+      customers.length;
 
 
   /* Total Credit */
 
-  $("totalCredit").textContent =
-    money(
+  $("totalCredit")
+    .textContent =
+      money(
 
-      customers.reduce(
-
-        (s, c) =>
-
-          s +
-
-          (c.transactions || [])
-            .filter(
-              t => t.type === "credit"
+        customers.reduce(
+          (s, c) =>
+            s +
+            (
+              c.transactions || []
             )
-            .reduce(
-              (a, t) =>
-                a +
-                Number(t.amount),
-              0
-            ),
+              .filter(
+                t =>
+                  t.type ===
+                  "credit"
+              )
+              .reduce(
+                (a, t) =>
+                  a +
+                  Number(
+                    t.amount
+                  ),
+                0
+              ),
+          0
+        )
 
-        0
-
-      )
-
-    );
+      );
 
 
   /* Total Debit */
 
-  $("totalDebit").textContent =
-    money(
+  $("totalDebit")
+    .textContent =
+      money(
 
-      customers.reduce(
-
-        (s, c) =>
-
-          s +
-
-          (c.transactions || [])
-            .filter(
-              t => t.type === "debit"
+        customers.reduce(
+          (s, c) =>
+            s +
+            (
+              c.transactions || []
             )
-            .reduce(
-              (a, t) =>
-                a +
-                Number(t.amount),
-              0
-            ),
+              .filter(
+                t =>
+                  t.type ===
+                  "debit"
+              )
+              .reduce(
+                (a, t) =>
+                  a +
+                  Number(
+                    t.amount
+                  ),
+                0
+              ),
+          0
+        )
 
-        0
-
-      )
-
-    );
-
-
-  /* Outstanding */
-
-  $("totalBalance").textContent =
-    money(
-
-      customers.reduce(
-        (s, c) =>
-          s + c.balance,
-        0
-      )
-
-    );
+      );
 
 
-  /* Top 5 Debtors */
+  /* Total balance */
+
+  $("totalBalance")
+    .textContent =
+      money(
+
+        customers.reduce(
+          (s, c) =>
+            s +
+            c.balance,
+          0
+        )
+
+      );
+
+
+  /* Top 5 debtors */
 
   const top =
     [...customers]
       .sort(
         (a, b) =>
-          b.balance - a.balance
+          b.balance -
+          a.balance
       )
       .filter(
-        c => c.balance > 0
+        c =>
+          c.balance > 0
       )
-      .slice(0, 5);
+      .slice(
+        0,
+        5
+      );
 
 
-  $("topDebtors").innerHTML =
-    top.length
+  $("topDebtors")
+    .innerHTML =
+      top.length
 
-      ? top.map(c => `
+        ? top.map(
+            c => `
 
-        <div
-          class="debtor"
-          data-id="${c.id}"
-        >
+              <div
+                class="debtor"
+                data-id="${c.id}"
+              >
 
-          <div>
+                <div>
 
-            <b>
-              ${esc(c.name)}
-            </b>
+                  <b>
+                    ${esc(c.name)}
+                  </b>
 
-            <small>
-              ${esc(c.whatsapp || "")}
-            </small>
+                  <small>
+                    ${esc(
+                      c.whatsapp || ""
+                    )}
+                  </small>
 
-          </div>
+                </div>
 
-          <span
-            class="amount positive"
-          >
-            ${money(c.balance)} AFN
-          </span>
 
-        </div>
+                <span
+                  class="amount positive"
+                >
+                  ${money(
+                    c.balance
+                  )} AFN
+                </span>
 
-      `).join("")
+              </div>
 
-      : "<p class='muted'>No outstanding debt.</p>";
+            `
+          ).join("")
 
+        : `
+          <p class="muted">
+            No outstanding debt.
+          </p>
+        `;
+
+
+  /* Debtor click */
 
   document
-    .querySelectorAll(".debtor")
+    .querySelectorAll(
+      ".debtor"
+    )
     .forEach(
-      x =>
+      x => {
+
         x.onclick =
           () =>
             openCustomer(
               x.dataset.id
-            )
+            );
+
+      }
     );
 
 
@@ -626,9 +908,9 @@ function renderAll() {
 }
 
 
-/* =========================
+/* =========================================
    CUSTOMER LIST
-========================= */
+========================================= */
 
 function renderCustomers() {
 
@@ -639,206 +921,262 @@ function renderCustomers() {
 
 
   const list =
-    customers.filter(c =>
+    customers.filter(
+      c =>
+        c.name
+          .toLowerCase()
+          .includes(term)
 
-      c.name
-        .toLowerCase()
-        .includes(term)
+        ||
 
-      ||
-
-      (c.whatsapp || "")
-        .includes(term)
-
+        (
+          c.whatsapp ||
+          ""
+        ).includes(term)
     );
 
 
-  $("customers").innerHTML =
-    list.length
+  $("customers")
+    .innerHTML =
 
-      ? list.map(c => `
+      list.length
 
-        <div
-          class="customer"
-          data-id="${c.id}"
-        >
+        ? list.map(
+            c => `
 
-          <div class="customerMain">
+              <div
+                class="customer"
+                data-id="${c.id}"
+              >
 
-            <div>
-
-              <div class="row">
-
-                <b>
-                  ${esc(c.name)}
-                </b>
-
-                <span
-                  class="balancePill ${
-                    c.balance > 0
-                      ? "debt"
-                      : "paid"
-                  }"
+                <div
+                  class="customerMain"
                 >
-                  ${money(c.balance)} AFN
-                </span>
+
+                  <div>
+
+                    <div class="row">
+
+                      <b>
+                        ${esc(
+                          c.name
+                        )}
+                      </b>
+
+
+                      <span
+                        class="balancePill ${
+                          c.balance > 0
+                            ? "debt"
+                            : "paid"
+                        }"
+                      >
+                        ${money(
+                          c.balance
+                        )} AFN
+                      </span>
+
+                    </div>
+
+
+                    <small>
+                      ${esc(
+                        c.whatsapp || ""
+                      )}
+                    </small>
+
+                  </div>
+
+
+                  <div
+                    class="customerActions"
+                  >
+
+                    <button
+                      class="iconBtn editBtn"
+                      title="Edit customer"
+                    >
+                      ✏️
+                    </button>
+
+
+                    <button
+                      class="iconBtn reminderBtn"
+                      title="Send WhatsApp reminder"
+                    >
+                      🔔
+                    </button>
+
+
+                    <button
+                      class="iconBtn deleteBtn"
+                      title="Delete customer"
+                    >
+                      🗑️
+                    </button>
+
+                  </div>
+
+                </div>
 
               </div>
 
-              <small>
-                ${esc(c.whatsapp || "")}
-              </small>
+            `
+          ).join("")
 
-            </div>
-
-
-            <div
-              class="customerActions"
-            >
-
-              <button
-                class="iconBtn editBtn"
-                title="Edit customer"
-              >
-                ✏️
-              </button>
+        : `
+          <p class="muted">
+            No customers found.
+          </p>
+        `;
 
 
-              <button
-                class="iconBtn reminderBtn"
-                title="Send WhatsApp reminder"
-              >
-                🔔
-              </button>
-
-
-              <button
-                class="iconBtn deleteBtn"
-                title="Delete customer"
-              >
-                🗑️
-              </button>
-
-            </div>
-
-          </div>
-
-        </div>
-
-      `).join("")
-
-      : "<p class='muted'>No customers found.</p>";
-
+  /* Customer events */
 
   document
-    .querySelectorAll(".customer")
-    .forEach(row => {
+    .querySelectorAll(
+      ".customer"
+    )
+    .forEach(
+      row => {
 
-      const id =
-        row.dataset.id;
+        const id =
+          row.dataset.id;
 
 
-      row.onclick = e => {
+        /* Open customer */
 
-        if (
-          e.target.closest(
-            ".customerActions"
+        row.onclick =
+          e => {
+
+            if (
+              e.target.closest(
+                ".customerActions"
+              )
+            ) {
+              return;
+            }
+
+
+            openCustomer(id);
+
+          };
+
+
+        /* Edit */
+
+        row
+          .querySelector(
+            ".editBtn"
           )
-        ) {
-          return;
-        }
+          .onclick =
+            e => {
 
-        openCustomer(id);
-
-      };
+              e.stopPropagation();
 
 
-      /* Edit */
-
-      row
-        .querySelector(".editBtn")
-        .onclick = e => {
-
-          e.stopPropagation();
-
-          const c =
-            customers.find(
-              x => x.id === id
-            );
-
-          openCustomerForm(c);
-
-        };
+              const c =
+                customers.find(
+                  x =>
+                    x.id === id
+                );
 
 
-      /* Delete */
+              openCustomerForm(c);
 
-      row
-        .querySelector(".deleteBtn")
-        .onclick = async e => {
-
-          e.stopPropagation();
-
-          const c =
-            customers.find(
-              x => x.id === id
-            );
-
-          openCustomerForm(c);
-
-          $("deleteCustomerBtn").click();
-
-        };
+            };
 
 
-      /* Reminder */
+        /* Delete */
 
-      row
-        .querySelector(".reminderBtn")
-        .onclick = e => {
+        row
+          .querySelector(
+            ".deleteBtn"
+          )
+          .onclick =
+            async e => {
 
-          e.stopPropagation();
+              e.stopPropagation();
 
-          const c =
-            customers.find(
-              x => x.id === id
-            );
 
-          sendReminder(c);
+              const c =
+                customers.find(
+                  x =>
+                    x.id === id
+                );
 
-        };
 
-    });
+              openCustomerForm(c);
+
+
+              $("deleteCustomerBtn")
+                .click();
+
+            };
+
+
+        /* Reminder */
+
+        row
+          .querySelector(
+            ".reminderBtn"
+          )
+          .onclick =
+            e => {
+
+              e.stopPropagation();
+
+
+              const c =
+                customers.find(
+                  x =>
+                    x.id === id
+                );
+
+
+              sendReminder(c);
+
+            };
+
+      }
+    );
 
 }
 
 
-/* =========================
+/* =========================================
    OPEN CUSTOMER
-========================= */
+========================================= */
 
 async function openCustomer(id) {
 
   selectedCustomer =
     customers.find(
-      c => c.id === id
+      c =>
+        c.id === id
     );
+
 
   if (!selectedCustomer) {
     return;
   }
 
 
-  $("detailName").textContent =
-    selectedCustomer.name;
+  $("detailName")
+    .textContent =
+      selectedCustomer.name;
 
 
-  $("detailPhone").textContent =
-    selectedCustomer.whatsapp || "";
+  $("detailPhone")
+    .textContent =
+      selectedCustomer.whatsapp || "";
 
 
-  $("detailBalance").textContent =
-    `${money(selectedCustomer.balance)} AFN`;
+  $("detailBalance")
+    .textContent =
+      `${money(
+        selectedCustomer.balance
+      )} AFN`;
 
 
   $("customerPage")
@@ -851,235 +1189,292 @@ async function openCustomer(id) {
 }
 
 
-/* =========================
+/* =========================================
    CUSTOMER HISTORY
-========================= */
+========================================= */
 
 function renderHistory() {
 
   const ts =
-    selectedCustomer.transactions || [];
+    selectedCustomer
+      .transactions || [];
 
 
-  $("history").innerHTML =
-    ts.length
+  $("history")
+    .innerHTML =
 
-      ? ts.map(t => `
+      ts.length
 
-        <div
-          class="tx ${
-            t.type === "credit"
-              ? "txCredit"
-              : "txDebit"
-          }"
-        >
+        ? ts.map(
+            t => `
 
-          <div
-            class="row between"
-          >
+              <div
+                class="tx ${
+                  t.type === "credit"
+                    ? "txCredit"
+                    : "txDebit"
+                }"
+              >
 
-            <b>
+                <div
+                  class="row between"
+                >
 
-              ${
-                t.type === "credit"
-                  ? "Credit"
-                  : "Debit"
-              }
+                  <b>
 
-              —
-              ${money(t.amount)} AFN
+                    ${
+                      t.type === "credit"
+                        ? "Credit"
+                        : "Debit"
+                    }
 
-            </b>
+                    —
 
-            <span>
-              ${date(t.createdAt)}
-            </span>
+                    ${money(
+                      t.amount
+                    )} AFN
 
-          </div>
+                  </b>
 
 
-          <div class="note">
-            ${esc(t.note || "")}
-          </div>
+                  <span>
+                    ${date(
+                      t.createdAt
+                    )}
+                  </span>
 
-        </div>
+                </div>
 
-      `).join("")
 
-      : "<p class='muted'>No transactions.</p>";
+                <div class="note">
+
+                  ${esc(
+                    t.note || ""
+                  )}
+
+                </div>
+
+              </div>
+
+            `
+          ).join("")
+
+        : `
+          <p class="muted">
+            No transactions.
+          </p>
+        `;
 
 }
 
 
-/* =========================
+/* =========================================
    SAVE TRANSACTION
-========================= */
+========================================= */
 
-$("saveTx").onclick = async () => {
+$("saveTx").onclick =
+  async () => {
 
-  if (!selectedCustomer) {
-    return;
-  }
-
-
-  const amount =
-    Number(
-      $("txAmount").value
-    );
-
-
-  const type =
-    $("txType").value;
-
-
-  const note =
-    $("txNote")
-      .value
-      .trim();
-
-
-  const sendWhatsApp =
-    $("waToggle").checked;
-
-
-  if (!amount || amount <= 0) {
-
-    alert(
-      "Enter a valid amount"
-    );
-
-    return;
-  }
-
-
-  const wa =
-    (
-      selectedCustomer.whatsapp || ""
-    ).replace(
-      /\D/g,
-      ""
-    );
-
-
-  const waWindow =
-    sendWhatsApp && wa
-      ? window.open(
-          "about:blank",
-          "_blank"
-        )
-      : null;
-
-
-  try {
-
-    await addDoc(
-
-      collection(
-        db,
-        "transactions"
-      ),
-
-      {
-
-        customerId:
-          selectedCustomer.id,
-
-        ownerId:
-          currentUser.uid,
-
-        type,
-
-        amount,
-
-        note,
-
-        createdAt:
-          serverTimestamp()
-
-      }
-
-    );
-
-
-    $("txAmount").value = "";
-
-    $("txNote").value = "";
-
-
-    await loadCustomers();
-
-
-    selectedCustomer =
-      customers.find(
-        c =>
-          c.id ===
-          selectedCustomer.id
-      );
-
-
-    await openCustomer(
-      selectedCustomer.id
-    );
-
-
-    /* Sync public account only after
-       successful transaction */
-
-    try {
-
-      await syncPublicCustomer(
-        selectedCustomer
-      );
-
-    } catch (syncError) {
-
-      console.error(
-        "Public account sync failed:",
-        syncError
-      );
-
+    if (!selectedCustomer) {
+      return;
     }
+
+
+    const amount =
+      Number(
+        $("txAmount")
+          .value
+      );
+
+
+    const type =
+      $("txType")
+        .value;
+
+
+    const note =
+      $("txNote")
+        .value
+        .trim();
+
+
+    const sendWhatsApp =
+      $("waToggle")
+        .checked;
 
 
     if (
-      waWindow &&
-      selectedCustomer
+      !amount ||
+      amount <= 0
     ) {
 
-      const message =
-        buildPashtoMessage(
-          selectedCustomer
+      alert(
+        "Enter a valid amount"
+      );
+
+      return;
+    }
+
+
+    const wa =
+      (
+        selectedCustomer
+          .whatsapp || ""
+      ).replace(
+        /\D/g,
+        ""
+      );
+
+
+    /* Open WhatsApp window
+       before Firestore operation */
+
+    const waWindow =
+      sendWhatsApp && wa
+        ? window.open(
+            "about:blank",
+            "_blank"
+          )
+        : null;
+
+
+    try {
+
+      /* Add transaction */
+
+      await addDoc(
+
+        collection(
+          db,
+          "transactions"
+        ),
+
+        {
+          customerId:
+            selectedCustomer.id,
+
+          ownerId:
+            currentUser.uid,
+
+          type,
+
+          amount,
+
+          note,
+
+          createdAt:
+            serverTimestamp()
+        }
+
+      );
+
+
+      $("txAmount")
+        .value = "";
+
+
+      $("txNote")
+        .value = "";
+
+
+      /* Reload customers */
+
+      await loadCustomers();
+
+
+      /* Select customer again */
+
+      selectedCustomer =
+        customers.find(
+          c =>
+            c.id ===
+            selectedCustomer.id
         );
 
 
-      waWindow.location.href =
-        `https://wa.me/${wa}?text=${
-          encodeURIComponent(message)
-        }`;
+      if (!selectedCustomer) {
+
+        if (waWindow) {
+          waWindow.close();
+        }
+
+        return;
+
+      }
+
+
+      await openCustomer(
+        selectedCustomer.id
+      );
+
+
+      /* Update public account */
+
+      try {
+
+        await syncPublicCustomer(
+          selectedCustomer
+        );
+
+      } catch (syncError) {
+
+        console.error(
+          "Public account sync failed:",
+          syncError
+        );
+
+      }
+
+
+      /* WhatsApp */
+
+      if (
+        waWindow &&
+        selectedCustomer
+      ) {
+
+        const message =
+          buildPashtoMessage(
+            selectedCustomer
+          );
+
+
+        waWindow.location.href =
+          `https://wa.me/${wa}?text=${
+            encodeURIComponent(
+              message
+            )
+          }`;
+
+      }
+
+
+    } catch (e) {
+
+      if (waWindow) {
+        waWindow.close();
+      }
+
+
+      console.error(
+        "Save transaction error:",
+        e
+      );
+
+
+      alert(
+        "Could not save transaction: " +
+        e.message
+      );
 
     }
 
-
-  } catch (e) {
-
-    if (waWindow) {
-      waWindow.close();
-    }
+  };
 
 
-    alert(
-      "Could not save transaction: " +
-      e.message
-    );
-
-  }
-
-};
-
-
-/* =========================
+/* =========================================
    WHATSAPP REMINDER
-========================= */
+========================================= */
 
 function sendReminder(c) {
 
@@ -1089,11 +1484,12 @@ function sendReminder(c) {
 
 
   const wa =
-    (c.whatsapp || "")
-      .replace(
-        /\D/g,
-        ""
-      );
+    (
+      c.whatsapp || ""
+    ).replace(
+      /\D/g,
+      ""
+    );
 
 
   if (!wa) {
@@ -1111,21 +1507,20 @@ function sendReminder(c) {
 
 
   window.open(
-
     `https://wa.me/${wa}?text=${
-      encodeURIComponent(message)
+      encodeURIComponent(
+        message
+      )
     }`,
-
     "_blank"
-
   );
 
 }
 
 
-/* =========================
-   PASHTO MESSAGE
-========================= */
+/* =========================================
+   PASHTO WHATSAPP MESSAGE
+========================================= */
 
 function buildPashtoMessage(c) {
 
@@ -1159,17 +1554,18 @@ ${portalUrl(c.publicToken)}`;
 }
 
 
-/* =========================
+/* =========================================
    PUBLIC ACCOUNT URL
-========================= */
+========================================= */
 
 function portalUrl(token) {
 
   return `${location.origin}${
-    location.pathname.replace(
-      /\/$/,
-      ""
-    )
+    location.pathname
+      .replace(
+        /\/$/,
+        ""
+      )
   }/customer.html?token=${
     encodeURIComponent(token)
   }`;
@@ -1177,50 +1573,70 @@ function portalUrl(token) {
 }
 
 
-/* =========================
-   RANDOM PUBLIC TOKEN
-========================= */
+/* =========================================
+   RANDOM TOKEN
+========================================= */
 
 function randomToken() {
 
   return `${
     crypto
       .randomUUID()
-      .replace(/-/g, "")
+      .replace(
+        /-/g,
+        ""
+      )
   }${
     crypto
       .randomUUID()
-      .replace(/-/g, "")
+      .replace(
+        /-/g,
+        ""
+      )
   }`;
 
 }
 
 
-/* =========================
-   HELPERS
-========================= */
+/* =========================================
+   MONEY FORMAT
+========================================= */
 
-const money = n =>
-  Number(n || 0)
-    .toLocaleString(
-      "en-US",
-      {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      }
-    );
-
-
-const date = x =>
-  x?.toDate
-    ? x.toDate()
-        .toLocaleString("en-GB")
-    : "Just now";
+const money =
+  n =>
+    Number(n || 0)
+      .toLocaleString(
+        "en-US",
+        {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        }
+      );
 
 
-const esc = s =>
-  String(s ?? "")
-    .replace(
+/* =========================================
+   DATE FORMAT
+========================================= */
+
+const date =
+  x =>
+    x?.toDate
+      ? x.toDate()
+          .toLocaleString(
+            "en-GB"
+          )
+      : "Just now";
+
+
+/* =========================================
+   HTML ESCAPE
+========================================= */
+
+const esc =
+  s =>
+    String(
+      s ?? ""
+    ).replace(
       /[&<>"']/g,
       m => ({
         "&": "&amp;",
@@ -1232,12 +1648,15 @@ const esc = s =>
     );
 
 
-/* =========================
-   DETAIL REMINDER
-========================= */
+/* =========================================
+   DETAIL PAGE REMINDER
+========================================= */
 
 $("detailReminder").onclick =
-  () =>
+  () => {
+
     sendReminder(
       selectedCustomer
     );
+
+  };
