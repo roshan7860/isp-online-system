@@ -1,65 +1,437 @@
 <!doctype html>
-<html lang="ps">
+<html lang="ps" dir="rtl">
+
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ستاسو د حساب معلومات</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="utf-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width,initial-scale=1"
+  >
+
+  <title>ستاسو د حساب معلومات</title>
+
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    body {
+      direction: rtl;
+    }
+
+    .portal {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 40px 15px;
+    }
+
+    .portalCard {
+      width: 100%;
+      max-width: 760px;
+    }
+
+    .portalCard h1 {
+      margin-bottom: 25px;
+    }
+
+    .portalInfo {
+      background: #f7f7f7;
+      padding: 18px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+
+    .portalInfo p {
+      margin: 10px 0;
+    }
+
+    .portalBalance {
+      text-align: center;
+      background: #fff3f3;
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+    }
+
+    .portalBalance span {
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .portalBalance b {
+      display: block;
+      font-size: 30px;
+      color: #d62828;
+    }
+
+    .portalBalance small {
+      display: block;
+      margin-top: 5px;
+    }
+
+    .portalTx {
+      margin-top: 15px;
+    }
+
+    .portalTx .tx {
+      margin-bottom: 12px;
+    }
+
+    .msg {
+      color: red;
+      padding: 15px;
+      text-align: center;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
 </head>
+
+
 <body>
+
 <main class="portal">
+
   <div class="card portalCard">
-    <h1>ستاسو د حساب معلومات</h1>
-    <div id="loading">مهرباني وکړئ، لږ انتظار وکړئ...</div>
-    <div id="account" class="hidden">
-      <div class="portalInfo">
-        <p><b>نوم:</b> <span id="pName"></span></p>
-        <p><b>شمېره:</b> <span id="pPhone"></span></p>
-        <p><b>پته:</b> <span id="pAddress"></span></p>
-      </div>
-      <div class="portalBalance">
-        <span>پر تاسو پاتې پیسې</span>
-        <b id="pBalance"></b>
-        <small>افغانۍ</small>
-      </div>
-      <h3>د حساب تاریخ</h3>
-      <div id="pHistory"></div>
+
+    <h1>
+      ستاسو د حساب معلومات
+    </h1>
+
+
+    <div id="loading">
+      مهرباني وکړئ، لږ انتظار وکړئ...
     </div>
-    <div id="error" class="msg hidden"></div>
+
+
+    <div id="account" class="hidden">
+
+      <div class="portalInfo">
+
+        <p>
+          <b>نوم:</b>
+          <span id="pName"></span>
+        </p>
+
+        <p>
+          <b>شمېره:</b>
+          <span id="pPhone"></span>
+        </p>
+
+        <p>
+          <b>پته:</b>
+          <span id="pAddress"></span>
+        </p>
+
+      </div>
+
+
+      <div class="portalBalance">
+
+        <span>
+          پر تاسو پاتې پیسې
+        </span>
+
+        <b id="pBalance">
+          0.00
+        </b>
+
+        <small>
+          افغانۍ
+        </small>
+
+      </div>
+
+
+      <h3>
+        د حساب تاریخ
+      </h3>
+
+
+      <div
+        id="pHistory"
+        class="portalTx"
+      ></div>
+
+    </div>
+
+
+    <div
+      id="error"
+      class="msg hidden"
+    ></div>
+
   </div>
+
 </main>
+
+
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
-import { getFirestore, doc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
-import { firebaseConfig } from "./firebase-config.js";
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const token = new URLSearchParams(location.search).get("token");
+import {
+  initializeApp
+} from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
 
-const money=n=>Number(n||0).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
-const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
-const date=x=>x?.toDate?x.toDate().toLocaleString("en-GB"):"";
 
-async function load(){
-  if(!token) throw new Error("د حساب لینک ناسم دی.");
-  const ref=doc(db,"public_accounts",token);
-  const snap=await getDoc(ref);
-  if(!snap.exists()) throw new Error("دا حساب پیدا نه شو.");
-  const c=snap.data();
-  pName.textContent=c.name||"";
-  pPhone.textContent=c.whatsapp||"";
-  pAddress.textContent=c.address||"";
-  pBalance.textContent=money(c.balance);
-  const ts=await getDocs(collection(db,"public_accounts",token,"transactions"));
-  const rows=ts.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.createdAt?.toMillis?.()??0)-(a.createdAt?.toMillis?.()??0));
-  pHistory.innerHTML=rows.length?rows.map(t=>`
-    <div class="tx ${t.type==="credit"?"txCredit":"txDebit"}">
-      <div class="row between"><b>${t.type==="credit"?"کریډیټ":"ډیبیټ"} — ${money(t.amount)} افغانۍ</b><span>${date(t.createdAt)}</span></div>
-      <div class="note">${esc(t.note||"")}</div>
-    </div>`).join(""):"<p class='muted'>تر اوسه کومه معامله نشته.</p>";
-  loading.classList.add("hidden"); account.classList.remove("hidden");
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  collection,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+
+
+import {
+  firebaseConfig
+} from "./firebase-config.js";
+
+
+const app =
+  initializeApp(firebaseConfig);
+
+
+const db =
+  getFirestore(app);
+
+
+const token =
+  new URLSearchParams(
+    location.search
+  ).get("token");
+
+
+const $ =
+  id => document.getElementById(id);
+
+
+const money =
+  n =>
+    Number(n || 0)
+      .toLocaleString(
+        "en-US",
+        {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        }
+      );
+
+
+const esc =
+  s =>
+    String(s ?? "")
+      .replace(
+        /[&<>"']/g,
+        m => ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#039;"
+        }[m])
+      );
+
+
+const date =
+  x =>
+    x?.toDate
+      ? x.toDate().toLocaleString("en-GB")
+      : "";
+
+
+async function load() {
+
+  try {
+
+    if (!token) {
+
+      throw new Error(
+        "د حساب لینک ناسم دی."
+      );
+
+    }
+
+
+    // =========================
+    // PUBLIC ACCOUNT
+    // =========================
+
+    const ref =
+      doc(
+        db,
+        "public_accounts",
+        token
+      );
+
+
+    const snap =
+      await getDoc(ref);
+
+
+    if (!snap.exists()) {
+
+      throw new Error(
+        "دا حساب پیدا نه شو. مهرباني وکړئ له حساب ورکوونکي سره اړیکه ونیسئ."
+      );
+
+    }
+
+
+    const c =
+      snap.data();
+
+
+    $("pName").textContent =
+      c.name || "";
+
+
+    $("pPhone").textContent =
+      c.whatsapp || "";
+
+
+    $("pAddress").textContent =
+      c.address || "";
+
+
+    $("pBalance").textContent =
+      money(c.balance);
+
+
+    // =========================
+    // TRANSACTIONS
+    // =========================
+
+    const txRef =
+      collection(
+        db,
+        "public_accounts",
+        token,
+        "transactions"
+      );
+
+
+    const ts =
+      await getDocs(txRef);
+
+
+    const rows =
+      ts.docs
+        .map(d => ({
+          id: d.id,
+          ...d.data()
+        }))
+        .sort(
+          (a, b) =>
+            (
+              b.createdAt
+                ?.toMillis?.() ?? 0
+            ) -
+            (
+              a.createdAt
+                ?.toMillis?.() ?? 0
+            )
+        );
+
+
+    $("pHistory").innerHTML =
+      rows.length
+
+        ? rows.map(t => `
+
+          <div
+            class="tx ${
+              t.type === "credit"
+                ? "txCredit"
+                : "txDebit"
+            }"
+          >
+
+            <div
+              class="row between"
+            >
+
+              <b>
+
+                ${
+                  t.type === "credit"
+                    ? "کریډیټ"
+                    : "ډیبیټ"
+                }
+
+                —
+                ${money(t.amount)}
+                افغانۍ
+
+              </b>
+
+
+              <span>
+                ${date(t.createdAt)}
+              </span>
+
+            </div>
+
+
+            <div class="note">
+
+              ${esc(t.note || "")}
+
+            </div>
+
+          </div>
+
+        `).join("")
+
+        : `
+          <p class="muted">
+            تر اوسه کومه معامله نشته.
+          </p>
+        `;
+
+
+    $("loading")
+      .classList
+      .add("hidden");
+
+
+    $("account")
+      .classList
+      .remove("hidden");
+
+
+  } catch (e) {
+
+    console.error(
+      "Public account error:",
+      e
+    );
+
+
+    $("loading")
+      .classList
+      .add("hidden");
+
+
+    $("error").textContent =
+      e.message ||
+      "د حساب معلومات ونه لوستل شول.";
+
+
+    $("error")
+      .classList
+      .remove("hidden");
+
+  }
+
 }
-load().catch(e=>{loading.classList.add("hidden");error.textContent=e.message;error.classList.remove("hidden")});
+
+
+load();
+
 </script>
+
 </body>
 </html>
