@@ -1,74 +1,168 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
 import {
-  getFirestore, collection, addDoc, getDocs, getDoc, query, where,
-  serverTimestamp, doc, updateDoc, deleteDoc, setDoc
+  getAuth,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
+
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  where,
+  serverTimestamp,
+  doc,
+  updateDoc,
+  deleteDoc,
+  setDoc
 } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+
 import { firebaseConfig } from "./firebase-config.js";
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+
 const $ = id => document.getElementById(id);
 
-let currentUser = null, customers = [], selectedCustomer = null, editingCustomerId = null;
+let currentUser = null;
+let customers = [];
+let selectedCustomer = null;
+let editingCustomerId = null;
+
+
+/* =========================
+   LOGIN
+========================= */
 
 $("loginBtn").onclick = async () => {
   $("loginMsg").textContent = "";
+
   try {
-    await signInWithEmailAndPassword(auth, $("email").value.trim(), $("password").value);
+    await signInWithEmailAndPassword(
+      auth,
+      $("email").value.trim(),
+      $("password").value
+    );
   } catch (e) {
     $("loginMsg").textContent = e.message;
   }
 };
 
+
+/* =========================
+   BASIC BUTTONS
+========================= */
+
 $("logoutBtn").onclick = () => signOut(auth);
+
 $("addCustomerBtn").onclick = () => openCustomerForm();
+
 $("closeModal").onclick = () => closeCustomerForm();
-$("closeDetail").onclick = () => $("customerPage").classList.add("hidden");
+
+$("closeDetail").onclick = () => {
+  $("customerPage").classList.add("hidden");
+};
+
 $("search").oninput = renderCustomers;
 
+
+/* =========================
+   AUTH STATE
+========================= */
+
 onAuthStateChanged(auth, async user => {
+
   currentUser = user;
+
   if (user) {
+
     $("loginPage").classList.add("hidden");
     $("app").classList.remove("hidden");
+
     await loadCustomers();
+
   } else {
+
     $("app").classList.add("hidden");
     $("loginPage").classList.remove("hidden");
+
   }
+
 });
 
+
+/* =========================
+   CUSTOMER FORM
+========================= */
+
 function openCustomerForm(customer = null) {
+
   editingCustomerId = customer?.id || null;
-  $("modalTitle").textContent = customer ? "Edit Customer" : "Add Customer";
-  $("customerName").value = customer?.name || "";
-  $("customerWhatsapp").value = customer?.whatsapp || "";
-  $("customerAddress").value = customer?.address || "";
+
+  $("modalTitle").textContent =
+    customer ? "Edit Customer" : "Add Customer";
+
+  $("customerName").value =
+    customer?.name || "";
+
+  $("customerWhatsapp").value =
+    customer?.whatsapp || "";
+
+  $("customerAddress").value =
+    customer?.address || "";
+
   $("customerMsg").textContent = "";
-  $("deleteCustomerBtn").classList.toggle("hidden", !customer);
+
+  $("deleteCustomerBtn").classList.toggle(
+    "hidden",
+    !customer
+  );
+
   $("modal").classList.remove("hidden");
 }
 
+
 function closeCustomerForm() {
+
   $("modal").classList.add("hidden");
+
   editingCustomerId = null;
 }
 
+
+/* =========================
+   SAVE CUSTOMER
+========================= */
+
 $("saveCustomer").onclick = async () => {
-  const name = $("customerName").value.trim();
-  const phone = $("customerWhatsapp").value.trim();
-  const address = $("customerAddress").value.trim();
+
+  const name =
+    $("customerName").value.trim();
+
+  const phone =
+    $("customerWhatsapp").value.trim();
+
+  const address =
+    $("customerAddress").value.trim();
 
   if (!name) {
-    $("customerMsg").textContent = "Customer name is required";
+
+    $("customerMsg").textContent =
+      "Customer name is required";
+
     return;
   }
 
   try {
+
     if (editingCustomerId) {
-      const ref = doc(db, "customers", editingCustomerId);
+
+      const ref =
+        doc(db, "customers", editingCustomerId);
 
       await updateDoc(ref, {
         name,
@@ -77,74 +171,141 @@ $("saveCustomer").onclick = async () => {
         updatedAt: serverTimestamp()
       });
 
-      const c = customers.find(x => x.id === editingCustomerId);
-      if (c?.publicToken) await syncPublicCustomer(c);
-
     } else {
-      const publicToken = randomToken();
 
-      await addDoc(collection(db, "customers"), {
-        name,
-        whatsapp: phone,
-        address,
-        ownerId: currentUser.uid,
-        publicToken,
-        createdAt: serverTimestamp()
-      });
+      const publicToken =
+        randomToken();
+
+      await addDoc(
+        collection(db, "customers"),
+        {
+          name,
+          whatsapp: phone,
+          address,
+          ownerId: currentUser.uid,
+          publicToken,
+          createdAt: serverTimestamp()
+        }
+      );
+
     }
 
     closeCustomerForm();
+
     await loadCustomers();
 
   } catch (e) {
-    $("customerMsg").textContent = e.message;
+
+    $("customerMsg").textContent =
+      e.message;
+
   }
+
 };
 
+
+/* =========================
+   DELETE CUSTOMER
+========================= */
+
 $("deleteCustomerBtn").onclick = async () => {
+
   if (!editingCustomerId) return;
 
-  const c = customers.find(x => x.id === editingCustomerId);
+  const c =
+    customers.find(
+      x => x.id === editingCustomerId
+    );
 
-  if (!confirm(`Delete customer "${c?.name || ""}" and all transactions?`)) return;
+  if (
+    !confirm(
+      `Delete customer "${c?.name || ""}" and all transactions?`
+    )
+  ) {
+    return;
+  }
 
   try {
-    const txs = c?.transactions || [];
+
+    const txs =
+      c?.transactions || [];
 
     for (const t of txs) {
-      await deleteDoc(doc(db, "transactions", t.id));
+
+      await deleteDoc(
+        doc(db, "transactions", t.id)
+      );
+
     }
 
     if (c?.publicToken) {
-      const publicRef = doc(db, "public_accounts", c.publicToken);
-      await deleteDoc(publicRef).catch(() => {});
+
+      const publicRef =
+        doc(
+          db,
+          "public_accounts",
+          c.publicToken
+        );
+
+      await deleteDoc(publicRef)
+        .catch(() => {});
+
     }
 
-    await deleteDoc(doc(db, "customers", editingCustomerId));
+    await deleteDoc(
+      doc(
+        db,
+        "customers",
+        editingCustomerId
+      )
+    );
 
     closeCustomerForm();
-    $("customerPage").classList.add("hidden");
+
+    $("customerPage")
+      .classList.add("hidden");
 
     await loadCustomers();
 
   } catch (e) {
-    $("customerMsg").textContent = e.message;
+
+    $("customerMsg").textContent =
+      e.message;
+
   }
+
 };
 
+
+/* =========================
+   LOAD CUSTOMERS
+========================= */
+
 async function loadCustomers() {
+
   try {
-    const q = query(
-      collection(db, "customers"),
-      where("ownerId", "==", currentUser.uid)
-    );
 
-    const snap = await getDocs(q);
+    const q =
+      query(
+        collection(db, "customers"),
+        where(
+          "ownerId",
+          "==",
+          currentUser.uid
+        )
+      );
 
-    customers = snap.docs.map(d => ({
-      id: d.id,
-      ...d.data()
-    }));
+    const snap =
+      await getDocs(q);
+
+    customers =
+      snap.docs.map(d => ({
+        id: d.id,
+        ...d.data()
+      }));
+
+
+    /* Sort customers locally */
 
     customers.sort(
       (a, b) =>
@@ -152,28 +313,51 @@ async function loadCustomers() {
         (a.createdAt?.toMillis?.() ?? 0)
     );
 
+
+    /* Load transactions */
+
     for (const c of customers) {
 
       if (!c.publicToken) {
-        c.publicToken = randomToken();
+
+        c.publicToken =
+          randomToken();
 
         await updateDoc(
-          doc(db, "customers", c.id),
-          { publicToken: c.publicToken }
+          doc(
+            db,
+            "customers",
+            c.id
+          ),
+          {
+            publicToken:
+              c.publicToken
+          }
         );
+
       }
 
-      const tq = query(
-        collection(db, "transactions"),
-        where("customerId", "==", c.id)
-      );
 
-      const ts = await getDocs(tq);
+      const tq =
+        query(
+          collection(db, "transactions"),
+          where(
+            "customerId",
+            "==",
+            c.id
+          )
+        );
 
-      c.transactions = ts.docs.map(d => ({
-        id: d.id,
-        ...d.data()
-      }));
+      const ts =
+        await getDocs(tq);
+
+
+      c.transactions =
+        ts.docs.map(d => ({
+          id: d.id,
+          ...d.data()
+        }));
+
 
       c.transactions.sort(
         (a, b) =>
@@ -181,44 +365,89 @@ async function loadCustomers() {
           (a.createdAt?.toMillis?.() ?? 0)
       );
 
-      c.balance = (c.transactions || []).reduce(
-        (s, t) =>
-          s +
-          (
-            t.type === "credit"
-              ? Number(t.amount)
-              : -Number(t.amount)
-          ),
-        0
-      );
 
-      await syncPublicCustomer(c);
+      /* Calculate balance */
+
+      c.balance =
+        (c.transactions || []).reduce(
+          (s, t) =>
+            s +
+            (
+              t.type === "credit"
+                ? Number(t.amount)
+                : -Number(t.amount)
+            ),
+          0
+        );
+
     }
+
+
+    /* IMPORTANT:
+       Do NOT sync public_accounts here.
+       This prevents Dashboard from failing
+       because of public_accounts permissions.
+    */
 
     renderAll();
 
   } catch (e) {
-    console.error("Firestore loadCustomers error:", e);
-    alert("Could not load customers: " + (e.message || e));
+
+    console.error(
+      "Firestore loadCustomers error:",
+      e
+    );
+
+    alert(
+      "Could not load customers: " +
+      (e.message || e)
+    );
+
   }
+
 }
 
+
+/* =========================
+   PUBLIC CUSTOMER SYNC
+========================= */
+
 async function syncPublicCustomer(c) {
+
   if (!c?.publicToken) return;
 
-  const ref = doc(db, "public_accounts", c.publicToken);
+  const ref =
+    doc(
+      db,
+      "public_accounts",
+      c.publicToken
+    );
 
   await setDoc(ref, {
+
     name: c.name,
-    whatsapp: c.whatsapp || "",
-    address: c.address || "",
-    balance: Number(c.balance || 0),
-    updatedAt: serverTimestamp()
+
+    whatsapp:
+      c.whatsapp || "",
+
+    address:
+      c.address || "",
+
+    balance:
+      Number(c.balance || 0),
+
+    updatedAt:
+      serverTimestamp()
+
   });
 
-  for (const t of (c.transactions || [])) {
+
+  for (
+    const t of (c.transactions || [])
+  ) {
 
     await setDoc(
+
       doc(
         db,
         "public_accounts",
@@ -226,310 +455,692 @@ async function syncPublicCustomer(c) {
         "transactions",
         t.id
       ),
+
       {
+
         type: t.type,
-        amount: Number(t.amount),
-        note: t.note || "",
-        createdAt: t.createdAt || null
+
+        amount:
+          Number(t.amount),
+
+        note:
+          t.note || "",
+
+        createdAt:
+          t.createdAt || null
+
       }
+
     );
+
   }
+
 }
+
+
+/* =========================
+   DASHBOARD
+========================= */
 
 function renderAll() {
 
-  $("customerCount").textContent = customers.length;
+  $("customerCount").textContent =
+    customers.length;
 
-  $("totalCredit").textContent = money(
-    customers.reduce(
-      (s, c) =>
-        s +
-        (c.transactions || [])
-          .filter(t => t.type === "credit")
-          .reduce(
-            (a, t) => a + Number(t.amount),
-            0
-          ),
-      0
-    )
-  );
 
-  $("totalDebit").textContent = money(
-    customers.reduce(
-      (s, c) =>
-        s +
-        (c.transactions || [])
-          .filter(t => t.type === "debit")
-          .reduce(
-            (a, t) => a + Number(t.amount),
-            0
-          ),
-      0
-    )
-  );
+  /* Total Credit */
 
-  $("totalBalance").textContent = money(
-    customers.reduce((s, c) => s + c.balance, 0)
-  );
+  $("totalCredit").textContent =
+    money(
 
-  const top = [...customers]
-    .sort((a, b) => b.balance - a.balance)
-    .filter(c => c.balance > 0)
-    .slice(0, 5);
+      customers.reduce(
 
-  $("topDebtors").innerHTML = top.length
-    ? top.map(c => `
-      <div class="debtor" data-id="${c.id}">
-        <div>
-          <b>${esc(c.name)}</b>
-          <small>${esc(c.whatsapp || "")}</small>
+        (s, c) =>
+
+          s +
+
+          (c.transactions || [])
+            .filter(
+              t => t.type === "credit"
+            )
+            .reduce(
+              (a, t) =>
+                a +
+                Number(t.amount),
+              0
+            ),
+
+        0
+
+      )
+
+    );
+
+
+  /* Total Debit */
+
+  $("totalDebit").textContent =
+    money(
+
+      customers.reduce(
+
+        (s, c) =>
+
+          s +
+
+          (c.transactions || [])
+            .filter(
+              t => t.type === "debit"
+            )
+            .reduce(
+              (a, t) =>
+                a +
+                Number(t.amount),
+              0
+            ),
+
+        0
+
+      )
+
+    );
+
+
+  /* Outstanding */
+
+  $("totalBalance").textContent =
+    money(
+
+      customers.reduce(
+        (s, c) =>
+          s + c.balance,
+        0
+      )
+
+    );
+
+
+  /* Top 5 Debtors */
+
+  const top =
+    [...customers]
+      .sort(
+        (a, b) =>
+          b.balance - a.balance
+      )
+      .filter(
+        c => c.balance > 0
+      )
+      .slice(0, 5);
+
+
+  $("topDebtors").innerHTML =
+    top.length
+
+      ? top.map(c => `
+
+        <div
+          class="debtor"
+          data-id="${c.id}"
+        >
+
+          <div>
+
+            <b>
+              ${esc(c.name)}
+            </b>
+
+            <small>
+              ${esc(c.whatsapp || "")}
+            </small>
+
+          </div>
+
+          <span
+            class="amount positive"
+          >
+            ${money(c.balance)} AFN
+          </span>
+
         </div>
-        <span class="amount positive">
-          ${money(c.balance)} AFN
-        </span>
-      </div>
-    `).join("")
-    : "<p class='muted'>No outstanding debt.</p>";
 
-  document.querySelectorAll(".debtor").forEach(
-    x => x.onclick = () => openCustomer(x.dataset.id)
-  );
+      `).join("")
+
+      : "<p class='muted'>No outstanding debt.</p>";
+
+
+  document
+    .querySelectorAll(".debtor")
+    .forEach(
+      x =>
+        x.onclick =
+          () =>
+            openCustomer(
+              x.dataset.id
+            )
+    );
+
 
   renderCustomers();
+
 }
+
+
+/* =========================
+   CUSTOMER LIST
+========================= */
 
 function renderCustomers() {
 
-  const term = $("search").value.toLowerCase();
+  const term =
+    $("search")
+      .value
+      .toLowerCase();
 
-  const list = customers.filter(c =>
-    c.name.toLowerCase().includes(term) ||
-    (c.whatsapp || "").includes(term)
-  );
 
-  $("customers").innerHTML = list.length
-    ? list.map(c => `
-      <div class="customer" data-id="${c.id}">
-        <div class="customerMain">
-          <div>
-            <div class="row">
-              <b>${esc(c.name)}</b>
-              <span class="balancePill ${
-                c.balance > 0 ? "debt" : "paid"
-              }">
-                ${money(c.balance)} AFN
-              </span>
+  const list =
+    customers.filter(c =>
+
+      c.name
+        .toLowerCase()
+        .includes(term)
+
+      ||
+
+      (c.whatsapp || "")
+        .includes(term)
+
+    );
+
+
+  $("customers").innerHTML =
+    list.length
+
+      ? list.map(c => `
+
+        <div
+          class="customer"
+          data-id="${c.id}"
+        >
+
+          <div class="customerMain">
+
+            <div>
+
+              <div class="row">
+
+                <b>
+                  ${esc(c.name)}
+                </b>
+
+                <span
+                  class="balancePill ${
+                    c.balance > 0
+                      ? "debt"
+                      : "paid"
+                  }"
+                >
+                  ${money(c.balance)} AFN
+                </span>
+
+              </div>
+
+              <small>
+                ${esc(c.whatsapp || "")}
+              </small>
+
             </div>
 
-            <small>${esc(c.whatsapp || "")}</small>
+
+            <div
+              class="customerActions"
+            >
+
+              <button
+                class="iconBtn editBtn"
+                title="Edit customer"
+              >
+                ✏️
+              </button>
+
+
+              <button
+                class="iconBtn reminderBtn"
+                title="Send WhatsApp reminder"
+              >
+                🔔
+              </button>
+
+
+              <button
+                class="iconBtn deleteBtn"
+                title="Delete customer"
+              >
+                🗑️
+              </button>
+
+            </div>
+
           </div>
 
-          <div class="customerActions">
-            <button
-              class="iconBtn editBtn"
-              title="Edit customer">
-              ✏️
-            </button>
-
-            <button
-              class="iconBtn reminderBtn"
-              title="Send WhatsApp reminder">
-              🔔
-            </button>
-
-            <button
-              class="iconBtn deleteBtn"
-              title="Delete customer">
-              🗑️
-            </button>
-          </div>
         </div>
-      </div>
-    `).join("")
-    : "<p class='muted'>No customers found.</p>";
 
-  document.querySelectorAll(".customer").forEach(row => {
+      `).join("")
 
-    const id = row.dataset.id;
+      : "<p class='muted'>No customers found.</p>";
 
-    row.onclick = e => {
-      if (e.target.closest(".customerActions")) return;
-      openCustomer(id);
-    };
 
-    row.querySelector(".editBtn").onclick = e => {
-      e.stopPropagation();
+  document
+    .querySelectorAll(".customer")
+    .forEach(row => {
 
-      const c = customers.find(x => x.id === id);
+      const id =
+        row.dataset.id;
 
-      openCustomerForm(c);
-    };
 
-    row.querySelector(".deleteBtn").onclick = async e => {
-      e.stopPropagation();
+      row.onclick = e => {
 
-      const c = customers.find(x => x.id === id);
+        if (
+          e.target.closest(
+            ".customerActions"
+          )
+        ) {
+          return;
+        }
 
-      openCustomerForm(c);
+        openCustomer(id);
 
-      $("deleteCustomerBtn").click();
-    };
+      };
 
-    row.querySelector(".reminderBtn").onclick = e => {
-      e.stopPropagation();
 
-      const c = customers.find(x => x.id === id);
+      /* Edit */
 
-      sendReminder(c);
-    };
-  });
+      row
+        .querySelector(".editBtn")
+        .onclick = e => {
+
+          e.stopPropagation();
+
+          const c =
+            customers.find(
+              x => x.id === id
+            );
+
+          openCustomerForm(c);
+
+        };
+
+
+      /* Delete */
+
+      row
+        .querySelector(".deleteBtn")
+        .onclick = async e => {
+
+          e.stopPropagation();
+
+          const c =
+            customers.find(
+              x => x.id === id
+            );
+
+          openCustomerForm(c);
+
+          $("deleteCustomerBtn").click();
+
+        };
+
+
+      /* Reminder */
+
+      row
+        .querySelector(".reminderBtn")
+        .onclick = e => {
+
+          e.stopPropagation();
+
+          const c =
+            customers.find(
+              x => x.id === id
+            );
+
+          sendReminder(c);
+
+        };
+
+    });
+
 }
+
+
+/* =========================
+   OPEN CUSTOMER
+========================= */
 
 async function openCustomer(id) {
 
-  selectedCustomer = customers.find(c => c.id === id);
+  selectedCustomer =
+    customers.find(
+      c => c.id === id
+    );
 
-  if (!selectedCustomer) return;
+  if (!selectedCustomer) {
+    return;
+  }
 
-  $("detailName").textContent = selectedCustomer.name;
+
+  $("detailName").textContent =
+    selectedCustomer.name;
+
 
   $("detailPhone").textContent =
     selectedCustomer.whatsapp || "";
 
+
   $("detailBalance").textContent =
     `${money(selectedCustomer.balance)} AFN`;
 
-  $("customerPage").classList.remove("hidden");
+
+  $("customerPage")
+    .classList
+    .remove("hidden");
+
 
   renderHistory();
+
 }
+
+
+/* =========================
+   CUSTOMER HISTORY
+========================= */
 
 function renderHistory() {
 
-  const ts = selectedCustomer.transactions || [];
+  const ts =
+    selectedCustomer.transactions || [];
 
-  $("history").innerHTML = ts.length
-    ? ts.map(t => `
-      <div class="tx ${
-        t.type === "credit" ? "txCredit" : "txDebit"
-      }">
 
-        <div class="row between">
-          <b>
-            ${
-              t.type === "credit"
-                ? "Credit"
-                : "Debit"
-            }
-            — ${money(t.amount)} AFN
-          </b>
+  $("history").innerHTML =
+    ts.length
 
-          <span>${date(t.createdAt)}</span>
+      ? ts.map(t => `
+
+        <div
+          class="tx ${
+            t.type === "credit"
+              ? "txCredit"
+              : "txDebit"
+          }"
+        >
+
+          <div
+            class="row between"
+          >
+
+            <b>
+
+              ${
+                t.type === "credit"
+                  ? "Credit"
+                  : "Debit"
+              }
+
+              —
+              ${money(t.amount)} AFN
+
+            </b>
+
+            <span>
+              ${date(t.createdAt)}
+            </span>
+
+          </div>
+
+
+          <div class="note">
+            ${esc(t.note || "")}
+          </div>
+
         </div>
 
-        <div class="note">
-          ${esc(t.note || "")}
-        </div>
+      `).join("")
 
-      </div>
-    `).join("")
-    : "<p class='muted'>No transactions.</p>";
+      : "<p class='muted'>No transactions.</p>";
+
 }
+
+
+/* =========================
+   SAVE TRANSACTION
+========================= */
 
 $("saveTx").onclick = async () => {
 
-  if (!selectedCustomer) return;
-
-  const amount = Number($("txAmount").value);
-  const type = $("txType").value;
-  const note = $("txNote").value.trim();
-  const sendWhatsApp = $("waToggle").checked;
-
-  if (!amount || amount <= 0) {
-    return alert("Enter a valid amount");
+  if (!selectedCustomer) {
+    return;
   }
 
-  // Open immediately so browser popup blockers
-  // do not stop the WhatsApp window.
-  const wa = (selectedCustomer.whatsapp || "")
-    .replace(/\D/g, "");
+
+  const amount =
+    Number(
+      $("txAmount").value
+    );
+
+
+  const type =
+    $("txType").value;
+
+
+  const note =
+    $("txNote")
+      .value
+      .trim();
+
+
+  const sendWhatsApp =
+    $("waToggle").checked;
+
+
+  if (!amount || amount <= 0) {
+
+    alert(
+      "Enter a valid amount"
+    );
+
+    return;
+  }
+
+
+  const wa =
+    (
+      selectedCustomer.whatsapp || ""
+    ).replace(
+      /\D/g,
+      ""
+    );
+
 
   const waWindow =
     sendWhatsApp && wa
-      ? window.open("about:blank", "_blank")
+      ? window.open(
+          "about:blank",
+          "_blank"
+        )
       : null;
+
 
   try {
 
-    const ref = await addDoc(
-      collection(db, "transactions"),
+    await addDoc(
+
+      collection(
+        db,
+        "transactions"
+      ),
+
       {
-        customerId: selectedCustomer.id,
-        ownerId: currentUser.uid,
+
+        customerId:
+          selectedCustomer.id,
+
+        ownerId:
+          currentUser.uid,
+
         type,
+
         amount,
+
         note,
-        createdAt: serverTimestamp()
+
+        createdAt:
+          serverTimestamp()
+
       }
+
     );
 
+
     $("txAmount").value = "";
+
     $("txNote").value = "";
+
 
     await loadCustomers();
 
+
     selectedCustomer =
-      customers.find(c => c.id === selectedCustomer.id);
+      customers.find(
+        c =>
+          c.id ===
+          selectedCustomer.id
+      );
 
-    await openCustomer(selectedCustomer.id);
 
-    if (waWindow && selectedCustomer) {
+    await openCustomer(
+      selectedCustomer.id
+    );
+
+
+    /* Sync public account only after
+       successful transaction */
+
+    try {
+
+      await syncPublicCustomer(
+        selectedCustomer
+      );
+
+    } catch (syncError) {
+
+      console.error(
+        "Public account sync failed:",
+        syncError
+      );
+
+    }
+
+
+    if (
+      waWindow &&
+      selectedCustomer
+    ) {
 
       const message =
-        buildPashtoMessage(selectedCustomer);
+        buildPashtoMessage(
+          selectedCustomer
+        );
+
 
       waWindow.location.href =
-        `https://wa.me/${wa}?text=${encodeURIComponent(message)}`;
+        `https://wa.me/${wa}?text=${
+          encodeURIComponent(message)
+        }`;
+
     }
+
 
   } catch (e) {
 
-    if (waWindow) waWindow.close();
+    if (waWindow) {
+      waWindow.close();
+    }
+
 
     alert(
       "Could not save transaction: " +
       e.message
     );
+
   }
+
 };
+
+
+/* =========================
+   WHATSAPP REMINDER
+========================= */
 
 function sendReminder(c) {
 
-  if (!c) return;
-
-  const wa = (c.whatsapp || "")
-    .replace(/\D/g, "");
-
-  if (!wa) {
-    alert("This customer has no WhatsApp number.");
+  if (!c) {
     return;
   }
 
-  const message = buildPashtoMessage(c);
+
+  const wa =
+    (c.whatsapp || "")
+      .replace(
+        /\D/g,
+        ""
+      );
+
+
+  if (!wa) {
+
+    alert(
+      "This customer has no WhatsApp number."
+    );
+
+    return;
+  }
+
+
+  const message =
+    buildPashtoMessage(c);
+
 
   window.open(
-    `https://wa.me/${wa}?text=${encodeURIComponent(message)}`,
+
+    `https://wa.me/${wa}?text=${
+      encodeURIComponent(message)
+    }`,
+
     "_blank"
+
   );
+
 }
+
+
+/* =========================
+   PASHTO MESSAGE
+========================= */
 
 function buildPashtoMessage(c) {
 
-  const d = new Intl.DateTimeFormat("ps-AF", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit"
-  }).format(new Date());
+  const d =
+    new Intl.DateTimeFormat(
+      "ps-AF",
+      {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+      }
+    ).format(
+      new Date()
+    );
+
 
   return `سلام
 
@@ -544,43 +1155,89 @@ function buildPashtoMessage(c) {
 ستاسو د حسابونو د لیدلو لپاره په لاندې لینک کلیک کولای شئ.
 
 ${portalUrl(c.publicToken)}`;
+
 }
+
+
+/* =========================
+   PUBLIC ACCOUNT URL
+========================= */
 
 function portalUrl(token) {
 
   return `${location.origin}${
-    location.pathname.replace(/\/$/, "")
-  }/customer.html?token=${encodeURIComponent(token)}`;
+    location.pathname.replace(
+      /\/$/,
+      ""
+    )
+  }/customer.html?token=${
+    encodeURIComponent(token)
+  }`;
+
 }
+
+
+/* =========================
+   RANDOM PUBLIC TOKEN
+========================= */
 
 function randomToken() {
 
   return `${
-    crypto.randomUUID().replace(/-/g, "")
+    crypto
+      .randomUUID()
+      .replace(/-/g, "")
   }${
-    crypto.randomUUID().replace(/-/g, "")
+    crypto
+      .randomUUID()
+      .replace(/-/g, "")
   }`;
+
 }
 
+
+/* =========================
+   HELPERS
+========================= */
+
 const money = n =>
-  Number(n || 0).toLocaleString("en-US", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  });
+  Number(n || 0)
+    .toLocaleString(
+      "en-US",
+      {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }
+    );
+
 
 const date = x =>
   x?.toDate
-    ? x.toDate().toLocaleString("en-GB")
+    ? x.toDate()
+        .toLocaleString("en-GB")
     : "Just now";
 
-const esc = s =>
-  String(s ?? "").replace(/[&<>"']/g, m => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#039;"
-  }[m]));
 
-$("detailReminder").onclick = () =>
-  sendReminder(selectedCustomer);
+const esc = s =>
+  String(s ?? "")
+    .replace(
+      /[&<>"']/g,
+      m => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      }[m])
+    );
+
+
+/* =========================
+   DETAIL REMINDER
+========================= */
+
+$("detailReminder").onclick =
+  () =>
+    sendReminder(
+      selectedCustomer
+    );
