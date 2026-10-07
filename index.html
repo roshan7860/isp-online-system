@@ -46,20 +46,30 @@
   <input id="customerName" placeholder="Customer name">
   <input id="customerWhatsapp" placeholder="WhatsApp number (e.g. 937XXXXXXXXX)">
   <input id="customerAddress" placeholder="Address">
-  <button id="saveCustomer">Save Customer</button>
+  <div class="row">
+    <button id="saveCustomer">Save Customer</button>
+    <button id="deleteCustomerBtn" class="danger hidden">Delete</button>
+  </div>
   <div id="customerMsg" class="msg"></div>
  </div>
 </div>
 
 <div id="customerPage" class="modal hidden">
  <div class="card detail">
-  <div class="row between"><div><h3 id="detailName"></h3><p id="detailPhone"></p></div><button id="closeDetail" class="secondary">×</button></div>
-  <div class="balance" id="detailBalance">0</div>
+  <div class="row between">
+    <div><h3 id="detailName"></h3><p id="detailPhone"></p></div>
+    <div class="row detailActions">
+      <button id="detailReminder" class="iconBtn" title="Send WhatsApp reminder">🔔</button>
+      <button id="closeDetail" class="secondary">×</button>
+    </div>
+  </div>
+  <div class="balance" id="detailBalance">0 AFN</div>
   <p class="muted">Outstanding balance</p>
   <div class="transactionForm">
-   <select id="txType"><option value="credit">Credit (customer owes you)</option><option value="debit">Debit (customer paid)</option></select>
+   <select id="txType"><option value="credit">Credit (customer owes)</option><option value="debit">Debit (customer paid)</option></select>
    <input id="txAmount" type="number" min="0" step="0.01" placeholder="Amount">
    <input id="txNote" placeholder="Note">
+   <label class="switchRow"><input id="waToggle" type="checkbox" checked><span>WhatsApp</span></label>
    <button id="saveTx">Save Transaction</button>
   </div>
   <h4>Transaction History</h4><div id="history"></div>

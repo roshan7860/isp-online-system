@@ -1,1 +1,52 @@
-*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17202a}header{background:#182a3a;color:#fff;padding:15px 5%;display:flex;justify-content:space-between;align-items:center}main{max-width:1200px;margin:25px auto;padding:0 15px}.center{min-height:100vh;display:grid;place-items:center}.card{background:#fff;border-radius:14px;padding:20px;box-shadow:0 5px 20px #00000012}.login{width:min(420px,92vw)}input,select,button{width:100%;padding:12px;margin:6px 0;border-radius:8px;border:1px solid #ccd3da;font-size:15px}button{background:#1677ff;color:#fff;border:0;cursor:pointer;font-weight:bold}button.secondary{background:#e9edf1;color:#17202a;width:auto;padding:9px 15px}.hidden{display:none!important}.msg{min-height:20px;color:#c0392b}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin-bottom:20px}.stat{background:#fff;padding:18px;border-radius:12px;box-shadow:0 4px 16px #0000000d}.stat span{display:block;color:#6b7785}.stat b{font-size:25px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}.row{display:flex;gap:10px;align-items:center}.between{justify-content:space-between}.customer,.debtor,.tx{border-bottom:1px solid #eee;padding:12px 5px;cursor:pointer}.customer:last-child,.debtor:last-child,.tx:last-child{border:0}.amount{font-weight:bold}.positive{color:#c0392b}.negative{color:#16803c}.muted{color:#6b7785}.modal{position:fixed;inset:0;background:#0008;display:grid;place-items:center;padding:15px}.modalBox{width:min(500px,95vw)}.detail{width:min(850px,96vw);max-height:92vh;overflow:auto}.balance{font-size:36px;font-weight:bold;margin:10px 0}.transactionForm{display:grid;grid-template-columns:1fr 1fr 2fr 1fr;gap:8px}.transactionForm>*{margin:0}@media(max-width:750px){.stats{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}.transactionForm{grid-template-columns:1fr}.transactionForm button{width:100%}}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17202a}
+header{background:#182a3a;color:#fff;padding:15px 5%;display:flex;justify-content:space-between;align-items:center}
+main{max-width:1200px;margin:25px auto;padding:0 15px}
+.center{min-height:100vh;display:grid;place-items:center}
+.card{background:#fff;border-radius:14px;padding:20px;box-shadow:0 5px 20px #00000012}
+.login{width:min(420px,92vw)}
+input,select,button{width:100%;padding:12px;margin:6px 0;border-radius:8px;border:1px solid #ccd3da;font-size:15px}
+button{background:#1677ff;color:#fff;border:0;cursor:pointer;font-weight:bold}
+button.secondary{background:#e9edf1;color:#17202a;width:auto;padding:9px 15px}
+button.danger{background:#d93025;width:auto;padding:10px 18px}
+.hidden{display:none!important}
+.msg{min-height:20px;color:#c0392b}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin-bottom:20px}
+.stat{background:#fff;padding:18px;border-radius:12px;box-shadow:0 4px 16px #0000000d}
+.stat span{display:block;color:#6b7785}.stat b{font-size:25px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.row{display:flex;gap:10px;align-items:center}.between{justify-content:space-between}
+.customer,.debtor,.tx{border-bottom:1px solid #eee;padding:12px 5px}
+.customer{cursor:pointer}.customer:last-child,.debtor:last-child,.tx:last-child{border:0}
+.debtor{display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+.debtor small{display:block;color:#718096;margin-top:3px}
+.amount{font-weight:bold}.positive{color:#c0392b}.negative{color:#16803c}
+.muted{color:#6b7785}
+.customerMain{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.customerActions{display:flex;gap:4px;flex-shrink:0}
+.iconBtn{width:40px;height:40px;padding:0;margin:0;background:#eef2f6;color:#17202a;border:1px solid #d7dde3;font-size:18px}
+.iconBtn:hover{background:#dde6ef}
+.balancePill{display:inline-block;margin-left:8px;font-size:12px;padding:3px 7px;border-radius:20px;font-weight:bold}
+.balancePill.debt{color:#c0392b;background:#fde9e7}.balancePill.paid{color:#16803c;background:#e8f6ed}
+.modal{position:fixed;inset:0;background:#0008;display:grid;place-items:center;padding:15px}
+.modalBox{width:min(500px,95vw)}
+.detail{width:min(900px,96vw);max-height:92vh;overflow:auto}
+.balance{font-size:36px;font-weight:bold;margin:10px 0}
+.transactionForm{display:grid;grid-template-columns:1.25fr 1fr 2fr 120px 1fr;gap:8px;align-items:center}
+.transactionForm>*{margin:0}
+.switchRow{height:46px;border:1px solid #ccd3da;border-radius:8px;display:flex;align-items:center;justify-content:center;gap:7px;cursor:pointer;font-weight:bold}
+.switchRow input{width:auto;margin:0;accent-color:#1677ff}
+.tx{padding:13px 6px}.txCredit b{color:#c0392b}.txDebit b{color:#16803c}
+.note{margin-top:5px;color:#5f6b76}
+.detailActions{gap:7px}
+@media(max-width:900px){.transactionForm{grid-template-columns:1fr 1fr}.transactionForm .switchRow{grid-column:span 1}.transactionForm button{grid-column:span 2}}
+@media(max-width:750px){.stats{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}.customerMain{align-items:flex-start}.customerActions{flex-wrap:wrap}.detail{padding:15px}}
+
+.portal{max-width:850px;margin:40px auto;padding:15px}
+.portalCard{direction:rtl;text-align:right}
+.portalCard h1{margin-top:0}
+.portalInfo{background:#f7f9fb;border-radius:12px;padding:15px}
+.portalBalance{margin:20px 0;padding:22px;border-radius:12px;background:#eef5ff;text-align:center}
+.portalBalance span,.portalBalance small{display:block;color:#5f6b76}
+.portalBalance b{display:block;font-size:36px;margin:8px 0}
+.portalBalance small{font-size:16px}

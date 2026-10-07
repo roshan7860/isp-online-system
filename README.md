@@ -1,33 +1,29 @@
 # Customer Credit Manager
 
-## 1. Firebase
-1. Create a Firebase project.
-2. Enable Authentication > Email/Password.
-3. Create a Firestore Database.
-4. Add a Web App and copy its config into `firebase-config.js`.
-5. Create your first user in Firebase Authentication.
-6. Publish the Firestore rules from `firestore.rules`.
+Firebase + GitHub Pages customer credit/debit manager.
 
-## 2. GitHub Pages
-Upload all files to a GitHub repository.
-Go to Settings > Pages > Deploy from branch > main / root.
-Open the generated GitHub Pages address.
+## Features
+- Firebase Email/Password login
+- Customer add/edit/delete
+- Credit/debit transactions
+- Red credit and green debit styling
+- Optional WhatsApp message toggle per transaction
+- Pashto WhatsApp message with balance/date
+- One-click WhatsApp reminder button
+- Customer public account link with name, number, balance and transaction history
+- Top 5 debtors
 
-## 3. Important
-The WhatsApp function currently opens a WhatsApp message with the customer's balance. It does not silently send messages through WhatsApp servers. Automatic sending requires WhatsApp Business Cloud API.
+## Firebase
+1. Enable Authentication > Email/Password.
+2. Create Firestore Database.
+3. Put your Web App config in `firebase-config.js`.
+4. Publish `firestore.rules`.
 
-## Data model
-customers/{customerId}
-- name
-- whatsapp
-- address
-- ownerId
-- createdAt
+## GitHub Pages
+Upload all project files to the repository root and enable Pages from `main` / root.
 
-transactions/{transactionId}
-- customerId
-- ownerId
-- type: credit | debit
-- amount
-- note
-- createdAt
+## WhatsApp
+The system opens a WhatsApp message using `wa.me`. It does not silently send messages through WhatsApp servers. Automatic background sending requires WhatsApp Business Cloud API.
+
+## Public customer portal
+Each customer gets a random public token. The link is included in WhatsApp messages and opens `customer.html`, showing the customer's account details and transaction history.
