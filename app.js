@@ -1454,12 +1454,11 @@ $("saveTx").onclick =
           );
 
 
-        waWindow.location.href =
-          `https://wa.me/${wa}?text=${
-            encodeURIComponent(
-              message
-            )
-          }`;
+        const encodedMessage = encodeURIComponent(message);
+        const isAndroid = /Android/i.test(navigator.userAgent);
+        waWindow.location.href = isAndroid
+          ? `intent://send?phone=${wa}&text=${encodedMessage}#Intent;scheme=whatsapp;package=com.whatsapp;end`
+          : `https://wa.me/${wa}?text=${encodedMessage}`;
 
       }
 
@@ -1521,14 +1520,13 @@ function sendReminder(c) {
     buildPashtoMessage(c);
 
 
-  window.open(
-    `https://wa.me/${wa}?text=${
-      encodeURIComponent(
-        message
-      )
-    }`,
-    "_blank"
-  );
+  const encodedMessage = encodeURIComponent(message);
+  const isAndroid = /Android/i.test(navigator.userAgent);
+  const whatsappUrl = isAndroid
+    ? `intent://send?phone=${wa}&text=${encodedMessage}#Intent;scheme=whatsapp;package=com.whatsapp;end`
+    : `https://wa.me/${wa}?text=${encodedMessage}`;
+
+  window.open(whatsappUrl, "_blank");
 
 }
 
