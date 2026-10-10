@@ -1,4 +1,4 @@
-const CACHE_NAME = "customer-credit-manager-v1";
+const CACHE_NAME = "customer-credit-manager-v2";
 const APP_SHELL = [
   "./", "./index.html", "./customer.html", "./style.css", "./app.js",
   "./firebase-config.js", "./manifest.webmanifest",
