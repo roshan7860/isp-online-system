@@ -9,6 +9,7 @@
     content="width=device-width,initial-scale=1"
   >
 
+  <meta name="theme-color" content="#172b4d">
   <title>ستاسو د حساب معلومات</title>
 
   <link rel="stylesheet" href="style.css">
@@ -157,7 +158,14 @@ const esc =
 const date =
   x =>
     x?.toDate
-      ? x.toDate().toLocaleString("en-GB")
+      ? x.toDate().toLocaleString("en-GB", {
+          hour: "2-digit",
+          minute: "2-digit",
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour12: true
+        })
       : "";
 
 

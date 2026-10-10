@@ -462,3 +462,208 @@ body:has(.portal) {
   .portalTx .tx .row.between {flex-direction:column;gap:4px}
   .portalTx .tx .row span {text-align:right;direction:rtl}
 }
+
+
+/* =========================================================
+   GLOBAL PREMIUM UI REFRESH — Customer Credit Manager
+   Preserves existing app behavior and DOM IDs.
+   ========================================================= */
+:root{
+  --ui-bg:#f3f6fc;
+  --ui-card:#ffffff;
+  --ui-ink:#182943;
+  --ui-muted:#6b7b92;
+  --ui-line:#e4eaf3;
+  --ui-blue:#285fe8;
+  --ui-blue-dark:#1d49b6;
+  --ui-red:#d83e50;
+  --ui-green:#168260;
+  --ui-radius:18px;
+  --ui-shadow:0 12px 34px rgba(27,48,82,.075);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:
+    radial-gradient(ellipse at 8% 0%,rgba(65,111,224,.08),transparent 30%),
+    var(--ui-bg);
+  color:var(--ui-ink);
+  font-family:Inter,"Noto Sans Arabic","Segoe UI",Tahoma,sans-serif;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+button,input,select{font:inherit}
+button{
+  border:1px solid transparent;
+  border-radius:11px;
+  background:linear-gradient(135deg,var(--ui-blue),#407bff);
+  color:#fff;
+  padding:11px 16px;
+  font-size:14px;
+  font-weight:700;
+  cursor:pointer;
+  box-shadow:0 4px 11px rgba(40,95,232,.15);
+  transition:transform .16s ease,box-shadow .16s ease,filter .16s ease;
+}
+button:hover{transform:translateY(-1px);box-shadow:0 7px 17px rgba(40,95,232,.2);filter:saturate(1.05)}
+button:active{transform:translateY(0)}
+button:disabled{opacity:.58;cursor:not-allowed;transform:none}
+button.secondary{
+  background:#eef2f8;color:#344660;border-color:#dfe6f0;
+  box-shadow:none;
+}
+button.secondary:hover{background:#e5ebf5;box-shadow:none}
+button.danger{background:linear-gradient(135deg,#d83e50,#bd2e40);box-shadow:0 4px 11px rgba(216,62,80,.15)}
+input,select{
+  min-width:0;
+  width:100%;
+  padding:12px 14px;
+  margin:6px 0;
+  color:var(--ui-ink);
+  background:#fff;
+  border:1px solid #d9e2ee;
+  border-radius:11px;
+  font-size:14px;
+  outline:none;
+  transition:border-color .15s ease,box-shadow .15s ease;
+}
+input::placeholder{color:#9aa8bb}
+input:focus,select:focus{border-color:#7095f2;box-shadow:0 0 0 4px rgba(40,95,232,.11)}
+label{font-size:13px;font-weight:650;color:#475a75}
+header{
+  position:sticky;top:0;z-index:50;
+  min-height:72px;
+  padding:15px clamp(15px,4vw,58px);
+  background:linear-gradient(115deg,#12243e,#203f69);
+  color:#fff;
+  box-shadow:0 8px 24px rgba(18,36,62,.15);
+  backdrop-filter:blur(14px);
+}
+header h2{margin:0;font-size:clamp(18px,2vw,25px);font-weight:800;letter-spacing:-.035em}
+header .headerActions{gap:8px}
+header .secondary{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.15);color:#fff}
+header .secondary:hover{background:rgba(255,255,255,.2)}
+main{width:100%;max-width:1360px;margin:30px auto;padding:0 clamp(13px,2.8vw,34px)}
+.center{
+  min-height:100vh;
+  padding:20px;
+  background:
+    radial-gradient(ellipse at 15% 8%,rgba(65,111,224,.14),transparent 35%),
+    radial-gradient(ellipse at 90% 90%,rgba(31,159,126,.08),transparent 28%),
+    var(--ui-bg);
+}
+.card,.stat{
+  background:var(--ui-card);
+  border:1px solid rgba(223,231,242,.95);
+  border-radius:var(--ui-radius);
+  box-shadow:var(--ui-shadow);
+}
+.card{padding:clamp(17px,2vw,26px)}
+.login{width:min(440px,94vw);padding:clamp(24px,4vw,36px);border-radius:24px}
+.login h1{margin:0 0 8px;color:#192e4d;font-size:clamp(24px,3vw,30px);font-weight:850;letter-spacing:-.045em;line-height:1.25}
+.login p{margin:0 0 22px;color:var(--ui-muted);font-size:14px}
+.login input{padding:14px 15px;margin:7px 0}
+.login #loginBtn{margin-top:13px;padding:13px}
+.stats{gap:16px;margin-bottom:23px}
+.stat{
+  position:relative;
+  padding:21px 22px;
+  overflow:hidden;
+  transition:transform .18s ease,box-shadow .18s ease;
+}
+.stat:hover{transform:translateY(-2px);box-shadow:0 16px 36px rgba(27,48,82,.11)}
+.stat:before{content:"";position:absolute;top:0;bottom:0;left:0;width:4px;background:#8daaf0}
+.stat:nth-child(2):before{background:#356ef0}
+.stat:nth-child(3):before{background:#1ba77b}
+.stat:nth-child(4):before{background:#e3a33e}
+.stat span{display:block;color:var(--ui-muted);font-size:12px;font-weight:750;text-transform:uppercase;letter-spacing:.055em;margin-bottom:8px}
+.stat b{display:block;color:#1a2f4e;font-size:clamp(23px,2.3vw,31px);font-weight:850;letter-spacing:-.045em;line-height:1.3;font-variant-numeric:tabular-nums}
+.grid{gap:22px;align-items:start}
+.grid>.card{min-width:0}
+.card h3,.card h4{color:#1b3151;font-weight:800;letter-spacing:-.025em}
+.card h3{font-size:18px;margin-top:0}
+.card h4{font-size:15px}
+.row{gap:10px}
+.row.between{gap:12px}
+#addCustomerBtn{white-space:nowrap}
+#search{margin:5px 0 14px}
+.customer,.debtor,.tx{border-bottom:1px solid var(--ui-line);padding:15px 7px}
+.customer{border-radius:11px;cursor:pointer;transition:background .15s ease,padding .15s ease}
+.customer:hover{background:#f5f8ff;padding-left:11px;padding-right:11px}
+.debtor{border-radius:11px;transition:background .15s ease}
+.debtor:hover{background:#f7f9fd}
+.debtor small{color:#8190a5}
+.customerMain{gap:12px}
+.customerActions{gap:6px}
+.iconBtn{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:40px;height:40px;padding:0;margin:0;
+  border-radius:11px;background:#f0f4fa;color:#314865;border:1px solid #e0e7f1;
+  box-shadow:none;
+}
+.iconBtn:hover{background:#e4ecf8;box-shadow:none}
+.balancePill{padding:4px 9px;border-radius:20px;font-size:11px;font-weight:800;letter-spacing:.01em}
+.balancePill.debt{color:#b72d3c;background:#fff0f1}
+.balancePill.paid{color:#08764f;background:#e8f8f1}
+.amount,.balance{font-variant-numeric:tabular-nums}
+.positive{color:#c33143}.negative{color:#13845c}
+.muted{color:var(--ui-muted)}
+.modal{position:fixed;inset:0;z-index:1000;background:rgba(12,26,47,.58);backdrop-filter:blur(5px);padding:15px}
+.modalBox,.detail{border:1px solid rgba(255,255,255,.75);box-shadow:0 25px 80px rgba(7,20,42,.25);border-radius:22px}
+.modalBox{width:min(520px,96vw);padding:clamp(19px,3vw,28px)}
+.modalBox h3{margin-top:0}
+.modalBox input{margin:7px 0 11px}
+.detail{width:min(1000px,97vw);max-height:93vh;overflow:auto;padding:clamp(17px,2.5vw,30px)}
+.detail h3{font-size:22px;margin:0 0 4px}
+.detail #detailPhone{margin:0;color:var(--ui-muted);font-size:13px}
+.detailActions{gap:7px}
+.balance{font-size:clamp(30px,4vw,43px);font-weight:850;letter-spacing:-.045em;color:var(--ui-red);margin:10px 0 0}
+.transactionForm{
+  display:grid;grid-template-columns:1.2fr 1fr 1.7fr 125px 1fr;
+  gap:9px;align-items:center;margin:16px 0 20px;padding:15px;
+  border:1px solid var(--ui-line);border-radius:15px;background:#f7f9fc;
+}
+.transactionForm>*{margin:0;min-width:0}
+.switchRow{height:45px;border:1px solid #dce5f0;border-radius:11px;background:#fff;color:#344967}
+.switchRow input{width:auto;accent-color:var(--ui-blue)}
+.tx{padding:16px 8px}
+.tx:last-child{border-bottom:0}
+.txCredit b{color:#20334e}
+.txDebit b{color:#c33143}
+.txActions{margin-top:10px;gap:7px;display:flex;align-items:center;flex-wrap:wrap}
+.txActions button{padding:7px 11px;border-radius:9px;font-size:12px}
+.note{margin-top:6px;color:#72829a;font-size:13px;line-height:1.6;overflow-wrap:anywhere}
+.msg{min-height:20px;color:#c0394b;font-size:13px;font-weight:650}
+.hidden{display:none!important}
+.iconSvg{display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;line-height:0}
+.iconSvg svg,.txActions svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+button:focus-visible{outline:3px solid rgba(37,99,235,.35);outline-offset:2px}
+@media(max-width:1000px){
+  .transactionForm{grid-template-columns:1fr 1fr}
+  .transactionForm button{grid-column:span 2}
+}
+@media(max-width:750px){
+  header{position:relative;padding:14px}
+  main{margin:20px auto;padding:0 12px}
+  .stats{grid-template-columns:1fr 1fr;gap:11px}
+  .grid{grid-template-columns:1fr;gap:16px}
+  .customerMain{align-items:flex-start}
+  .customerActions{flex-wrap:wrap}
+  .detail{padding:16px}
+}
+@media(max-width:520px){
+  header{gap:8px;align-items:center}
+  header h2{font-size:16px;max-width:55vw;line-height:1.3}
+  header .headerActions button{min-width:40px}
+  .stats{gap:9px}
+  .stat{padding:14px 13px;border-radius:14px}
+  .stat span{font-size:10px;letter-spacing:.02em}
+  .stat b{font-size:21px}
+  .card{padding:15px;border-radius:15px}
+  .login{padding:24px;border-radius:20px}
+  .transactionForm{grid-template-columns:1fr;padding:12px}
+  .transactionForm>*{grid-column:auto!important}
+  .txActions{flex-wrap:wrap}
+  .row.between{align-items:center}
+  .modalBox{padding:19px;border-radius:18px}
+}
