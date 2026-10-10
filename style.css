@@ -52,3 +52,10 @@ button.danger{background:#d93025;width:auto;padding:10px 18px}
 .portalBalance small{font-size:16px}
 
 @media(max-width:520px){header{gap:10px;align-items:flex-start}header h2{font-size:18px;margin:8px 0}.headerActions{flex-shrink:0}.detailActions .iconBtn{width:38px;height:38px}.transactionForm{grid-template-columns:1fr}.transactionForm>*{grid-column:auto!important}.stats .stat{padding:13px}.stat b{font-size:21px}}
+
+/* Professional, consistent outline icon treatment */
+.iconSvg{display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;line-height:0}
+.iconSvg svg,.txActions svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.txActions button{display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.headerActions .iconSvg svg{width:19px;height:19px}
+button:focus-visible{outline:3px solid rgba(37,99,235,.35);outline-offset:2px}

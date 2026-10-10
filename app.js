@@ -40,6 +40,17 @@ const db = getFirestore(app);
 
 const $ = id => document.getElementById(id);
 
+/* Consistent lightweight outline icons (inline SVG; no external dependency). */
+const ICONS = {
+  settings: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z"/><path d="m19.4 15 .1.1 1.1.9-1.4 2.4-1.4-.6a7.9 7.9 0 0 1-1.5.9l-.2 1.5h-2.8l-.2-1.5a7.9 7.9 0 0 1-1.5-.9l-1.4.6-1.4-2.4 1.1-.9a7.2 7.2 0 0 1 0-1.8l-1.1-.9 1.4-2.4 1.4.6a7.9 7.9 0 0 1 1.5-.9l.2-1.5h2.8l.2 1.5a7.9 7.9 0 0 1 1.5.9l1.4-.6 1.4 2.4-1.1.9a7.2 7.2 0 0 1 0 1.8Z"/></svg>',
+  edit: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 16.5-.8 4.3 4.3-.8L19.7 7.8a2.1 2.1 0 0 0-3-3L4 16.5Z"/><path d="m14.8 6.7 3 3"/></svg>',
+  trash: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6m4-6v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>',
+  close: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>'
+};
+const icon = name => ICONS[name] || "";
+
+
+
 
 /* =========================================
    GLOBAL VARIABLES
@@ -1265,7 +1276,7 @@ function renderHistory() {
     <div class="tx ${t.type === "credit" ? "txCredit" : "txDebit"}">
       <div class="row between"><b><span class="txTypeLabel">${t.type === "credit" ? "قرض" : "رسید"}</span> — ${money(t.amount)} AFN</b><span>${date(t.createdAt)}</span></div>
       <div class="note">${esc(t.note || "")}</div>
-      <div class="txActions"><button type="button" class="secondary" data-edit-tx="${esc(t.id)}" aria-label="Edit transaction">✎ Edit</button><button type="button" class="danger" data-delete-tx="${esc(t.id)}" aria-label="Delete transaction">⌫ Delete</button></div>
+      <div class="txActions"><button type="button" class="secondary" data-edit-tx="${esc(t.id)}" aria-label="Edit transaction"><span class="iconSvg" aria-hidden="true">' + icon('edit') + '</span> Edit</button><button type="button" class="danger" data-delete-tx="${esc(t.id)}" aria-label="Delete transaction"><span class="iconSvg" aria-hidden="true">' + icon('trash') + '</span> Delete</button></div>
     </div>
   `).join("") : `<p class="muted">No transactions.</p>`;
   $("history").querySelectorAll("[data-edit-tx]").forEach(btn => { btn.onclick = () => { const tx = ts.find(t => t.id === btn.dataset.editTx); if (tx) editTransaction(tx); }; });
@@ -1607,15 +1618,15 @@ function randomToken() {
 ========================================= */
 
 const money =
-  n =>
-    Number(n || 0)
-      .toLocaleString(
-        "en-US",
-        {
-          minimumFractionDigits: 2,
+  n => {
+    const value = Number(n || 0);
+    return Number.isFinite(value)
+      ? value.toLocaleString("en-US", {
+          minimumFractionDigits: 0,
           maximumFractionDigits: 2
-        }
-      );
+        }).replace(/\\.0+$/, "").replace(/(\\.\\d*?)0+$/, "$1")
+      : "0";
+  };
 
 
 /* =========================================
