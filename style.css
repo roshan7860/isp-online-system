@@ -36,7 +36,7 @@ button.danger{background:#d93025;width:auto;padding:10px 18px}
 .transactionForm>*{margin:0}
 .switchRow{height:46px;border:1px solid #ccd3da;border-radius:8px;display:flex;align-items:center;justify-content:center;gap:7px;cursor:pointer;font-weight:bold}
 .switchRow input{width:auto;margin:0;accent-color:#1677ff}
-.tx{padding:13px 6px}.txCredit b{color:#c0392b}.txDebit b{color:#16803c}
+.tx{padding:13px 6px}.txCredit b{color:#17202a}.txDebit b{color:#c0392b}.txActions{display:flex;gap:6px;align-items:center}.txActions button{width:auto;padding:6px 9px;margin:0;font-size:12px}.headerActions{align-items:center}.headerActions button{min-width:42px}.txCredit .txTypeLabel{color:#17202a}.txDebit .txTypeLabel{color:#c0392b}
 .note{margin-top:5px;color:#5f6b76}
 .detailActions{gap:7px}
 @media(max-width:900px){.transactionForm{grid-template-columns:1fr 1fr}.transactionForm .switchRow{grid-column:span 1}.transactionForm button{grid-column:span 2}}
@@ -50,3 +50,5 @@ button.danger{background:#d93025;width:auto;padding:10px 18px}
 .portalBalance span,.portalBalance small{display:block;color:#5f6b76}
 .portalBalance b{display:block;font-size:36px;margin:8px 0}
 .portalBalance small{font-size:16px}
+
+@media(max-width:520px){header{gap:10px;align-items:flex-start}header h2{font-size:18px;margin:8px 0}.headerActions{flex-shrink:0}.detailActions .iconBtn{width:38px;height:38px}.transactionForm{grid-template-columns:1fr}.transactionForm>*{grid-column:auto!important}.stats .stat{padding:13px}.stat b{font-size:21px}}

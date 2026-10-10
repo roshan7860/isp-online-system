@@ -116,15 +116,6 @@
           <span id="pName"></span>
         </p>
 
-        <p>
-          <b>شمېره:</b>
-          <span id="pPhone"></span>
-        </p>
-
-        <p>
-          <b>پته:</b>
-          <span id="pAddress"></span>
-        </p>
 
       </div>
 
@@ -288,13 +279,6 @@ async function load() {
       c.name || "";
 
 
-    $("pPhone").textContent =
-      c.whatsapp || "";
-
-
-    $("pAddress").textContent =
-      c.address || "";
-
 
     $("pBalance").textContent =
       money(c.balance);
@@ -357,8 +341,8 @@ async function load() {
 
                 ${
                   t.type === "credit"
-                    ? "کریډیټ"
-                    : "ډیبیټ"
+                    ? "قرض"
+                    : "رسید"
                 }
 
                 —

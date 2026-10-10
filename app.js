@@ -4,7 +4,11 @@ import {
   getAuth,
   signInWithEmailAndPassword,
   onAuthStateChanged,
-  signOut
+  signOut,
+  updateEmail,
+  updatePassword,
+  reauthenticateWithCredential,
+  EmailAuthProvider
 } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
 
 import {
@@ -100,6 +104,42 @@ $("logoutBtn").onclick = () => {
 
   signOut(auth);
 
+};
+
+/* Account settings use Firebase Authentication; passwords are never stored in Firestore. */
+$("settingsBtn").onclick = () => {
+  if (!currentUser) return;
+  $("settingsEmail").value = currentUser.email || "";
+  $("settingsCurrentPassword").value = "";
+  $("settingsNewPassword").value = "";
+  $("settingsMsg").textContent = "";
+  $("settingsModal").classList.remove("hidden");
+};
+$("closeSettings").onclick = () => $("settingsModal").classList.add("hidden");
+$("saveSettings").onclick = async () => {
+  const user = auth.currentUser;
+  const email = $("settingsEmail").value.trim();
+  const currentPassword = $("settingsCurrentPassword").value;
+  const newPassword = $("settingsNewPassword").value;
+  const msg = $("settingsMsg"); msg.textContent = "";
+  if (!user) { msg.textContent = "Please sign in again."; return; }
+  if (!email) { msg.textContent = "Please enter an email address."; return; }
+  if (newPassword && newPassword.length < 6) { msg.textContent = "New password must be at least 6 characters."; return; }
+  const changeEmail = email !== (user.email || "");
+  const changePassword = Boolean(newPassword);
+  if (!changeEmail && !changePassword) { msg.textContent = "There are no changes to save."; return; }
+  if (!currentPassword) { msg.textContent = "Enter your current password to verify your identity."; return; }
+  const btn = $("saveSettings"); btn.disabled = true;
+  try {
+    await reauthenticateWithCredential(user, EmailAuthProvider.credential(user.email || email, currentPassword));
+    if (changeEmail) await updateEmail(user, email);
+    if (changePassword) await updatePassword(user, newPassword);
+    $("settingsCurrentPassword").value = ""; $("settingsNewPassword").value = "";
+    msg.textContent = "Settings updated successfully.";
+  } catch (e) {
+    console.error("Account settings error:", e);
+    msg.textContent = e.code === "auth/requires-recent-login" ? "Please sign out and sign in again, then retry." : e.code === "auth/email-already-in-use" ? "This email is already in use." : e.code === "auth/invalid-credential" ? "Current password is incorrect." : e.message;
+  } finally { btn.disabled = false; }
 };
 
 
@@ -1004,7 +1044,7 @@ function renderCustomers() {
                       class="iconBtn reminderBtn"
                       title="Send WhatsApp reminder"
                     >
-                      🔔
+                      ♧
                     </button>
 
 
@@ -1193,80 +1233,44 @@ async function openCustomer(id) {
    CUSTOMER HISTORY
 ========================================= */
 
-function renderHistory() {
-
-  const ts =
-    selectedCustomer
-      .transactions || [];
-
-
-  $("history")
-    .innerHTML =
-
-      ts.length
-
-        ? ts.map(
-            t => `
-
-              <div
-                class="tx ${
-                  t.type === "credit"
-                    ? "txCredit"
-                    : "txDebit"
-                }"
-              >
-
-                <div
-                  class="row between"
-                >
-
-                  <b>
-
-                    ${
-                      t.type === "credit"
-                        ? "Credit"
-                        : "Debit"
-                    }
-
-                    —
-
-                    ${money(
-                      t.amount
-                    )} AFN
-
-                  </b>
-
-
-                  <span>
-                    ${date(
-                      t.createdAt
-                    )}
-                  </span>
-
-                </div>
-
-
-                <div class="note">
-
-                  ${esc(
-                    t.note || ""
-                  )}
-
-                </div>
-
-              </div>
-
-            `
-          ).join("")
-
-        : `
-          <p class="muted">
-            No transactions.
-          </p>
-        `;
-
+async function refreshCustomerAndPublic(customerId) {
+  await loadCustomers();
+  selectedCustomer = customers.find(c => c.id === customerId) || null;
+  if (selectedCustomer) { await syncPublicCustomer(selectedCustomer); await openCustomer(customerId); }
 }
 
+async function editTransaction(t) {
+  if (!selectedCustomer || !t?.id) return;
+  const amountText = prompt("Enter transaction amount:", String(t.amount ?? ""));
+  if (amountText === null) return;
+  const amount = Number(amountText);
+  if (!Number.isFinite(amount) || amount <= 0) { alert("Enter a valid amount greater than zero."); return; }
+  const note = prompt("Enter transaction note:", t.note || "");
+  if (note === null) return;
+  try { await updateDoc(doc(db, "transactions", t.id), { amount, note: note.trim(), updatedAt: serverTimestamp() }); await refreshCustomerAndPublic(selectedCustomer.id); }
+  catch (e) { console.error("Edit transaction error:", e); alert("Could not edit transaction: " + e.message); }
+}
+
+async function removeTransaction(t) {
+  if (!selectedCustomer || !t?.id) return;
+  if (!confirm("Delete this transaction? This cannot be undone.")) return;
+  const customerId = selectedCustomer.id;
+  try { await deleteDoc(doc(db, "transactions", t.id)); await refreshCustomerAndPublic(customerId); }
+  catch (e) { console.error("Delete transaction error:", e); alert("Could not delete transaction: " + e.message); }
+}
+
+function renderHistory() {
+  const ts = selectedCustomer?.transactions || [];
+  $("history").innerHTML = ts.length ? ts.map(t => `
+    <div class="tx ${t.type === "credit" ? "txCredit" : "txDebit"}">
+      <div class="row between"><b><span class="txTypeLabel">${t.type === "credit" ? "قرض" : "رسید"}</span> — ${money(t.amount)} AFN</b><span>${date(t.createdAt)}</span></div>
+      <div class="note">${esc(t.note || "")}</div>
+      <div class="txActions"><button type="button" class="secondary" data-edit-tx="${esc(t.id)}" aria-label="Edit transaction">✎ Edit</button><button type="button" class="danger" data-delete-tx="${esc(t.id)}" aria-label="Delete transaction">⌫ Delete</button></div>
+    </div>
+  `).join("") : `<p class="muted">No transactions.</p>`;
+  $("history").querySelectorAll("[data-edit-tx]").forEach(btn => { btn.onclick = () => { const tx = ts.find(t => t.id === btn.dataset.editTx); if (tx) editTransaction(tx); }; });
+  $("history").querySelectorAll("[data-delete-tx]").forEach(btn => { btn.onclick = () => { const tx = ts.find(t => t.id === btn.dataset.deleteTx); if (tx) removeTransaction(tx); }; });
+}
 
 /* =========================================
    SAVE TRANSACTION

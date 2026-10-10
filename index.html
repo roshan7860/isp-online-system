@@ -17,7 +17,7 @@
 </div>
 
 <div id="app" class="hidden">
-  <header><h2>Customer Credit Manager</h2><button id="logoutBtn" class="secondary">Logout</button></header>
+  <header><h2>Customer Credit Manager</h2><div class="row headerActions"><button id="settingsBtn" class="secondary" title="Account settings" aria-label="Account settings">⚙</button><button id="logoutBtn" class="secondary">Logout</button></div></header>
   <main>
     <section class="stats">
       <div class="stat"><span>Customers</span><b id="customerCount">0</b></div>
@@ -54,6 +54,21 @@
  </div>
 </div>
 
+<div id="settingsModal" class="modal hidden">
+ <div class="card modalBox">
+  <div class="row between"><h3>Account Settings</h3><button id="closeSettings" class="secondary" aria-label="Close settings">×</button></div>
+  <p class="muted">Change the email address or password for your signed-in account.</p>
+  <label for="settingsEmail">New email</label>
+  <input id="settingsEmail" type="email" placeholder="New email address">
+  <label for="settingsCurrentPassword">Current password (required to verify)</label>
+  <input id="settingsCurrentPassword" type="password" autocomplete="current-password" placeholder="Current password">
+  <label for="settingsNewPassword">New password (leave empty if unchanged)</label>
+  <input id="settingsNewPassword" type="password" autocomplete="new-password" placeholder="At least 6 characters">
+  <button id="saveSettings">Save Settings</button>
+  <div id="settingsMsg" class="msg" role="status"></div>
+ </div>
+</div>
+
 <div id="customerPage" class="modal hidden">
  <div class="card detail">
   <div class="row between">
@@ -66,7 +81,7 @@
   <div class="balance" id="detailBalance">0 AFN</div>
   <p class="muted">Outstanding balance</p>
   <div class="transactionForm">
-   <select id="txType"><option value="credit">Credit (customer owes)</option><option value="debit">Debit (customer paid)</option></select>
+   <select id="txType"><option value="credit">قرض (Customer owes)</option><option value="debit">رسید (Customer paid)</option></select>
    <input id="txAmount" type="number" min="0" step="0.01" placeholder="Amount">
    <input id="txNote" placeholder="Note">
    <label class="switchRow"><input id="waToggle" type="checkbox" checked><span>WhatsApp</span></label>
