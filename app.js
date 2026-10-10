@@ -45,6 +45,7 @@ const ICONS = {
   settings: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z"/><path d="m19.4 15 .1.1 1.1.9-1.4 2.4-1.4-.6a7.9 7.9 0 0 1-1.5.9l-.2 1.5h-2.8l-.2-1.5a7.9 7.9 0 0 1-1.5-.9l-1.4.6-1.4-2.4 1.1-.9a7.2 7.2 0 0 1 0-1.8l-1.1-.9 1.4-2.4 1.4.6a7.9 7.9 0 0 1 1.5-.9l.2-1.5h2.8l.2 1.5a7.9 7.9 0 0 1 1.5.9l1.4-.6 1.4 2.4-1.1.9a7.2 7.2 0 0 1 0 1.8Z"/></svg>',
   edit: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 16.5-.8 4.3 4.3-.8L19.7 7.8a2.1 2.1 0 0 0-3-3L4 16.5Z"/><path d="m14.8 6.7 3 3"/></svg>',
   trash: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6m4-6v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>',
+  message: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-12.6 7.4L3 20l1.1-4.9A8.5 8.5 0 1 1 21 11.5Z"/><path d="M8 11h.01M12 11h.01M16 11h.01"/></svg>',
   close: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>'
 };
 const icon = name => ICONS[name] || "";
@@ -1047,7 +1048,7 @@ function renderCustomers() {
                       class="iconBtn editBtn"
                       title="Edit customer"
                     >
-                      ✏️
+                      <span class="iconSvg" aria-hidden="true">${icon("edit")}</span>
                     </button>
 
 
@@ -1055,7 +1056,7 @@ function renderCustomers() {
                       class="iconBtn reminderBtn"
                       title="Send WhatsApp reminder"
                     >
-                      ♧
+                      <span class="iconSvg" aria-hidden="true">${icon("message")}</span>
                     </button>
 
 
@@ -1063,7 +1064,7 @@ function renderCustomers() {
                       class="iconBtn deleteBtn"
                       title="Delete customer"
                     >
-                      🗑️
+                      <span class="iconSvg" aria-hidden="true">${icon("trash")}</span>
                     </button>
 
                   </div>
@@ -1536,34 +1537,17 @@ function sendReminder(c) {
 ========================================= */
 
 function buildPashtoMessage(c) {
+  return `السلام علیکم، محترم *${c.name}*!
 
-  const d =
-    new Intl.DateTimeFormat(
-      "ps-AF",
-      {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit"
-      }
-    ).format(
-      new Date()
-    );
+ستاسو د حساب تازه معلومات:
 
+💰 *پاتې پیسې:* ${money(c.balance)} افغانۍ
 
-  return `سلام
+مهرباني وکړئ د پاتې پیسو د تصفیې لپاره اقدام وکړئ.
 
-محترم: ${c.name}
-
-تاسو تر ${d} همدې تاریخ پورې زمونږ حساب پر تاسو پاتي دی.
-پر تاسو پاتې پیسې: ${money(c.balance)} افغانۍ دي.
-
-هیله ده حساب تاسو په خپل وخت راته ورسوئ،
-مننه.
-
-ستاسو د حسابونو د لیدلو لپاره په لاندې لینک کلیک کولای شئ.
+📋 *د خپل حساب د بشپړو معلوماتو لپاره لاندې لینک پانیزئ:*
 
 ${portalUrl(c.publicToken)}`;
-
 }
 
 

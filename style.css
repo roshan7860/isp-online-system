@@ -667,3 +667,14 @@ button:focus-visible{outline:3px solid rgba(37,99,235,.35);outline-offset:2px}
   .row.between{align-items:center}
   .modalBox{padding:19px;border-radius:18px}
 }
+
+/* Refined customer action buttons and consistent professional SVG icons */
+.customerActions{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.customerActions .iconBtn{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;padding:0;margin:0;border-radius:11px;background:#f5f8fd;color:#425875;border:1px solid #dce5f2;box-shadow:0 1px 2px rgba(20,40,80,.04);transition:background .15s,border-color .15s,color .15s,transform .15s}
+.customerActions .iconBtn:hover{background:#eaf1ff;border-color:#bfd1f7;color:#245eea;transform:translateY(-1px)}
+.customerActions .deleteBtn{color:#c33c4b}
+.customerActions .deleteBtn:hover{background:#fff0f1;border-color:#f2c6cb;color:#b42332}
+.customerActions .iconSvg{width:19px;height:19px}
+.customerActions .iconSvg svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.customerActions button:focus-visible{outline:3px solid rgba(36,94,234,.25);outline-offset:2px}
+@media(max-width:520px){.customerActions{gap:6px}.customerActions .iconBtn{width:36px;height:36px}.customerActions .iconSvg,.customerActions .iconSvg svg{width:17px;height:17px}}
