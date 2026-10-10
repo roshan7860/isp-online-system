@@ -678,10 +678,3 @@ button:focus-visible{outline:3px solid rgba(37,99,235,.35);outline-offset:2px}
 .customerActions .iconSvg svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .customerActions button:focus-visible{outline:3px solid rgba(36,94,234,.25);outline-offset:2px}
 @media(max-width:520px){.customerActions{gap:6px}.customerActions .iconBtn{width:36px;height:36px}.customerActions .iconSvg,.customerActions .iconSvg svg{width:17px;height:17px}}
-
-/* Transaction history icon-only actions */
-.txActions .txIconBtn{width:38px;min-width:38px;height:36px;padding:0;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;gap:0}
-.txActions .txIconBtn .iconSvg,.txActions .txIconBtn .iconSvg svg{width:18px;height:18px}
-.txActions .txIconBtn.danger{background:#c92f45;color:#fff;border-color:#c92f45}
-.txActions .txIconBtn.secondary{background:#eef3fb;color:#243b5a;border:1px solid #d9e3f2}
-.txActions .txIconBtn:focus-visible{outline:2px solid #3167f6;outline-offset:2px}

@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#172b4d"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#172b4d"><link rel="manifest" href="/isp-online-system/manifest.webmanifest"><link rel="apple-touch-icon" href="/isp-online-system/icon-192.png">
 <title>Customer Credit Manager</title>
 <link rel="stylesheet" href="style.css">
 </head>
@@ -94,7 +94,7 @@
 <script>
 (() => {
   if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
-    window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(err => console.warn('PWA service worker:', err)));
+    window.addEventListener('load', () => navigator.serviceWorker.register('/isp-online-system/sw.js', { scope: '/isp-online-system/' }).catch(err => console.warn('PWA service worker:', err)));
   }
   let installPrompt = null;
   const installBtn = document.getElementById('installAppBtn');

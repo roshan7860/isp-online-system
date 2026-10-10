@@ -27,9 +27,3 @@ The system opens a WhatsApp message using `wa.me`. It does not silently send mes
 
 ## Public customer portal
 Each customer gets a random public token. The link is included in WhatsApp messages and opens `customer.html`, showing the customer's account details and transaction history.
-
-
-## Install as a desktop or mobile app (PWA)
-This project includes `manifest.webmanifest`, `sw.js`, and 192/512 PNG icons. Upload **all files and the `icons` folder** to the root of the GitHub Pages repository, keeping the same folder structure. Open the HTTPS site in Edge/Chrome on desktop and choose the install icon in the address bar or Menu → Apps → Install this site as an app. On Android, use browser menu → Install app / Add to Home screen. On iPhone/iPad Safari, use Share → Add to Home Screen.
-
-The app shell can be cached, but Firebase sign-in, customer balances, and transaction updates still require an internet connection.
