@@ -1,3 +1,4 @@
+
 {
   "id": "/isp-online-system/",
   "name": "Customer Credit Manager",
@@ -9,18 +10,19 @@
   "orientation": "any",
   "background_color": "#f4f7fc",
   "theme_color": "#172b4d",
-"icons": [
-  {
-    "src": "./icon-192.png",
-    "sizes": "192x192",
-    "type": "image/png",
-    "purpose": "any"
-  },
-  {
-    "src": "./icon-512.png",
-    "sizes": "512x512",
-    "type": "image/png",
-    "purpose": "any"
-  }
-],
-"prefer_related_applications": false
+  "icons": [
+    {
+      "src": "/isp-online-system/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/isp-online-system/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "prefer_related_applications": false
+}
