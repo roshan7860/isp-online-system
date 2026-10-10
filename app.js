@@ -1619,10 +1619,7 @@ const money =
   n => {
     const value = Number(n || 0);
     return Number.isFinite(value)
-      ? value.toLocaleString("en-US", {
-          minimumFractionDigits: 0,
-          maximumFractionDigits: 2
-        }).replace(/\\.0+$/, "").replace(/(\\.\\d*?)0+$/, "$1")
+      ? value.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 2 }).replace(/\\.0+$/, "").replace(/(\\.\\d*?)0+$/, "$1")
       : "0";
   };
 
