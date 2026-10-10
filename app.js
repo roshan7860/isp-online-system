@@ -19,6 +19,7 @@ import {
   query,
   where,
   serverTimestamp,
+  Timestamp,
   doc,
   updateDoc,
   deleteDoc,
@@ -33,6 +34,13 @@ import { firebaseConfig } from "./firebase-config.js";
 ========================================= */
 
 const app = initializeApp(firebaseConfig);
+
+// Default transaction date to today, while allowing manual selection.
+const txDateInput = document.getElementById("txDate");
+if (txDateInput) {
+  const today = new Date();
+  txDateInput.value = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+}
 
 const auth = getAuth(app);
 
@@ -1307,6 +1315,11 @@ $("saveTx").onclick =
       $("txType")
         .value;
 
+    const dateValue = $("txDate").value;
+    if (!dateValue) { alert("مهرباني وکړئ د معاملې نېټه وټاکئ."); return; }
+    const selectedDate = new Date(dateValue + "T00:00:00");
+    const now = new Date();
+    selectedDate.setHours(now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds());
 
     const note =
       $("txNote")
@@ -1379,7 +1392,7 @@ $("saveTx").onclick =
           note,
 
           createdAt:
-            serverTimestamp()
+            Timestamp.fromDate(selectedDate)
         }
 
       );
@@ -1388,6 +1401,7 @@ $("saveTx").onclick =
       $("txAmount")
         .value = "";
 
+      $("txDate").value = new Date().toLocaleDateString("en-CA");
 
       $("txNote")
         .value = "";
