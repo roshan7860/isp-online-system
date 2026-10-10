@@ -10,6 +10,8 @@
   >
 
   <meta name="theme-color" content="#172b4d">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
   <title>ستاسو د حساب معلومات</title>
 
   <link rel="stylesheet" href="style.css">
@@ -353,5 +355,10 @@ load();
 
 </script>
 
+<script>
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(err => console.warn('PWA service worker:', err)));
+}
+</script>
 </body>
 </html>

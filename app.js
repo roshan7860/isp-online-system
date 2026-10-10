@@ -1277,7 +1277,7 @@ function renderHistory() {
     <div class="tx ${t.type === "credit" ? "txCredit" : "txDebit"}">
       <div class="row between"><b><span class="txTypeLabel">${t.type === "credit" ? "قرض" : "رسید"}</span> — ${money(t.amount)} AFN</b><span>${date(t.createdAt)}</span></div>
       <div class="note">${esc(t.note || "")}</div>
-      <div class="txActions"><button type="button" class="secondary" data-edit-tx="${esc(t.id)}" aria-label="Edit transaction"><span class="iconSvg" aria-hidden="true">' + icon('edit') + '</span> Edit</button><button type="button" class="danger" data-delete-tx="${esc(t.id)}" aria-label="Delete transaction"><span class="iconSvg" aria-hidden="true">' + icon('trash') + '</span> Delete</button></div>
+      <div class="txActions"><button type="button" class="secondary" data-edit-tx="${esc(t.id)}" aria-label="Edit transaction"><span class="iconSvg" aria-hidden="true">${icon('edit')}</span> Edit</button><button type="button" class="danger" data-delete-tx="${esc(t.id)}" aria-label="Delete transaction"><span class="iconSvg" aria-hidden="true">${icon('trash')}</span> Delete</button></div>
     </div>
   `).join("") : `<p class="muted">No transactions.</p>`;
   $("history").querySelectorAll("[data-edit-tx]").forEach(btn => { btn.onclick = () => { const tx = ts.find(t => t.id === btn.dataset.editTx); if (tx) editTransaction(tx); }; });
@@ -1615,10 +1615,14 @@ const money =
 const date =
   x =>
     x?.toDate
-      ? x.toDate()
-          .toLocaleString(
-            "en-GB"
-          )
+      ? x.toDate().toLocaleString("en-GB", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true
+        })
       : "Just now";
 
 

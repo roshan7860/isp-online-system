@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#172b4d"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icons/icon-192.png">
 <title>Customer Credit Manager</title>
 <link rel="stylesheet" href="style.css">
 </head>
@@ -17,7 +17,7 @@
 </div>
 
 <div id="app" class="hidden">
-  <header><h2>Customer Credit Manager</h2><div class="row headerActions"><button id="settingsBtn" class="secondary" title="Account settings" aria-label="Account settings"><span class="iconSvg" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z"/><path d="M19.4 15l1.1 1-1.4 2.4-1.4-.6a7.9 7.9 0 0 1-1.5.9l-.2 1.5h-2.8l-.2-1.5a7.9 7.9 0 0 1-1.5-.9l-1.4.6-1.4-2.4 1.1-1a7.2 7.2 0 0 1 0-1.8l-1.1-.9 1.4-2.4 1.4.6a7.9 7.9 0 0 1 1.5-.9l.2-1.5h2.8l.2 1.5a7.9 7.9 0 0 1 1.5.9l1.4-.6 1.4 2.4-1.1.9a7.2 7.2 0 0 1 0 1.8Z"/></svg></span></button><button id="logoutBtn" class="secondary">Logout</button></div></header>
+  <header><h2>Customer Credit Manager</h2><div class="row headerActions"><button id="installAppBtn" class="secondary hidden" type="button">Install App</button><button id="settingsBtn" class="secondary" title="Account settings" aria-label="Account settings"><span class="iconSvg" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z"/><path d="M19.4 15l1.1 1-1.4 2.4-1.4-.6a7.9 7.9 0 0 1-1.5.9l-.2 1.5h-2.8l-.2-1.5a7.9 7.9 0 0 1-1.5-.9l-1.4.6-1.4-2.4 1.1-1a7.2 7.2 0 0 1 0-1.8l-1.1-.9 1.4-2.4 1.4.6a7.9 7.9 0 0 1 1.5-.9l.2-1.5h2.8l.2 1.5a7.9 7.9 0 0 1 1.5.9l1.4-.6 1.4 2.4-1.1.9a7.2 7.2 0 0 1 0 1.8Z"/></svg></span></button><button id="logoutBtn" class="secondary">Logout</button></div></header>
   <main>
     <section class="stats">
       <div class="stat"><span>Customers</span><b id="customerCount">0</b></div>
@@ -90,6 +90,27 @@
   <h4>Transaction History</h4><div id="history"></div>
  </div>
 </div>
+
+<script>
+(() => {
+  if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(err => console.warn('PWA service worker:', err)));
+  }
+  let installPrompt = null;
+  const installBtn = document.getElementById('installAppBtn');
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  if (installBtn && !isStandalone) {
+    window.addEventListener('beforeinstallprompt', event => {
+      event.preventDefault(); installPrompt = event; installBtn.classList.remove('hidden');
+    });
+    installBtn.addEventListener('click', async () => {
+      if (installPrompt) { installPrompt.prompt(); await installPrompt.userChoice; installPrompt = null; installBtn.classList.add('hidden'); }
+      else alert('Install: په براوزر کې د Address bar د Install آیکن یا Menu > Apps > Install this site as an app وکاروئ. په موبایل کې Menu > Add to Home screen / Install app وټاکئ.');
+    });
+    window.addEventListener('appinstalled', () => installBtn.classList.add('hidden'));
+  }
+})();
+</script>
 
 <script type="module" src="app.js"></script>
 </body>
