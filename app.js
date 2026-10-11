@@ -1283,7 +1283,7 @@ function renderHistory() {
   const ts = selectedCustomer?.transactions || [];
   $("history").innerHTML = ts.length ? ts.map(t => `
     <div class="tx ${t.type === "credit" ? "txCredit" : "txDebit"}">
-      <div class="row between"><b><span class="txTypeLabel">${t.type === "credit" ? "قرض" : "رسید"}</span> — ${money(t.amount)} AFN</b><span>${date(t.createdAt)}</span></div>
+      <div class="row between"><b><span class="txTypeLabel">${t.type === "credit" ? "قرض" : "رسید"}</span> — ${money(t.amount)} AFN</b><span>${transactionDateLabel(t)}</span></div>
       <div class="note">${esc(t.note || "")}</div>
       <div class="txActions"><button type="button" class="secondary" data-edit-tx="${esc(t.id)}" aria-label="Edit transaction"><span class="iconSvg" aria-hidden="true">${icon('edit')}</span> Edit</button><button type="button" class="danger" data-delete-tx="${esc(t.id)}" aria-label="Delete transaction"><span class="iconSvg" aria-hidden="true">${icon('trash')}</span> Delete</button></div>
     </div>
@@ -1390,6 +1390,9 @@ $("saveTx").onclick =
           amount,
 
           note,
+
+          // Keep the chosen calendar date explicitly as well as the timestamp.
+          transactionDate: dateValue,
 
           createdAt:
             Timestamp.fromDate(selectedDate)
@@ -1621,6 +1624,21 @@ const money =
       : "0";
   };
 
+
+/* =========================================
+   TRANSACTION DATE DISPLAY
+========================================= */
+
+const transactionDateLabel = t => {
+  // New records use the explicitly selected calendar date. Older records fall back to createdAt.
+  if (typeof t?.transactionDate === "string" && /^\d{4}-\d{2}-\d{2}$/.test(t.transactionDate)) {
+    const [year, month, day] = t.transactionDate.split("-").map(Number);
+    const time = t?.createdAt?.toDate ? t.createdAt.toDate() : null;
+    const shown = new Date(year, month - 1, day, time ? time.getHours() : 12, time ? time.getMinutes() : 0);
+    return shown.toLocaleString("en-GB", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true });
+  }
+  return date(t?.createdAt);
+};
 
 /* =========================================
    DATE FORMAT
