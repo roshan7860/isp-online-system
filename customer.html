@@ -155,18 +155,19 @@ const esc =
       );
 
 
-const date =
-  x =>
-    x?.toDate
-      ? x.toDate().toLocaleString("en-GB", {
-          hour: "2-digit",
-          minute: "2-digit",
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-          hour12: true
-        })
-      : "";
+const date = x => {
+  // Prefer the editable transaction date; fall back to Firestore timestamp.
+  if (typeof x?.transactionDate === "string" && /^\d{4}-\d{2}-\d{2}$/.test(x.transactionDate)) {
+    const [year, month, day] = x.transactionDate.split("-").map(Number);
+    const d = new Date(year, month - 1, day);
+    return d.toLocaleDateString("en-GB", { day: "2-digit", month: "2-digit", year: "numeric" });
+  }
+  return x?.createdAt?.toDate
+    ? x.createdAt.toDate().toLocaleString("en-GB", {
+        hour: "2-digit", minute: "2-digit", day: "2-digit", month: "2-digit", year: "numeric", hour12: true
+      })
+    : "";
+};
 
 
 async function load() {
@@ -243,17 +244,13 @@ async function load() {
           id: d.id,
           ...d.data()
         }))
-        .sort(
-          (a, b) =>
-            (
-              b.createdAt
-                ?.toMillis?.() ?? 0
-            ) -
-            (
-              a.createdAt
-                ?.toMillis?.() ?? 0
-            )
-        );
+        .sort((a, b) => {
+          const key = t => {
+            if (typeof t.transactionDate === "string" && /^\d{4}-\d{2}-\d{2}$/.test(t.transactionDate)) return new Date(t.transactionDate + "T00:00:00").getTime();
+            return t.createdAt?.toMillis?.() ?? 0;
+          };
+          return key(b) - key(a);
+        });
 
 
     $("pHistory").innerHTML =
@@ -289,7 +286,7 @@ async function load() {
 
 
               <span>
-                ${date(t.createdAt)}
+                ${date(t)}
               </span>
 
             </div>
