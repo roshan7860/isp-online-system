@@ -509,29 +509,38 @@ $("deleteCustomerBtn").onclick =
 
 async function loadCustomers() {
   if (!currentUser) return;
+  const startedAt = performance.now();
   try {
-    // Fetch the customer's list first so the dashboard can appear immediately.
-    const customerQuery = query(
-      collection(db, "customers"),
-      where("ownerId", "==", currentUser.uid)
-    );
+    const customerQuery = query(collection(db, "customers"), where("ownerId", "==", currentUser.uid));
     const customerSnap = await getDocs(customerQuery);
-    customers = customerSnap.docs.map(d => ({ id: d.id, ...d.data(), transactions: [] }));
+    customers = customerSnap.docs.map(d => ({ id: d.id, ...d.data(), transactions: [], balance: 0 }));
     customers.sort((a, b) => (b.createdAt?.toMillis?.() ?? 0) - (a.createdAt?.toMillis?.() ?? 0));
-
-    // Render the customer list immediately instead of waiting for every transaction
-    // and every public-account write to finish.
+    // Render the customer list immediately; transaction data is loaded in batches below.
     renderAll();
 
-    // Load transactions for all customers concurrently, not one customer at a time.
+    // Make sure public tokens exist without serializing writes one customer at a time.
     await Promise.all(customers.map(async c => {
       if (!c.publicToken) {
         c.publicToken = randomToken();
         await updateDoc(doc(db, "customers", c.id), { publicToken: c.publicToken });
       }
-      const tq = query(collection(db, "transactions"), where("customerId", "==", c.id));
-      const ts = await getDocs(tq);
-      c.transactions = ts.docs.map(d => ({ id: d.id, ...d.data() }));
+    }));
+
+    // Fetch this user's transactions in one Firestore query instead of one query per customer.
+    // Filtering by ownerId also matches the existing Firestore security rules.
+    const grouped = new Map(customers.map(c => [c.id, c]));
+    if (customers.length) {
+      const transactionSnap = await getDocs(query(
+        collection(db, "transactions"),
+        where("ownerId", "==", currentUser.uid)
+      ));
+      transactionSnap.docs.forEach(d => {
+        const t = { id: d.id, ...d.data() };
+        const c = grouped.get(t.customerId);
+        if (c) c.transactions.push(t);
+      });
+    }
+    for (const c of customers) {
       c.transactions.sort((a, b) => {
         const stamp = t => {
           if (typeof t.transactionDate === "string" && /^\d{4}-\d{2}-\d{2}$/.test(t.transactionDate)) return new Date(t.transactionDate + "T00:00:00").getTime();
@@ -540,15 +549,13 @@ async function loadCustomers() {
         return stamp(b) - stamp(a);
       });
       c.balance = c.transactions.reduce((sum, t) => sum + (t.type === "credit" ? Number(t.amount) : -Number(t.amount)), 0);
-    }));
-
-    // Show complete local data as soon as transactions are ready.
+    }
     renderAll();
-
-    // Public account syncing is secondary; don't block login/dashboard on it.
+    // Keep sync off the login-critical path.
     Promise.allSettled(customers.map(c => syncPublicCustomer(c))).then(results => {
       results.forEach((r, i) => { if (r.status === "rejected") console.warn("Public account sync failed:", customers[i]?.id, r.reason); });
     });
+    console.info(`Customer data loaded in ${Math.round(performance.now() - startedAt)}ms`);
   } catch (e) {
     console.error("Firestore loadCustomers error:", e);
     alert("Could not load customers: " + (e.message || e));
@@ -1115,46 +1122,58 @@ async function refreshCustomerAndPublic(customerId) {
   if (selectedCustomer) { await syncPublicCustomer(selectedCustomer); await openCustomer(customerId); }
 }
 
-async function editTransaction(t) {
+let transactionBeingEdited = null;
+function editTransaction(t) {
   if (!selectedCustomer || !t?.id) return;
-  const amountText = prompt("د معاملې نوی مبلغ ولیکئ:", String(t.amount ?? ""));
-  if (amountText === null) return;
-  const amount = Number(amountText);
-  if (!Number.isFinite(amount) || amount <= 0) { alert("مهرباني وکړئ سم مبلغ ولیکئ."); return; }
-
-  const typeText = prompt("د معاملې ډول ولیکئ: credit = قرض، debit = رسید", t.type === "debit" ? "debit" : "credit");
-  if (typeText === null) return;
-  const type = typeText.trim().toLowerCase();
-  if (!["credit", "debit"].includes(type)) { alert("ډول باید credit یا debit وي."); return; }
-
+  transactionBeingEdited = t;
+  $("editTxType").value = t.type === "debit" ? "debit" : "credit";
+  $("editTxAmount").value = String(t.amount ?? "");
   const oldDate = (typeof t.transactionDate === "string" && /^\d{4}-\d{2}-\d{2}$/.test(t.transactionDate))
     ? t.transactionDate
     : (t.createdAt?.toDate ? (() => { const d=t.createdAt.toDate(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; })() : new Date().toISOString().slice(0,10));
-  const transactionDate = prompt("د معاملې نېټه ولیکئ (YYYY-MM-DD):", oldDate);
-  if (transactionDate === null) return;
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(transactionDate) || Number.isNaN(new Date(transactionDate + "T00:00:00").getTime())) { alert("نېټه باید په YYYY-MM-DD بڼه وي، لکه 2026-10-11."); return; }
-
-  const note = prompt("د معاملې یادښت:", t.note || "");
-  if (note === null) return;
+  $("editTxDate").value = oldDate;
+  $("editTxNote").value = t.note || "";
+  $("editTxMsg").textContent = "";
+  $("editTxModal").classList.remove("hidden");
+}
+function closeEditTransaction() {
+  $("editTxModal").classList.add("hidden");
+  transactionBeingEdited = null;
+}
+$("cancelEditTx").onclick = closeEditTransaction;
+$("cancelEditTx2").onclick = closeEditTransaction;
+$("saveEditTx").onclick = async () => {
+  const t = transactionBeingEdited;
+  if (!selectedCustomer || !t?.id) return;
+  const amount = Number($("editTxAmount").value);
+  const type = $("editTxType").value;
+  const transactionDate = $("editTxDate").value;
+  const note = $("editTxNote").value.trim();
+  if (!Number.isFinite(amount) || amount <= 0) { $("editTxMsg").textContent = "مهرباني وکړئ سم مبلغ ولیکئ."; return; }
+  if (!["credit", "debit"].includes(type)) { $("editTxMsg").textContent = "د معاملې ډول سم نه دی."; return; }
+  if (!transactionDate || !/^\d{4}-\d{2}-\d{2}$/.test(transactionDate)) { $("editTxMsg").textContent = "مهرباني وکړئ نېټه وټاکئ."; return; }
   const customerId = selectedCustomer.id;
+  $("saveEditTx").disabled = true;
+  $("saveEditTx").textContent = "ثبت کېږي...";
   try {
     const oldTimestamp = t.createdAt?.toDate ? t.createdAt.toDate() : new Date();
     const newTimestamp = new Date(transactionDate + "T00:00:00");
     newTimestamp.setHours(oldTimestamp.getHours(), oldTimestamp.getMinutes(), oldTimestamp.getSeconds(), oldTimestamp.getMilliseconds());
     await updateDoc(doc(db, "transactions", t.id), {
-      amount,
-      type,
-      transactionDate,
-      note: note.trim(),
+      amount, type, transactionDate, note,
       createdAt: Timestamp.fromDate(newTimestamp),
       updatedAt: serverTimestamp()
     });
+    closeEditTransaction();
     await refreshCustomerAndPublic(customerId);
   } catch (e) {
     console.error("Edit transaction error:", e);
-    alert("معامله نه شوه اصلاح کېدای: " + e.message);
+    $("editTxMsg").textContent = "معامله نه شوه اصلاح کېدای: " + (e.message || e);
+  } finally {
+    $("saveEditTx").disabled = false;
+    $("saveEditTx").textContent = "بدلونونه ثبت کړه";
   }
-}
+};
 
 async function removeTransaction(t) {
   if (!selectedCustomer || !t?.id) return;

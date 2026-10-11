@@ -678,3 +678,10 @@ button:focus-visible{outline:3px solid rgba(37,99,235,.35);outline-offset:2px}
 .customerActions .iconSvg svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .customerActions button:focus-visible{outline:3px solid rgba(36,94,234,.25);outline-offset:2px}
 @media(max-width:520px){.customerActions{gap:6px}.customerActions .iconBtn{width:36px;height:36px}.customerActions .iconSvg,.customerActions .iconSvg svg{width:17px;height:17px}}
+
+/* Transaction edit form */
+#editTxModal .modalBox{display:flex;flex-direction:column;gap:8px;max-height:90vh;overflow:auto}
+#editTxModal label{font-weight:600;color:var(--text,#24364b);margin-top:4px}
+#editTxModal select,#editTxModal input{width:100%;box-sizing:border-box}
+#editTxModal .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+#editTxModal .row button{flex:1;min-width:130px}
