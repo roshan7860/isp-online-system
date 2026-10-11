@@ -566,12 +566,26 @@ async function loadCustomers() {
    PUBLIC ACCOUNT SYNC
 ========================================= */
 
-async function syncPublicCustomer(c) {
+// Serialize public-account syncs per token. loadCustomers() may start a background
+// sync while an edit/delete triggers another sync; concurrent mirror writes could
+// otherwise restore stale transaction copies after the newer sync has finished.
+const publicSyncQueues = new Map();
+
+function syncPublicCustomer(c) {
+  if (!c?.publicToken) return Promise.resolve();
+  const token = c.publicToken;
+  const previous = publicSyncQueues.get(token) || Promise.resolve();
+  const next = previous.catch(() => {}).then(() => syncPublicCustomerNow(c));
+  publicSyncQueues.set(token, next);
+  return next.finally(() => {
+    if (publicSyncQueues.get(token) === next) publicSyncQueues.delete(token);
+  });
+}
+
+async function syncPublicCustomerNow(c) {
   if (!c?.publicToken) return;
 
   const publicRef = doc(db, "public_accounts", c.publicToken);
-
-  // Update the public account summary first.
   await setDoc(publicRef, {
     name: c.name,
     whatsapp: c.whatsapp || "",
@@ -580,27 +594,26 @@ async function syncPublicCustomer(c) {
     updatedAt: serverTimestamp()
   }, { merge: true });
 
-  // The public subcollection must mirror the current admin transactions.
-  // This removes stale copies left behind when a transaction was replaced
-  // by an edit that created a new transaction document ID.
   const publicTxRef = collection(db, "public_accounts", c.publicToken, "transactions");
   const existingSnap = await getDocs(publicTxRef);
-  const currentIds = new Set((c.transactions || []).map(t => String(t.id)));
+  const currentTransactions = c.transactions || [];
+  const currentIds = new Set(currentTransactions.map(t => String(t.id)));
 
-  const staleDocs = existingSnap.docs.filter(d => !currentIds.has(d.id));
-  await Promise.all(staleDocs.map(d => deleteDoc(d.ref)));
+  // Delete public documents not present in the latest admin transaction list.
+  await Promise.all(existingSnap.docs
+    .filter(d => !currentIds.has(d.id))
+    .map(d => deleteDoc(d.ref)));
 
-  // Upsert every current transaction using its original Firestore document ID.
-  await Promise.all((c.transactions || []).map(t => setDoc(
-    doc(db, "public_accounts", c.publicToken, "transactions", t.id),
+  // Mirror the admin records using stable Firestore transaction IDs.
+  await Promise.all(currentTransactions.map(t => setDoc(
+    doc(db, "public_accounts", c.publicToken, "transactions", String(t.id)),
     {
       type: t.type,
       amount: Number(t.amount),
       note: t.note || "",
       transactionDate: t.transactionDate || null,
       createdAt: t.createdAt || null
-    },
-    { merge: true }
+    }
   )));
 }
 
