@@ -570,6 +570,8 @@ async function syncPublicCustomer(c) {
   if (!c?.publicToken) return;
 
   const publicRef = doc(db, "public_accounts", c.publicToken);
+
+  // Update the public account summary first.
   await setDoc(publicRef, {
     name: c.name,
     whatsapp: c.whatsapp || "",
@@ -578,30 +580,28 @@ async function syncPublicCustomer(c) {
     updatedAt: serverTimestamp()
   }, { merge: true });
 
-  // Keep the public transaction history an exact mirror of the admin history.
-  // This updates edited records and removes stale records that no longer exist
-  // in the admin collection (for example, after a transaction was deleted).
+  // The public subcollection must mirror the current admin transactions.
+  // This removes stale copies left behind when a transaction was replaced
+  // by an edit that created a new transaction document ID.
   const publicTxRef = collection(db, "public_accounts", c.publicToken, "transactions");
-  const publicTxSnap = await getDocs(publicTxRef);
-  const currentTransactions = Array.isArray(c.transactions) ? c.transactions : [];
-  const currentIds = new Set(currentTransactions.map(t => String(t.id)));
+  const existingSnap = await getDocs(publicTxRef);
+  const currentIds = new Set((c.transactions || []).map(t => String(t.id)));
 
-  for (const publicTx of publicTxSnap.docs) {
-    if (!currentIds.has(publicTx.id)) {
-      await deleteDoc(publicTx.ref);
-    }
-  }
+  const staleDocs = existingSnap.docs.filter(d => !currentIds.has(d.id));
+  await Promise.all(staleDocs.map(d => deleteDoc(d.ref)));
 
-  for (const t of currentTransactions) {
-    if (!t?.id) continue;
-    await setDoc(doc(db, "public_accounts", c.publicToken, "transactions", t.id), {
+  // Upsert every current transaction using its original Firestore document ID.
+  await Promise.all((c.transactions || []).map(t => setDoc(
+    doc(db, "public_accounts", c.publicToken, "transactions", t.id),
+    {
       type: t.type,
-      amount: Number(t.amount || 0),
+      amount: Number(t.amount),
       note: t.note || "",
       transactionDate: t.transactionDate || null,
       createdAt: t.createdAt || null
-    });
-  }
+    },
+    { merge: true }
+  )));
 }
 
 /* =========================================
