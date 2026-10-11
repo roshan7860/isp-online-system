@@ -567,88 +567,42 @@ async function loadCustomers() {
 ========================================= */
 
 async function syncPublicCustomer(c) {
+  if (!c?.publicToken) return;
 
-  if (!c?.publicToken) {
-    return;
-  }
+  const publicRef = doc(db, "public_accounts", c.publicToken);
+  await setDoc(publicRef, {
+    name: c.name,
+    whatsapp: c.whatsapp || "",
+    address: c.address || "",
+    balance: Number(c.balance || 0),
+    updatedAt: serverTimestamp()
+  }, { merge: true });
 
+  // Keep the public transaction history an exact mirror of the admin history.
+  // This updates edited records and removes stale records that no longer exist
+  // in the admin collection (for example, after a transaction was deleted).
+  const publicTxRef = collection(db, "public_accounts", c.publicToken, "transactions");
+  const publicTxSnap = await getDocs(publicTxRef);
+  const currentTransactions = Array.isArray(c.transactions) ? c.transactions : [];
+  const currentIds = new Set(currentTransactions.map(t => String(t.id)));
 
-  /* Main public account */
-
-  const ref =
-    doc(
-      db,
-      "public_accounts",
-      c.publicToken
-    );
-
-
-  await setDoc(
-    ref,
-    {
-      name:
-        c.name,
-
-      whatsapp:
-        c.whatsapp || "",
-
-      address:
-        c.address || "",
-
-      balance:
-        Number(
-          c.balance || 0
-        ),
-
-      updatedAt:
-        serverTimestamp()
+  for (const publicTx of publicTxSnap.docs) {
+    if (!currentIds.has(publicTx.id)) {
+      await deleteDoc(publicTx.ref);
     }
-  );
-
-
-  /* Public transactions */
-
-  for (
-    const t of (
-      c.transactions || []
-    )
-  ) {
-
-    await setDoc(
-
-      doc(
-        db,
-        "public_accounts",
-        c.publicToken,
-        "transactions",
-        t.id
-      ),
-
-      {
-        type:
-          t.type,
-
-        amount:
-          Number(
-            t.amount
-          ),
-
-        note:
-          t.note || "",
-
-        transactionDate:
-          t.transactionDate || null,
-
-        createdAt:
-          t.createdAt || null
-      }
-
-    );
-
   }
 
+  for (const t of currentTransactions) {
+    if (!t?.id) continue;
+    await setDoc(doc(db, "public_accounts", c.publicToken, "transactions", t.id), {
+      type: t.type,
+      amount: Number(t.amount || 0),
+      note: t.note || "",
+      transactionDate: t.transactionDate || null,
+      createdAt: t.createdAt || null
+    });
+  }
 }
-
 
 /* =========================================
    DASHBOARD
