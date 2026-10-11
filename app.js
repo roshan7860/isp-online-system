@@ -566,55 +566,66 @@ async function loadCustomers() {
    PUBLIC ACCOUNT SYNC
 ========================================= */
 
-// Serialize public-account syncs per token. loadCustomers() may start a background
-// sync while an edit/delete triggers another sync; concurrent mirror writes could
-// otherwise restore stale transaction copies after the newer sync has finished.
+// Serialize public-account syncs per customer and always read the latest source
+// transactions from Firestore. This prevents an older, slower sync from restoring
+// the pre-edit transaction alongside the edited one.
 const publicSyncQueues = new Map();
 
-function syncPublicCustomer(c) {
-  if (!c?.publicToken) return Promise.resolve();
-  const token = c.publicToken;
-  const previous = publicSyncQueues.get(token) || Promise.resolve();
-  const next = previous.catch(() => {}).then(() => syncPublicCustomerNow(c));
-  publicSyncQueues.set(token, next);
-  return next.finally(() => {
-    if (publicSyncQueues.get(token) === next) publicSyncQueues.delete(token);
-  });
-}
+async function syncPublicCustomer(c) {
+  if (!c?.publicToken || !c?.id || !currentUser?.uid) return;
 
-async function syncPublicCustomerNow(c) {
-  if (!c?.publicToken) return;
+  const key = String(c.publicToken);
+  const previous = publicSyncQueues.get(key) || Promise.resolve();
+  const task = previous.catch(() => {}).then(async () => {
+    // Re-read authoritative transactions AFTER waiting in the queue.
+    const sourceSnap = await getDocs(query(
+      collection(db, "transactions"),
+      where("ownerId", "==", currentUser.uid)
+    ));
+    const latestTransactions = sourceSnap.docs
+      .filter(d => d.data().customerId === c.id)
+      .map(d => ({ id: d.id, ...d.data() }));
 
-  const publicRef = doc(db, "public_accounts", c.publicToken);
-  await setDoc(publicRef, {
-    name: c.name,
-    whatsapp: c.whatsapp || "",
-    address: c.address || "",
-    balance: Number(c.balance || 0),
-    updatedAt: serverTimestamp()
-  }, { merge: true });
+    const balance = latestTransactions.reduce(
+      (sum, t) => sum + (t.type === "credit" ? Number(t.amount || 0) : -Number(t.amount || 0)), 0
+    );
 
-  const publicTxRef = collection(db, "public_accounts", c.publicToken, "transactions");
-  const existingSnap = await getDocs(publicTxRef);
-  const currentTransactions = c.transactions || [];
-  const currentIds = new Set(currentTransactions.map(t => String(t.id)));
+    const publicRef = doc(db, "public_accounts", key);
+    await setDoc(publicRef, {
+      name: c.name || "",
+      whatsapp: c.whatsapp || "",
+      address: c.address || "",
+      balance,
+      updatedAt: serverTimestamp()
+    }, { merge: true });
 
-  // Delete public documents not present in the latest admin transaction list.
-  await Promise.all(existingSnap.docs
-    .filter(d => !currentIds.has(d.id))
-    .map(d => deleteDoc(d.ref)));
+    const publicTxRef = collection(db, "public_accounts", key, "transactions");
+    const existingSnap = await getDocs(publicTxRef);
+    const currentIds = new Set(latestTransactions.map(t => String(t.id)));
 
-  // Mirror the admin records using stable Firestore transaction IDs.
-  await Promise.all(currentTransactions.map(t => setDoc(
-    doc(db, "public_accounts", c.publicToken, "transactions", String(t.id)),
-    {
-      type: t.type,
-      amount: Number(t.amount),
-      note: t.note || "",
-      transactionDate: t.transactionDate || null,
-      createdAt: t.createdAt || null
+    // Remove legacy/obsolete IDs first. Then write one canonical document per
+    // current source transaction ID, preserving all genuine historical entries.
+    for (const oldDoc of existingSnap.docs) {
+      if (!currentIds.has(oldDoc.id)) await deleteDoc(oldDoc.ref);
     }
-  )));
+
+    for (const t of latestTransactions) {
+      await setDoc(doc(db, "public_accounts", key, "transactions", String(t.id)), {
+        type: t.type,
+        amount: Number(t.amount || 0),
+        note: t.note || "",
+        transactionDate: t.transactionDate || null,
+        createdAt: t.createdAt || null
+      });
+    }
+  });
+
+  publicSyncQueues.set(key, task);
+  try {
+    await task;
+  } finally {
+    if (publicSyncQueues.get(key) === task) publicSyncQueues.delete(key);
+  }
 }
 
 /* =========================================
