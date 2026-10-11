@@ -23,7 +23,8 @@ import {
   doc,
   updateDoc,
   deleteDoc,
-  setDoc
+  setDoc,
+  writeBatch
 } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
 
 import { firebaseConfig } from "./firebase-config.js";
@@ -566,66 +567,87 @@ async function loadCustomers() {
    PUBLIC ACCOUNT SYNC
 ========================================= */
 
-// Serialize public-account syncs per customer and always read the latest source
-// transactions from Firestore. This prevents an older, slower sync from restoring
-// the pre-edit transaction alongside the edited one.
+// Serialize public-account syncs per token so overlapping refreshes cannot
+// re-create an older transaction snapshot after a newer one.
 const publicSyncQueues = new Map();
 
+function queuePublicSync(token, task) {
+  const previous = publicSyncQueues.get(token) || Promise.resolve();
+  const next = previous.catch(() => {}).then(task);
+  publicSyncQueues.set(token, next);
+  return next.finally(() => {
+    if (publicSyncQueues.get(token) === next) publicSyncQueues.delete(token);
+  });
+}
+
 async function syncPublicCustomer(c) {
-  if (!c?.publicToken || !c?.id || !currentUser?.uid) return;
+  if (!c?.publicToken) return;
+  const token = c.publicToken;
+  // Snapshot transaction values before entering the queue.
+  const transactions = (c.transactions || []).map(t => ({
+    id: String(t.id), type: t.type, amount: Number(t.amount),
+    note: t.note || "", transactionDate: t.transactionDate || null,
+    createdAt: t.createdAt || null
+  }));
+  const summary = {
+    name: c.name || "", whatsapp: c.whatsapp || "", address: c.address || "",
+    balance: Number(c.balance || 0), updatedAt: serverTimestamp()
+  };
 
-  const key = String(c.publicToken);
-  const previous = publicSyncQueues.get(key) || Promise.resolve();
-  const task = previous.catch(() => {}).then(async () => {
-    // Re-read authoritative transactions AFTER waiting in the queue.
-    const sourceSnap = await getDocs(query(
-      collection(db, "transactions"),
-      where("ownerId", "==", currentUser.uid)
-    ));
-    const latestTransactions = sourceSnap.docs
-      .filter(d => d.data().customerId === c.id)
-      .map(d => ({ id: d.id, ...d.data() }));
-
-    const balance = latestTransactions.reduce(
-      (sum, t) => sum + (t.type === "credit" ? Number(t.amount || 0) : -Number(t.amount || 0)), 0
-    );
-
-    const publicRef = doc(db, "public_accounts", key);
-    await setDoc(publicRef, {
-      name: c.name || "",
-      whatsapp: c.whatsapp || "",
-      address: c.address || "",
-      balance,
-      updatedAt: serverTimestamp()
-    }, { merge: true });
-
-    const publicTxRef = collection(db, "public_accounts", key, "transactions");
+  return queuePublicSync(token, async () => {
+    const publicRef = doc(db, "public_accounts", token);
+    const publicTxRef = collection(db, "public_accounts", token, "transactions");
     const existingSnap = await getDocs(publicTxRef);
-    const currentIds = new Set(latestTransactions.map(t => String(t.id)));
+    const currentIds = new Set(transactions.map(t => t.id));
+    const staleRefs = existingSnap.docs.filter(d => !currentIds.has(d.id)).map(d => d.ref);
 
-    // Remove legacy/obsolete IDs first. Then write one canonical document per
-    // current source transaction ID, preserving all genuine historical entries.
-    for (const oldDoc of existingSnap.docs) {
-      if (!currentIds.has(oldDoc.id)) await deleteDoc(oldDoc.ref);
+    // A batch makes stale-copy removal and current-copy upserts atomic for the
+    // normal case. This prevents customers briefly seeing old+new dates.
+    const operations = [
+      { kind: "set", ref: publicRef, data: summary, options: { merge: true } },
+      ...staleRefs.map(ref => ({ kind: "delete", ref })),
+      ...transactions.map(t => ({
+        kind: "set",
+        ref: doc(db, "public_accounts", token, "transactions", t.id),
+        data: { type: t.type, amount: t.amount, note: t.note,
+          transactionDate: t.transactionDate, createdAt: t.createdAt },
+        options: { merge: false }
+      }))
+    ];
+
+    // Firestore batches allow at most 500 writes. Typical customer accounts
+    // fit in one atomic batch; larger accounts are handled in safe chunks.
+    if (operations.length <= 450) {
+      const batch = writeBatch(db);
+      for (const op of operations) {
+        if (op.kind === "delete") batch.delete(op.ref);
+        else batch.set(op.ref, op.data, op.options);
+      }
+      await batch.commit();
+      return;
     }
 
-    for (const t of latestTransactions) {
-      await setDoc(doc(db, "public_accounts", key, "transactions", String(t.id)), {
-        type: t.type,
-        amount: Number(t.amount || 0),
-        note: t.note || "",
-        transactionDate: t.transactionDate || null,
-        createdAt: t.createdAt || null
-      });
+    // For very large histories, remove all stale IDs first, then upsert the
+    // authoritative transactions in chunks. Stable admin IDs prevent copies.
+    for (let i = 0; i < staleRefs.length; i += 400) {
+      const batch = writeBatch(db);
+      staleRefs.slice(i, i + 400).forEach(ref => batch.delete(ref));
+      await batch.commit();
+    }
+    const summaryBatch = writeBatch(db);
+    summaryBatch.set(publicRef, summary, { merge: true });
+    await summaryBatch.commit();
+    for (let i = 0; i < transactions.length; i += 400) {
+      const batch = writeBatch(db);
+      transactions.slice(i, i + 400).forEach(t => batch.set(
+        doc(db, "public_accounts", token, "transactions", t.id),
+        { type: t.type, amount: t.amount, note: t.note,
+          transactionDate: t.transactionDate, createdAt: t.createdAt },
+        { merge: false }
+      ));
+      await batch.commit();
     }
   });
-
-  publicSyncQueues.set(key, task);
-  try {
-    await task;
-  } finally {
-    if (publicSyncQueues.get(key) === task) publicSyncQueues.delete(key);
-  }
 }
 
 /* =========================================
