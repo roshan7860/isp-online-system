@@ -508,199 +508,52 @@ $("deleteCustomerBtn").onclick =
 ========================================= */
 
 async function loadCustomers() {
-
+  if (!currentUser) return;
   try {
-
-    if (!currentUser) {
-      return;
-    }
-
-
-    /* Get customers */
-
-    const q =
-      query(
-        collection(
-          db,
-          "customers"
-        ),
-        where(
-          "ownerId",
-          "==",
-          currentUser.uid
-        )
-      );
-
-
-    const snap =
-      await getDocs(q);
-
-
-    customers =
-      snap.docs.map(
-        d => ({
-          id: d.id,
-          ...d.data()
-        })
-      );
-
-
-    /* Sort customers */
-
-    customers.sort(
-      (a, b) =>
-        (
-          b.createdAt
-            ?.toMillis?.() ?? 0
-        ) -
-        (
-          a.createdAt
-            ?.toMillis?.() ?? 0
-        )
+    // Fetch the customer's list first so the dashboard can appear immediately.
+    const customerQuery = query(
+      collection(db, "customers"),
+      where("ownerId", "==", currentUser.uid)
     );
+    const customerSnap = await getDocs(customerQuery);
+    customers = customerSnap.docs.map(d => ({ id: d.id, ...d.data(), transactions: [] }));
+    customers.sort((a, b) => (b.createdAt?.toMillis?.() ?? 0) - (a.createdAt?.toMillis?.() ?? 0));
 
-
-    /* Load each customer's transactions */
-
-    for (
-      const c of customers
-    ) {
-
-
-      /* Create public token
-         if missing */
-
-      if (!c.publicToken) {
-
-        c.publicToken =
-          randomToken();
-
-
-        await updateDoc(
-          doc(
-            db,
-            "customers",
-            c.id
-          ),
-          {
-            publicToken:
-              c.publicToken
-          }
-        );
-
-      }
-
-
-      /* Get transactions */
-
-      const tq =
-        query(
-          collection(
-            db,
-            "transactions"
-          ),
-          where(
-            "customerId",
-            "==",
-            c.id
-          )
-        );
-
-
-      const ts =
-        await getDocs(tq);
-
-
-      c.transactions =
-        ts.docs.map(
-          d => ({
-            id: d.id,
-            ...d.data()
-          })
-        );
-
-
-      /* Sort transactions */
-
-      c.transactions.sort(
-        (a, b) =>
-          (
-            b.createdAt
-              ?.toMillis?.() ?? 0
-          ) -
-          (
-            a.createdAt
-              ?.toMillis?.() ?? 0
-          )
-      );
-
-
-      /* Calculate balance */
-
-      c.balance =
-        (
-          c.transactions || []
-        ).reduce(
-          (s, t) =>
-            s +
-            (
-              t.type === "credit"
-                ? Number(t.amount)
-                : -Number(t.amount)
-            ),
-          0
-        );
-
-
-      /*
-        IMPORTANT:
-        Sync public account separately.
-
-        If public account permission
-        fails, dashboard will NOT fail.
-      */
-
-      try {
-
-        await syncPublicCustomer(c);
-
-      } catch (syncError) {
-
-        console.error(
-          "Public account sync failed:",
-          syncError
-        );
-
-      }
-
-    }
-
-
-    /* Render dashboard */
-
+    // Render the customer list immediately instead of waiting for every transaction
+    // and every public-account write to finish.
     renderAll();
 
+    // Load transactions for all customers concurrently, not one customer at a time.
+    await Promise.all(customers.map(async c => {
+      if (!c.publicToken) {
+        c.publicToken = randomToken();
+        await updateDoc(doc(db, "customers", c.id), { publicToken: c.publicToken });
+      }
+      const tq = query(collection(db, "transactions"), where("customerId", "==", c.id));
+      const ts = await getDocs(tq);
+      c.transactions = ts.docs.map(d => ({ id: d.id, ...d.data() }));
+      c.transactions.sort((a, b) => {
+        const stamp = t => {
+          if (typeof t.transactionDate === "string" && /^\d{4}-\d{2}-\d{2}$/.test(t.transactionDate)) return new Date(t.transactionDate + "T00:00:00").getTime();
+          return t.createdAt?.toMillis?.() ?? 0;
+        };
+        return stamp(b) - stamp(a);
+      });
+      c.balance = c.transactions.reduce((sum, t) => sum + (t.type === "credit" ? Number(t.amount) : -Number(t.amount)), 0);
+    }));
 
+    // Show complete local data as soon as transactions are ready.
+    renderAll();
+
+    // Public account syncing is secondary; don't block login/dashboard on it.
+    Promise.allSettled(customers.map(c => syncPublicCustomer(c))).then(results => {
+      results.forEach((r, i) => { if (r.status === "rejected") console.warn("Public account sync failed:", customers[i]?.id, r.reason); });
+    });
   } catch (e) {
-
-    console.error(
-      "Firestore loadCustomers error:",
-      e
-    );
-
-
-    alert(
-      "Could not load customers: " +
-      (
-        e.message ||
-        e
-      )
-    );
-
+    console.error("Firestore loadCustomers error:", e);
+    alert("Could not load customers: " + (e.message || e));
   }
-
 }
-
 
 /* =========================================
    PUBLIC ACCOUNT SYNC
@@ -775,6 +628,9 @@ async function syncPublicCustomer(c) {
 
         note:
           t.note || "",
+
+        transactionDate:
+          t.transactionDate || null,
 
         createdAt:
           t.createdAt || null
@@ -1261,14 +1117,43 @@ async function refreshCustomerAndPublic(customerId) {
 
 async function editTransaction(t) {
   if (!selectedCustomer || !t?.id) return;
-  const amountText = prompt("Enter transaction amount:", String(t.amount ?? ""));
+  const amountText = prompt("د معاملې نوی مبلغ ولیکئ:", String(t.amount ?? ""));
   if (amountText === null) return;
   const amount = Number(amountText);
-  if (!Number.isFinite(amount) || amount <= 0) { alert("Enter a valid amount greater than zero."); return; }
-  const note = prompt("Enter transaction note:", t.note || "");
+  if (!Number.isFinite(amount) || amount <= 0) { alert("مهرباني وکړئ سم مبلغ ولیکئ."); return; }
+
+  const typeText = prompt("د معاملې ډول ولیکئ: credit = قرض، debit = رسید", t.type === "debit" ? "debit" : "credit");
+  if (typeText === null) return;
+  const type = typeText.trim().toLowerCase();
+  if (!["credit", "debit"].includes(type)) { alert("ډول باید credit یا debit وي."); return; }
+
+  const oldDate = (typeof t.transactionDate === "string" && /^\d{4}-\d{2}-\d{2}$/.test(t.transactionDate))
+    ? t.transactionDate
+    : (t.createdAt?.toDate ? (() => { const d=t.createdAt.toDate(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; })() : new Date().toISOString().slice(0,10));
+  const transactionDate = prompt("د معاملې نېټه ولیکئ (YYYY-MM-DD):", oldDate);
+  if (transactionDate === null) return;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(transactionDate) || Number.isNaN(new Date(transactionDate + "T00:00:00").getTime())) { alert("نېټه باید په YYYY-MM-DD بڼه وي، لکه 2026-10-11."); return; }
+
+  const note = prompt("د معاملې یادښت:", t.note || "");
   if (note === null) return;
-  try { await updateDoc(doc(db, "transactions", t.id), { amount, note: note.trim(), updatedAt: serverTimestamp() }); await refreshCustomerAndPublic(selectedCustomer.id); }
-  catch (e) { console.error("Edit transaction error:", e); alert("Could not edit transaction: " + e.message); }
+  const customerId = selectedCustomer.id;
+  try {
+    const oldTimestamp = t.createdAt?.toDate ? t.createdAt.toDate() : new Date();
+    const newTimestamp = new Date(transactionDate + "T00:00:00");
+    newTimestamp.setHours(oldTimestamp.getHours(), oldTimestamp.getMinutes(), oldTimestamp.getSeconds(), oldTimestamp.getMilliseconds());
+    await updateDoc(doc(db, "transactions", t.id), {
+      amount,
+      type,
+      transactionDate,
+      note: note.trim(),
+      createdAt: Timestamp.fromDate(newTimestamp),
+      updatedAt: serverTimestamp()
+    });
+    await refreshCustomerAndPublic(customerId);
+  } catch (e) {
+    console.error("Edit transaction error:", e);
+    alert("معامله نه شوه اصلاح کېدای: " + e.message);
+  }
 }
 
 async function removeTransaction(t) {
