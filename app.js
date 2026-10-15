@@ -96,7 +96,7 @@ loginForm.onsubmit = async (event) => {
     return;
   }
   if (!/^[a-z0-9.!#$%&'*+/=?^_`{|}~-]+$/i.test(username)) {
-    $("loginMsg").textContent = "یوزر نوم سم ولیکئ؛ د @gmail.com برخه مه لیکئ.";
+    $("loginMsg").textContent = "Enter a valid Gmail username without @gmail.com.";
     return;
   }
 
@@ -109,9 +109,9 @@ loginForm.onsubmit = async (event) => {
   } catch (e) {
     console.error("Login error:", e);
     $("loginMsg").textContent = e.code === "auth/invalid-credential" || e.code === "auth/user-not-found" || e.code === "auth/wrong-password"
-      ? "یوزر نوم یا پاسورډ ناسم دی."
+      ? "Incorrect username or password."
       : e.code === "auth/too-many-requests"
-        ? "ډېرې هڅې شوې دي؛ لږ وروسته بیا هڅه وکړئ."
+        ? "Too many attempts. Please try again later."
         : e.message;
   } finally {
     loginButton.disabled = false;
