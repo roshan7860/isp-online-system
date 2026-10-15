@@ -1164,3 +1164,10 @@ button.recentCustomerRow{
 #dashboardView .pageHeading{margin-top:0!important;padding-top:0!important}
 #dashboardView .pageHeading h2{margin-top:0!important}
 body:has(#app:not(.hidden)){padding-top:0!important}
+
+
+/* V14: login page requested cleanup — helper hint and authentication footer removed */
+.loginScreen .login form label{margin-top:14px!important}
+.loginScreen .login form label:first-of-type{margin-top:0!important}
+.loginScreen .login form{margin-bottom:0!important}
+.loginScreen .loginFooter,.loginScreen .loginHint{display:none!important}

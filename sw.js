@@ -1,4 +1,4 @@
-const CACHE_NAME = "customer-credit-manager-top-gap-fix-v13";
+const CACHE_NAME = "customer-credit-manager-login-cleanup-v14";
 const BASE = "/isp-online-system/";
 const APP_SHELL = [
   BASE, BASE + "index.html", BASE + "customer.html", BASE + "style.css",
