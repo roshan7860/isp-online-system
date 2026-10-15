@@ -26,14 +26,21 @@
   <main>
     <section id="dashboardView" class="pageView">
       <div class="pageHeading"><div><h2>Dashboard</h2><p class="muted">Reports and financial overview</p></div><button id="dashboardAddCustomer" type="button">+ Customer</button></div>
-      <section class="stats">
-        <div class="stat"><span>Customers</span><b id="customerCount">0</b></div>
-        <div class="stat"><span>Total Credit</span><b id="totalCredit">0</b></div>
-        <div class="stat"><span>Total Debit</span><b id="totalDebit">0</b></div>
-        <div class="stat"><span>Outstanding</span><b id="totalBalance">0</b></div>
+      <section class="stats dashboardKpis">
+        <div class="stat kpiCredit"><span>Total Credit</span><b id="totalCredit">0</b><small>All customer credit transactions</small></div>
+        <div class="stat kpiDebit"><span>Total Debit</span><b id="totalDebit">0</b><small>All customer payments</small></div>
+        <div class="stat kpiBalance"><span>Total Outstanding Debt</span><b id="totalBalance">0</b><small>Remaining customer balances</small></div>
+        <div class="stat kpiCustomers"><span>Total Customers</span><b id="customerCount">0</b><small>Registered customer accounts</small></div>
+      </section>
+      <section class="analyticsGrid">
+        <article class="card analyticsCard"><div class="analyticsHeading"><div><h3>Today's Credit vs Debit</h3><p class="muted" id="todayChartDate">Today</p></div><div class="chartLegend"><span class="legendCredit">Credit</span><span class="legendDebit">Debit</span></div></div><div id="todayChart" class="barChart" aria-label="Today's credit and debit graph"></div><div class="chartTotals"><span>Credit <b id="todayCreditTotal">0</b></span><span>Debit <b id="todayDebitTotal">0</b></span></div></article>
+        <article class="card analyticsCard"><div class="analyticsHeading"><div><h3>This Week's Credit vs Debit</h3><p class="muted">Monday to Sunday</p></div><div class="chartLegend"><span class="legendCredit">Credit</span><span class="legendDebit">Debit</span></div></div><div id="weekChart" class="barChart" aria-label="This week's credit and debit graph"></div><div class="chartTotals"><span>Credit <b id="weekCreditTotal">0</b></span><span>Debit <b id="weekDebitTotal">0</b></span></div></article>
+        <article class="card analyticsCard"><div class="analyticsHeading"><div><h3>This Month's Credit vs Debit</h3><p class="muted" id="monthChartLabel">Current month</p></div><div class="chartLegend"><span class="legendCredit">Credit</span><span class="legendDebit">Debit</span></div></div><div id="monthChart" class="barChart" aria-label="This month's credit and debit graph"></div><div class="chartTotals"><span>Credit <b id="monthCreditTotal">0</b></span><span>Debit <b id="monthDebitTotal">0</b></span></div></article>
+        <article class="card analyticsCard comparisonCard"><div class="analyticsHeading"><div><h3>Yesterday vs Today</h3><p class="muted">Daily financial comparison</p></div></div><div id="dayCompareChart" class="compareChart"></div><div id="dayCompareSummary" class="comparisonSummary"></div></article>
+        <article class="card analyticsCard comparisonCard"><div class="analyticsHeading"><div><h3>Last Month vs This Month</h3><p class="muted">Monthly financial comparison</p></div></div><div id="monthCompareChart" class="compareChart"></div><div id="monthCompareSummary" class="comparisonSummary"></div></article>
       </section>
       <section class="dashboardGrid">
-        <div class="card reportCard"><h3>Financial Overview</h3><p class="muted">Credit, debit and outstanding balance</p>
+        <div class="card reportCard"><h3>Financial Overview</h3><p class="muted">All-time credit, debit and outstanding debt</p>
           <div class="reportBars" aria-label="Financial overview chart">
             <div class="reportBarRow"><span>Total Credit</span><div class="reportTrack"><div id="creditBar" class="reportFill creditFill"></div></div><b id="creditBarValue">0</b></div>
             <div class="reportBarRow"><span>Total Debit</span><div class="reportTrack"><div id="debitBar" class="reportFill debitFill"></div></div><b id="debitBarValue">0</b></div>

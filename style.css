@@ -775,3 +775,50 @@ body:has(#app) .msg{color:#ff7188}
 body:has(#app) #logoutBtn{border-color:#75334b;color:#ff9aac;background:#251528}
 @media(max-width:900px){body:has(#app) header{left:190px;padding:12px 16px}body:has(#app) .mainNav{width:190px;padding:16px 10px}body:has(#app) main{margin-left:190px;padding:95px 15px 25px}body:has(#app) .dashboardGrid{grid-template-columns:1fr}body:has(#app) .stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:600px){body:has(#app) header{left:76px;height:70px;padding:10px 9px}body:has(#app) header h2{font-size:14px;max-width:140px}body:has(#app) header .headerActions{gap:4px}body:has(#app) header .headerActions button{padding:8px 9px;font-size:11px;min-width:0}body:has(#app) .mainNav{width:76px;padding:12px 7px;gap:9px}body:has(#app) .mainNav:before{font-size:0;line-height:0;padding:17px 0 25px;height:15px;content:"CCM";text-align:center;color:#69d8ff;font-size:13px}body:has(#app) .navItem{font-size:0;justify-content:center;padding:9px 4px;gap:0}body:has(#app) .navItem span{width:34px;height:34px;flex-basis:34px;font-size:17px}body:has(#app) main{margin-left:76px;padding:85px 9px 22px}body:has(#app) .pageHeading h2{font-size:20px}body:has(#app) .pageHeading p{font-size:10px}body:has(#app) .stats{gap:8px}body:has(#app) .stat{padding:13px 12px}body:has(#app) .stat span{font-size:9px}body:has(#app) .stat b{font-size:21px}body:has(#app) .card{padding:13px;border-radius:12px}body:has(#app) .reportBarRow{grid-template-columns:75px minmax(20px,1fr) auto;gap:7px;font-size:10px}body:has(#app) .settingsPageCard{padding:14px}}
+
+/* Dashboard analytics: live, data-driven dark neon charts */
+body:has(#app){background:#050d1c;color:#e8f2ff}
+body:has(#app) header{background:linear-gradient(100deg,#07152b,#091b36);border-bottom:1px solid #123c66}
+body:has(#app) .pageHeading h2,body:has(#app) .card h3{color:#f1f7ff}
+body:has(#app) .card,body:has(#app) .stat{background:linear-gradient(145deg,#07182d,#061225 75%);border:1px solid #124576;box-shadow:0 8px 28px #0003}
+body:has(#app) .stats.dashboardKpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin:18px 0}
+body:has(#app) .dashboardKpis .stat{position:relative;overflow:hidden;padding:20px 19px;min-width:0;border-radius:16px}
+body:has(#app) .dashboardKpis .stat:before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--kpi-color,#16a8ff)}
+body:has(#app) .dashboardKpis .stat span{display:block;color:#b9cde8;font-size:13px;font-weight:650;margin-bottom:12px}
+body:has(#app) .dashboardKpis .stat b{font-size:clamp(21px,2vw,31px);color:#fff;letter-spacing:-.03em;overflow-wrap:anywhere}
+body:has(#app) .dashboardKpis .stat small{display:block;margin-top:9px;color:#819bbd;font-size:11px}
+body:has(#app) .kpiCredit{--kpi-color:#17d9a3;border-color:#087f80!important}body:has(#app) .kpiDebit{--kpi-color:#ff4778;border-color:#7e2850!important}body:has(#app) .kpiBalance{--kpi-color:#ffb52e;border-color:#8a5c17!important}body:has(#app) .kpiCustomers{--kpi-color:#a65cff;border-color:#5c3299!important}
+body:has(#app) .analyticsGrid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:14px;margin:14px 0 18px}
+body:has(#app) .analyticsCard{grid-column:span 2;padding:17px 17px 14px;min-width:0;border-radius:16px}
+body:has(#app) .analyticsCard.comparisonCard{grid-column:span 3}
+body:has(#app) .analyticsHeading{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:15px}
+body:has(#app) .analyticsHeading h3{font-size:14px;margin:0 0 5px}
+body:has(#app) .analyticsHeading .muted{font-size:11px;margin:0;color:#829cbd}
+body:has(#app) .chartLegend,.compareLegend{display:flex;gap:12px;flex-wrap:wrap;color:#a9c0df;font-size:10px}
+body:has(#app) .chartLegend span:before,.compareLegend span:before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px}
+body:has(#app) .legendCredit:before{background:#169eff}body:has(#app) .legendDebit:before{background:#22dca8}
+body:has(#app) .barChart{height:175px;display:flex;align-items:stretch;gap:clamp(4px,1vw,12px);padding:12px 5px 0;border-bottom:1px solid #254563;background:repeating-linear-gradient(to bottom,transparent 0,transparent 39px,#19324d 40px);min-width:0}
+body:has(#app) .chartColumn{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:8px}
+body:has(#app) .barPair{height:138px;width:100%;display:flex;align-items:flex-end;justify-content:center;gap:3px}
+body:has(#app) .chartBar{display:block;width:min(40%,17px);min-width:4px;border-radius:4px 4px 0 0;box-shadow:0 0 10px #078bff25}
+body:has(#app) .chartBar.creditBar,.creditBar{background:linear-gradient(180deg,#28c7ff,#0863f5)}
+body:has(#app) .chartBar.debitBar,.debitBar{background:linear-gradient(180deg,#35f0b5,#08a77c)}
+body:has(#app) .chartColumn small{color:#9bb3d3;font-size:10px;white-space:nowrap}
+body:has(#app) .chartTotals{display:flex;justify-content:space-between;gap:10px;margin-top:12px;color:#9bb3d3;font-size:11px}
+body:has(#app) .chartTotals b{display:block;color:#f0f7ff;font-size:12px;margin-top:4px}
+body:has(#app) .compareChart{padding:10px 0 13px;border-bottom:1px solid #193a5c}
+body:has(#app) .compareLegend{margin-bottom:13px}
+body:has(#app) .compareRows{display:grid;gap:14px}
+body:has(#app) .compareRow{display:grid;grid-template-columns:52px minmax(70px,1fr) minmax(110px,auto);align-items:center;gap:10px;color:#b9cde8;font-size:11px}
+body:has(#app) .compareTracks{display:grid;gap:5px}
+body:has(#app) .compareTrack{height:8px;border-radius:10px;background:#122944;overflow:hidden}
+body:has(#app) .compareTrack i{display:block;height:100%;border-radius:10px;min-width:0}
+body:has(#app) .compareRow>b{font-size:10px;color:#e9f3ff;text-align:right;white-space:nowrap}
+body:has(#app) .comparisonSummary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:12px}
+body:has(#app) .deltaCard{background:#091b30;border:1px solid #173a5e;border-radius:12px;padding:11px;min-width:0}
+body:has(#app) .deltaCard span,.deltaCard small{display:block;color:#91accd;font-size:10px}
+body:has(#app) .deltaCard b{display:block;font-size:13px;margin:7px 0;overflow-wrap:anywhere}
+body:has(#app) .deltaUp{color:#25e6ac}.deltaDown{color:#ff6485}
+body:has(#app) .muted{color:#8ea8c8}
+@media(max-width:1150px){body:has(#app) .analyticsCard{grid-column:span 3}body:has(#app) .analyticsCard.comparisonCard{grid-column:span 6}}
+@media(max-width:760px){body:has(#app) .stats.dashboardKpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}body:has(#app) .analyticsGrid{grid-template-columns:1fr;gap:10px}body:has(#app) .analyticsCard,body:has(#app) .analyticsCard.comparisonCard{grid-column:1;padding:13px}body:has(#app) .barChart{height:150px}body:has(#app) .compareRow{grid-template-columns:45px minmax(40px,1fr);gap:7px}body:has(#app) .compareRow>b{grid-column:2;text-align:left}body:has(#app) .chartLegend{gap:7px}}

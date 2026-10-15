@@ -849,10 +849,76 @@ function renderAll() {
     );
 
 
+  renderDashboardAnalytics();
   renderCustomers();
 
 }
 
+
+/* =========================================
+   LIVE DASHBOARD ANALYTICS
+========================================= */
+function renderDashboardAnalytics() {
+  const all = customers.flatMap(c => (c.transactions || []).map(t => ({ ...t, customerName: c.name })));
+  const localDateKey = value => {
+    if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
+    const d = value?.toDate ? value.toDate() : value instanceof Date ? value : null;
+    if (!d || Number.isNaN(d.getTime())) return "";
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+  };
+  const dateOf = t => localDateKey(t.transactionDate) || localDateKey(t.createdAt);
+  const now = new Date(); now.setHours(0,0,0,0);
+  const key = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+  const shift = (d, n) => { const x = new Date(d); x.setDate(x.getDate()+n); return x; };
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+  const prevMonthStart = new Date(now.getFullYear(), now.getMonth()-1, 1);
+  const nextMonthStart = new Date(now.getFullYear(), now.getMonth()+1, 1);
+  const monday = shift(now, -((now.getDay()+6)%7));
+  // Keep transaction type comparisons explicit; malformed records are ignored.
+  const sum = items => items.reduce((o,t) => { const a=Number(t.amount||0); if(t.type==='credit') o.credit+=a; if(t.type==='debit') o.debit+=a; return o; }, {credit:0,debit:0});
+  const byDate = d => all.filter(t => dateOf(t) === key(d));
+  const daily = [];
+  for (let h=0; h<24; h+=3) {
+    const subset = all.filter(t => {
+      if (dateOf(t)!==key(now)) return false;
+      const dt = t.createdAt?.toDate ? t.createdAt.toDate() : null;
+      return dt ? Math.floor(dt.getHours()/3)*3===h : h===12;
+    });
+    daily.push({label: `${String(h%12||12)}${h<12?'a':'p'}`, ...sum(subset)});
+  }
+  const weekly=[];
+  for(let i=0;i<7;i++){const d=shift(monday,i);weekly.push({label:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'][i],...sum(byDate(d))});}
+  const monthly=[];
+  const daysInMonth = new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
+  for(let start=1; start<=daysInMonth; start+=Math.ceil(daysInMonth/4)) {
+    const end=Math.min(daysInMonth,start+Math.ceil(daysInMonth/4)-1);
+    const subset=all.filter(t=>{const k=dateOf(t);return k>=key(new Date(now.getFullYear(),now.getMonth(),start))&&k<=key(new Date(now.getFullYear(),now.getMonth(),end));});
+    monthly.push({label:`${start}-${end}`, ...sum(subset)});
+  }
+  const yesterday=sum(byDate(shift(now,-1))), today=sum(byDate(now));
+  const lastMonth=sum(all.filter(t=>dateOf(t)>=key(prevMonthStart)&&dateOf(t)<key(monthStart)));
+  const thisMonth=sum(all.filter(t=>dateOf(t)>=key(monthStart)&&dateOf(t)<key(nextMonthStart)));
+  const fmt = n => money(n) + ' AFN';
+  const el = id => document.getElementById(id);
+  const setText=(id,v)=>{if(el(id))el(id).textContent=v;};
+  setText('todayChartDate',now.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}));
+  setText('monthChartLabel',now.toLocaleDateString('en-GB',{month:'long',year:'numeric'}));
+  setText('todayCreditTotal',fmt(today.credit));setText('todayDebitTotal',fmt(today.debit));
+  setText('weekCreditTotal',fmt(sum(weekly).credit));setText('weekDebitTotal',fmt(sum(weekly).debit));
+  setText('monthCreditTotal',fmt(thisMonth.credit));setText('monthDebitTotal',fmt(thisMonth.debit));
+  const chart=(id,rows)=>{
+    const node=el(id); if(!node)return;
+    const max=Math.max(1,...rows.flatMap(r=>[r.credit,r.debit]));
+    node.innerHTML=rows.map(r=>`<div class="chartColumn" title="${esc(r.label)} — Credit ${esc(fmt(r.credit))}, Debit ${esc(fmt(r.debit))}"><div class="barPair"><span class="chartBar creditBar" style="height:${Math.max(r.credit>0?2:0,r.credit/max*100)}%"></span><span class="chartBar debitBar" style="height:${Math.max(r.debit>0?2:0,r.debit/max*100)}%"></span></div><small>${esc(r.label)}</small></div>`).join('');
+  };
+  chart('todayChart',daily);chart('weekChart',weekly);chart('monthChart',monthly);
+  const comparison=(chartId,summaryId,a,b,labelA,labelB)=>{
+    const node=el(chartId); if(node){const max=Math.max(1,a.credit,a.debit,b.credit,b.debit);node.innerHTML=`<div class="compareLegend"><span class="legendCredit">${esc(labelA)}</span><span class="legendDebit">${esc(labelB)}</span></div><div class="compareRows">${[['Credit',a.credit,b.credit],['Debit',a.debit,b.debit]].map(([label,x,y])=>`<div class="compareRow"><span>${label}</span><div class="compareTracks"><div class="compareTrack"><i class="creditBar" style="width:${x/max*100}%"></i></div><div class="compareTrack"><i class="debitBar" style="width:${y/max*100}%"></i></div></div><b>${fmt(x)} / ${fmt(y)}</b></div>`).join('')}</div>`;}
+    const summaryNode=el(summaryId);if(summaryNode)summaryNode.innerHTML=[['Credit',a.credit,b.credit],['Debit',a.debit,b.debit]].map(([label,x,y])=>{const delta=y-x;const pct=x?Math.round(delta/x*100):y?100:0;return `<div class="deltaCard"><span>${label} difference</span><b class="${delta>=0?'deltaUp':'deltaDown'}">${delta>=0?'+':'−'}${fmt(Math.abs(delta))}</b><small>${delta>=0?'Increase':'Decrease'} ${Math.abs(pct)}%</small></div>`;}).join('');
+  };
+  comparison('dayCompareChart','dayCompareSummary',yesterday,today,'Yesterday','Today');
+  comparison('monthCompareChart','monthCompareSummary',lastMonth,thisMonth,prevMonthStart.toLocaleDateString('en-GB',{month:'short'}),monthStart.toLocaleDateString('en-GB',{month:'short'}));
+}
 
 /* =========================================
    CUSTOMER LIST
