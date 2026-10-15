@@ -1091,3 +1091,48 @@ button.recentCustomerRow{
   color:#884848!important;
   background:#fbf6f6!important;
 }
+
+
+/* V11 FIX: override the app-wide blue button rule with higher specificity */
+#app .recentCustomersCard,
+#app .recentCustomersList { background:#fff!important; }
+#app button.recentCustomerRow,
+#app .recentCustomersList button.recentCustomerRow,
+#app .recentCustomersList .recentCustomerRow{
+  background:#fff!important;
+  background-image:none!important;
+  color:#293b53!important;
+  border:0!important;
+  border-bottom:1px solid #e8edf3!important;
+  box-shadow:none!important;
+}
+#app button.recentCustomerRow:hover,
+#app .recentCustomersList button.recentCustomerRow:hover{
+  background:#f7f9fc!important;
+  background-image:none!important;
+}
+#app .recentCustomerInfo b{color:#293b53!important}
+#app .recentCustomerInfo small{color:#8792a2!important}
+#app .recentCustomerBalance{color:#4a5b72!important}
+#app .recentCustomerBalance.hasDebt{color:#a64b4b!important}
+
+/* Higher-specificity neutral sidebar overrides */
+#app .mainNav button.navItem,
+#app .mainNav .navItem{
+  background:#fff!important;
+  background-image:none!important;
+  color:#58677b!important;
+  border:1px solid transparent!important;
+  box-shadow:none!important;
+}
+#app .mainNav button.navItem:hover{
+  background:#f5f7fa!important;background-image:none!important;color:#405b7b!important;
+}
+#app .mainNav button.navItem.active{
+  background:#edf2f8!important;background-image:none!important;color:#345579!important;
+  border-color:#e0e8f2!important;box-shadow:inset 3px 0 #829bb8!important;
+}
+#app .mainNav button.navItem span{background:#f0f3f7!important;color:#68788d!important}
+#app .mainNav button.navItem.active span{background:#e1e9f2!important;color:#3e5e83!important}
+#app .mainNav button.logoutNavItem{background:transparent!important;background-image:none!important;color:#875858!important}
+#app .mainNav button.logoutNavItem:hover{background:#fbf6f6!important;background-image:none!important}
