@@ -676,6 +676,28 @@ async function syncPublicCustomer(c) {
    DASHBOARD
 ========================================= */
 
+function renderRecentCustomers() {
+  const target = $("recentCustomers");
+  if (!target) return;
+  const latest = [...customers]
+    .sort((a, b) => (b.createdAt?.toMillis?.() ?? 0) - (a.createdAt?.toMillis?.() ?? 0))
+    .slice(0, 5);
+  target.innerHTML = latest.length ? latest.map((c, i) => {
+    const initial = esc((c.name || "?").trim().slice(0, 1).toUpperCase());
+    const created = c.createdAt?.toDate ? c.createdAt.toDate() : null;
+    const dateLabel = created ? created.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) : "Recently added";
+    return `<button type="button" class="recentCustomerRow" data-id="${c.id}">
+      <span class="recentCustomerAvatar">${initial}</span>
+      <span class="recentCustomerInfo"><b>${esc(c.name || "Unnamed customer")}</b><small>${esc(c.whatsapp || "No phone number")} · ${dateLabel}</small></span>
+      <span class="recentCustomerBalance ${c.balance > 0 ? "hasDebt" : "settled"}">${money(c.balance)} <small>AFN</small></span>
+      <span class="recentCustomerArrow" aria-hidden="true">›</span>
+    </button>`;
+  }).join("") : `<p class="muted recentEmpty">No customers have been added yet.</p>`;
+  target.querySelectorAll(".recentCustomerRow").forEach(row => {
+    row.addEventListener("click", () => openCustomer(row.dataset.id));
+  });
+}
+
 function renderAll() {
 
   /* Customer count */
@@ -861,6 +883,7 @@ function renderAll() {
 
   renderDashboardAnalytics();
   renderCustomers();
+  renderRecentCustomers();
 
 }
 

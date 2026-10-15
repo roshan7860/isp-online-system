@@ -50,12 +50,9 @@
         <article class="card analyticsCard comparisonCard"><div class="analyticsHeading"><div><h3>Last Month vs This Month</h3><p class="muted">Monthly financial comparison</p></div></div><div id="monthCompareChart" class="compareChart"></div><div id="monthCompareSummary" class="comparisonSummary"></div></article>
       </section>
       <section class="dashboardGrid">
-        <div class="card reportCard"><h3>Financial Overview</h3><p class="muted">All-time credit, debit and outstanding debt</p>
-          <div class="reportBars" aria-label="Financial overview chart">
-            <div class="reportBarRow"><span>Total Credit</span><div class="reportTrack"><div id="creditBar" class="reportFill creditFill"></div></div><b id="creditBarValue">0</b></div>
-            <div class="reportBarRow"><span>Total Debit</span><div class="reportTrack"><div id="debitBar" class="reportFill debitFill"></div></div><b id="debitBarValue">0</b></div>
-            <div class="reportBarRow"><span>Outstanding</span><div class="reportTrack"><div id="balanceBar" class="reportFill balanceFill"></div></div><b id="balanceBarValue">0</b></div>
-          </div>
+        <div class="card reportCard recentCustomersCard">
+          <div class="recentCustomersHeading"><div><h3>Recently Added Customers</h3><p class="muted">Your 5 newest customer accounts</p></div><span class="recentCount">Latest 5</span></div>
+          <div id="recentCustomers" class="recentCustomersList"><p class="muted">Loading customers…</p></div>
         </div>
         <div class="card"><h3>Top 5 Debtors</h3><div id="topDebtors"></div></div>
       </section>
