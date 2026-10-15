@@ -1154,3 +1154,13 @@ button.recentCustomerRow{
 .mainNav .navItem:hover .navIcon{background:#e8edf4!important;color:#405b7b!important}
 .mainNav .logoutNavItem .navIcon{background:#f7eeee!important;color:#8c5c5c!important}
 .mainNav .logoutNavItem:hover .navIcon{background:#f3e4e4!important;color:#884848!important}
+
+
+/* V13: remove unused blank space above the dashboard content */
+#app{margin-top:0!important;padding-top:0!important}
+#app .mainNav{margin-top:0!important}
+#app main{margin-top:0!important;padding-top:18px!important}
+#app .pageView{margin-top:0!important;padding-top:0!important}
+#dashboardView .pageHeading{margin-top:0!important;padding-top:0!important}
+#dashboardView .pageHeading h2{margin-top:0!important}
+body:has(#app:not(.hidden)){padding-top:0!important}
