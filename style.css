@@ -969,3 +969,58 @@ html,body{background:#f5f7fb!important;color:#1d2939!important}body:has(#app){ba
 .recentCustomerArrow{color:#9aa5b4;font-size:22px;line-height:1}
 .recentEmpty{padding:18px 0;margin:0;font-size:12px}
 @media(max-width:600px){.recentCustomersCard{padding:15px!important}.recentCustomerRow{gap:8px!important}.recentCustomerAvatar{flex-basis:31px;width:31px;height:31px}.recentCustomerInfo b{max-width:125px}.recentCustomerBalance{font-size:11px}}
+
+
+/* Final targeted visual fixes requested by user */
+.recentCustomersCard,
+.recentCustomersList,
+.recentCustomerRow{
+  background:#fff!important;
+}
+.recentCustomerRow{
+  color:#26364b!important;
+  border-bottom:1px solid #edf0f4!important;
+  box-shadow:none!important;
+}
+.recentCustomerRow:hover{background:#f7f9fc!important}
+.recentCustomerInfo b{color:#263b57!important}
+.recentCustomerInfo small{color:#7d8999!important}
+.recentCustomerAvatar{background:#eef2f7!important;color:#315f9f!important}
+.recentCustomerBalance{color:#344a66!important}
+.recentCustomerBalance.hasDebt{color:#a74747!important}
+.recentCustomerArrow{color:#9aa5b4!important}
+
+/* Sidebar brand title: dark, readable text */
+.mainNav::before,
+.mainNav .brand,
+.mainNav .brandName,
+.mainNav .sidebarTitle,
+.mainNav .appName,
+.mainNav h1,
+.mainNav h2,
+.mainNav h3{
+  color:#26364b!important;
+  opacity:1!important;
+  text-shadow:none!important;
+}
+/* If the brand text is rendered as a direct element, keep it legible */
+.mainNav > :first-child:not(.navItem){
+  color:#26364b!important;
+  opacity:1!important;
+}
+
+/* Remove extra whitespace above the dashboard customer-add action */
+#dashboardView .pageHeading{
+  margin-top:0!important;
+  padding-top:0!important;
+}
+#dashboardView .pageHeading > div:first-child{
+  margin-top:0!important;
+}
+#dashboardView #dashboardAddCustomer{
+  margin-top:0!important;
+  align-self:center!important;
+}
+#dashboardView .pageHeading{
+  min-height:0!important;
+}
