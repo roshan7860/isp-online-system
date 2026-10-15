@@ -27,11 +27,11 @@
 </div>
 
 <div id="app" class="hidden">
-  <header><h2>Customer Credit Manager</h2><div class="row headerActions"><button id="installAppBtn" class="secondary hidden" type="button">Install App</button><button id="settingsBtn" class="secondary" title="Account settings" aria-label="Account settings"><span class="iconSvg" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z"/><path d="M19.4 15l1.1 1-1.4 2.4-1.4-.6a7.9 7.9 0 0 1-1.5.9l-.2 1.5h-2.8l-.2-1.5a7.9 7.9 0 0 1-1.5-.9l-1.4.6-1.4-2.4 1.1-1a7.2 7.2 0 0 1 0-1.8l-1.1-.9 1.4-2.4 1.4.6a7.9 7.9 0 0 1 1.5-.9l.2-1.5h2.8l.2 1.5a7.9 7.9 0 0 1 1.5.9l1.4-.6 1.4 2.4-1.1.9a7.2 7.2 0 0 1 0 1.8Z"/></svg></span></button><button id="logoutBtn" class="secondary">Logout</button></div></header>
   <nav class="mainNav" aria-label="Main navigation">
     <button type="button" class="navItem active" data-page="dashboardView"><span>▦</span> Dashboard</button>
     <button type="button" class="navItem" data-page="customersView"><span>♙</span> Customers</button>
     <button type="button" class="navItem" data-page="settingsView"><span>⚙</span> Settings</button>
+    <button type="button" class="navItem logoutNavItem" id="logoutBtn"><span aria-hidden="true">↪</span> Logout</button>
   </nav>
   <main>
     <section id="dashboardView" class="pageView">

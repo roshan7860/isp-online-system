@@ -157,7 +157,7 @@ function openSettingsPage() {
   $("settingsMsg").textContent = "";
   showPage("settingsView");
 }
-$("settingsBtn").onclick = openSettingsPage;
+const settingsShortcut = $("settingsBtn"); if (settingsShortcut) settingsShortcut.onclick = openSettingsPage;
 $("closeSettings").onclick = () => showPage("dashboardView");
 $("saveSettings").onclick = async () => {
   const user = auth.currentUser;
