@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#172b4d"><link rel="manifest" href="/isp-online-system/manifest.webmanifest"><link rel="apple-touch-icon" href="/isp-online-system/icon-192.png">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#f5f8fc"><link rel="manifest" href="/isp-online-system/manifest.webmanifest"><link rel="apple-touch-icon" href="/isp-online-system/icon-192.png">
 <title>Customer Credit Manager</title>
 <link rel="stylesheet" href="style.css">
 </head>
@@ -12,17 +12,17 @@
     <div class="loginBrandMark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 8.5a12 12 0 0 1 16 0M7 12a7.5 7.5 0 0 1 10 0m-7 3.5a3 3 0 0 1 4 0M12 19h.01"/></svg></div>
     <div class="loginEyebrow">SECURE ACCOUNT ACCESS</div>
     <h1>Customer Credit Manager</h1>
-    <p class="loginSubtitle">خپل حساب ته د ننوتلو لپاره معلومات ولیکئ</p>
+    <p class="loginSubtitle">Sign in to manage customer accounts and transactions.</p>
     <form id="loginForm" autocomplete="on">
       <label for="email">Username</label>
-      <div class="loginInputWrap"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/></svg><input id="email" name="username" type="text" placeholder="د ایمیل لومړۍ برخه" autocomplete="username" autocapitalize="none" spellcheck="false" required></div>
-      <div class="loginHint">د مثال په توګه: <b>yourname</b> (د @gmail.com پرته)</div>
+      <div class="loginInputWrap"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/></svg><input id="email" name="username" type="text" placeholder="Enter your Gmail username" autocomplete="username" autocapitalize="none" spellcheck="false" required></div>
+      <div class="loginHint">Enter the part before <b>@gmail.com</b>.</div>
       <label for="password">Password</label>
-      <div class="loginInputWrap"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><input id="password" name="password" type="password" placeholder="خپل پاسورډ ولیکئ" autocomplete="current-password" required><button id="toggleLoginPassword" class="loginPasswordToggle" type="button" aria-label="Show password">◉</button></div>
+      <div class="loginInputWrap"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><input id="password" name="password" type="password" placeholder="Enter your password" autocomplete="current-password" required><button id="toggleLoginPassword" class="loginPasswordToggle" type="button" aria-label="Show password">◉</button></div>
       <button id="loginBtn" type="submit">Sign in <span aria-hidden="true">→</span></button>
       <div id="loginMsg" class="msg" role="alert" aria-live="polite"></div>
     </form>
-    <div class="loginFooter"><span class="loginLock">♢</span> Secure sign in · Firebase Authentication</div>
+    <div class="loginFooter"><span class="loginLock">♢</span> Secure sign-in · Firebase Authentication</div>
   </div>
 </div>
 
@@ -107,9 +107,9 @@
   <div class="balance" id="detailBalance">0 AFN</div>
   <p class="muted">Outstanding balance</p>
   <div class="transactionForm">
-   <select id="txType"><option value="credit">قرض (Customer owes)</option><option value="debit">رسید (Customer paid)</option></select>
+   <select id="txType"><option value="credit">Credit (Customer owes)</option><option value="debit">Payment (Customer paid)</option></select>
    <input id="txAmount" type="number" min="0" step="0.01" placeholder="Amount">
-   <label for="txDate">د معاملې نېټه</label>
+   <label for="txDate">Transaction date</label>
    <input id="txDate" type="date" aria-label="Transaction date">
    <input id="txNote" placeholder="Note">
    <label class="switchRow"><input id="waToggle" type="checkbox" checked><span>WhatsApp</span></label>
@@ -121,16 +121,16 @@
 
 <div id="editTxModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="editTxTitle">
  <div class="card modalBox">
-  <div class="row between"><h3 id="editTxTitle">د معاملې سمون</h3><button id="cancelEditTx" class="secondary" type="button" aria-label="Close">×</button></div>
-  <label for="editTxType">د معاملې ډول</label>
-  <select id="editTxType"><option value="credit">قرض (Customer owes)</option><option value="debit">رسید (Customer paid)</option></select>
-  <label for="editTxAmount">مبلغ</label>
+  <div class="row between"><h3 id="editTxTitle">Edit transaction</h3><button id="cancelEditTx" class="secondary" type="button" aria-label="Close">×</button></div>
+  <label for="editTxType">Transaction type</label>
+  <select id="editTxType"><option value="credit">Credit (Customer owes)</option><option value="debit">Payment (Customer paid)</option></select>
+  <label for="editTxAmount">Amount</label>
   <input id="editTxAmount" type="number" min="0.01" step="0.01" required>
-  <label for="editTxDate">د معاملې نېټه</label>
+  <label for="editTxDate">Transaction date</label>
   <input id="editTxDate" type="date" required>
-  <label for="editTxNote">یادښت</label>
+  <label for="editTxNote">Note</label>
   <input id="editTxNote" placeholder="Note">
-  <div class="row"><button id="saveEditTx" type="button">بدلونونه ثبت کړه</button><button id="cancelEditTx2" class="secondary" type="button">لغوه</button></div>
+  <div class="row"><button id="saveEditTx" type="button">Save changes</button><button id="cancelEditTx2" class="secondary" type="button">Cancel</button></div>
   <div id="editTxMsg" class="msg" role="status"></div>
  </div>
 </div>
@@ -149,7 +149,7 @@
     });
     installBtn.addEventListener('click', async () => {
       if (installPrompt) { installPrompt.prompt(); await installPrompt.userChoice; installPrompt = null; installBtn.classList.add('hidden'); }
-      else alert('Install: په براوزر کې د Address bar د Install آیکن یا Menu > Apps > Install this site as an app وکاروئ. په موبایل کې Menu > Add to Home screen / Install app وټاکئ.');
+      else alert('To install: use the Install icon in the browser address bar, or choose Menu > Apps > Install this site as an app. On mobile, choose Menu > Add to Home screen / Install app.');
     });
     window.addEventListener('appinstalled', () => installBtn.classList.add('hidden'));
   }

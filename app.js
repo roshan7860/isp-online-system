@@ -1248,12 +1248,12 @@ $("saveEditTx").onclick = async () => {
   const type = $("editTxType").value;
   const transactionDate = $("editTxDate").value;
   const note = $("editTxNote").value.trim();
-  if (!Number.isFinite(amount) || amount <= 0) { $("editTxMsg").textContent = "مهرباني وکړئ سم مبلغ ولیکئ."; return; }
-  if (!["credit", "debit"].includes(type)) { $("editTxMsg").textContent = "د معاملې ډول سم نه دی."; return; }
-  if (!transactionDate || !/^\d{4}-\d{2}-\d{2}$/.test(transactionDate)) { $("editTxMsg").textContent = "مهرباني وکړئ نېټه وټاکئ."; return; }
+  if (!Number.isFinite(amount) || amount <= 0) { $("editTxMsg").textContent = "Please enter a valid amount."; return; }
+  if (!["credit", "debit"].includes(type)) { $("editTxMsg").textContent = "Invalid transaction type."; return; }
+  if (!transactionDate || !/^\d{4}-\d{2}-\d{2}$/.test(transactionDate)) { $("editTxMsg").textContent = "Please select a date."; return; }
   const customerId = selectedCustomer.id;
   $("saveEditTx").disabled = true;
-  $("saveEditTx").textContent = "ثبت کېږي...";
+  $("saveEditTx").textContent = "Saving...";
   try {
     const oldTimestamp = t.createdAt?.toDate ? t.createdAt.toDate() : new Date();
     const newTimestamp = new Date(transactionDate + "T00:00:00");
@@ -1267,10 +1267,10 @@ $("saveEditTx").onclick = async () => {
     await refreshCustomerAndPublic(customerId);
   } catch (e) {
     console.error("Edit transaction error:", e);
-    $("editTxMsg").textContent = "معامله نه شوه اصلاح کېدای: " + (e.message || e);
+    $("editTxMsg").textContent = "Could not update transaction: " + (e.message || e);
   } finally {
     $("saveEditTx").disabled = false;
-    $("saveEditTx").textContent = "بدلونونه ثبت کړه";
+    $("saveEditTx").textContent = "Save changes";
   }
 };
 
@@ -1319,7 +1319,7 @@ $("saveTx").onclick =
         .value;
 
     const dateValue = $("txDate").value;
-    if (!dateValue) { alert("مهرباني وکړئ د معاملې نېټه وټاکئ."); return; }
+    if (!dateValue) { alert("Please select a transaction date."); return; }
     const selectedDate = new Date(dateValue + "T00:00:00");
     const now = new Date();
     selectedDate.setHours(now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds());
