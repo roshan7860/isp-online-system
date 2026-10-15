@@ -6,13 +6,23 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div id="loginPage" class="center">
-  <div class="card login">
-    <h1>Customer Credit Manager</h1><p>Sign in to continue</p>
-    <input id="email" type="email" placeholder="Email">
-    <input id="password" type="password" placeholder="Password">
-    <button id="loginBtn">Login</button>
-    <div id="loginMsg" class="msg"></div>
+<div id="loginPage" class="center loginScreen">
+  <div class="loginBackdrop" aria-hidden="true"><span></span><span></span><span></span></div>
+  <div class="login card">
+    <div class="loginBrandMark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 8.5a12 12 0 0 1 16 0M7 12a7.5 7.5 0 0 1 10 0m-7 3.5a3 3 0 0 1 4 0M12 19h.01"/></svg></div>
+    <div class="loginEyebrow">SECURE ACCOUNT ACCESS</div>
+    <h1>Customer Credit Manager</h1>
+    <p class="loginSubtitle">خپل حساب ته د ننوتلو لپاره معلومات ولیکئ</p>
+    <form id="loginForm" autocomplete="on">
+      <label for="email">Username</label>
+      <div class="loginInputWrap"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/></svg><input id="email" name="username" type="text" placeholder="د ایمیل لومړۍ برخه" autocomplete="username" autocapitalize="none" spellcheck="false" required></div>
+      <div class="loginHint">د مثال په توګه: <b>yourname</b> (د @gmail.com پرته)</div>
+      <label for="password">Password</label>
+      <div class="loginInputWrap"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><input id="password" name="password" type="password" placeholder="خپل پاسورډ ولیکئ" autocomplete="current-password" required><button id="toggleLoginPassword" class="loginPasswordToggle" type="button" aria-label="Show password">◉</button></div>
+      <button id="loginBtn" type="submit">Sign in <span aria-hidden="true">→</span></button>
+      <div id="loginMsg" class="msg" role="alert" aria-live="polite"></div>
+    </form>
+    <div class="loginFooter"><span class="loginLock">♢</span> Secure sign in · Firebase Authentication</div>
   </div>
 </div>
 

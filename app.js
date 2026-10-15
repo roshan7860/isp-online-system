@@ -79,41 +79,51 @@ let editingCustomerId = null;
    LOGIN
 ========================================= */
 
-$("loginBtn").onclick = async () => {
+const loginForm = $("loginForm");
+const loginButton = $("loginBtn");
 
+loginForm.onsubmit = async (event) => {
+  event.preventDefault();
   $("loginMsg").textContent = "";
 
-  const email =
-    $("email").value.trim();
+  // Firebase Email/Password auth still requires the full email address.
+  // The user enters only the local part; append the agreed Gmail domain.
+  const username = $("email").value.trim().toLowerCase().replace(/@gmail\.com$/i, "");
+  const password = $("password").value;
 
-  const password =
-    $("password").value;
-
-  if (!email || !password) {
-
-    $("loginMsg").textContent =
-      "Please enter email and password.";
-
+  if (!username || !password) {
+    $("loginMsg").textContent = "Please enter username and password.";
+    return;
+  }
+  if (!/^[a-z0-9.!#$%&'*+/=?^_`{|}~-]+$/i.test(username)) {
+    $("loginMsg").textContent = "یوزر نوم سم ولیکئ؛ د @gmail.com برخه مه لیکئ.";
     return;
   }
 
+  loginButton.disabled = true;
+  loginButton.classList.add("isLoading");
+  loginButton.dataset.originalText = loginButton.textContent;
+  loginButton.textContent = "Signing in…";
   try {
-
-    await signInWithEmailAndPassword(
-      auth,
-      email,
-      password
-    );
-
+    await signInWithEmailAndPassword(auth, `${username}@gmail.com`, password);
   } catch (e) {
-
     console.error("Login error:", e);
-
-    $("loginMsg").textContent =
-      e.message;
-
+    $("loginMsg").textContent = e.code === "auth/invalid-credential" || e.code === "auth/user-not-found" || e.code === "auth/wrong-password"
+      ? "یوزر نوم یا پاسورډ ناسم دی."
+      : e.code === "auth/too-many-requests"
+        ? "ډېرې هڅې شوې دي؛ لږ وروسته بیا هڅه وکړئ."
+        : e.message;
+  } finally {
+    loginButton.disabled = false;
+    loginButton.classList.remove("isLoading");
+    loginButton.innerHTML = 'Sign in <span aria-hidden="true">→</span>';
   }
+};
 
+$("toggleLoginPassword").onclick = () => {
+  const field = $("password");
+  field.type = field.type === "password" ? "text" : "password";
+  $("toggleLoginPassword").setAttribute("aria-label", field.type === "password" ? "Show password" : "Hide password");
 };
 
 

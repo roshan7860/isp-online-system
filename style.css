@@ -822,3 +822,33 @@ body:has(#app) .deltaUp{color:#25e6ac}.deltaDown{color:#ff6485}
 body:has(#app) .muted{color:#8ea8c8}
 @media(max-width:1150px){body:has(#app) .analyticsCard{grid-column:span 3}body:has(#app) .analyticsCard.comparisonCard{grid-column:span 6}}
 @media(max-width:760px){body:has(#app) .stats.dashboardKpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}body:has(#app) .analyticsGrid{grid-template-columns:1fr;gap:10px}body:has(#app) .analyticsCard,body:has(#app) .analyticsCard.comparisonCard{grid-column:1;padding:13px}body:has(#app) .barChart{height:150px}body:has(#app) .compareRow{grid-template-columns:45px minmax(40px,1fr);gap:7px}body:has(#app) .compareRow>b{grid-column:2;text-align:left}body:has(#app) .chartLegend{gap:7px}}
+
+
+/* Professional secure login screen */
+.loginScreen{position:relative;isolation:isolate;overflow:hidden;background:radial-gradient(ellipse at 15% 10%,rgba(32,123,255,.22),transparent 38%),radial-gradient(ellipse at 90% 85%,rgba(26,211,183,.13),transparent 34%),#071326;padding:24px;min-height:100svh}
+.loginBackdrop{position:absolute;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
+.loginBackdrop:before,.loginBackdrop:after{content:"";position:absolute;border:1px solid rgba(65,151,255,.13);border-radius:50%;width:520px;height:520px;left:-230px;top:-250px}
+.loginBackdrop:after{width:650px;height:650px;left:auto;top:auto;right:-360px;bottom:-420px;border-color:rgba(43,224,197,.12)}
+.loginScreen .login{width:min(440px,94vw);padding:clamp(26px,5vw,42px);border-radius:24px;background:rgba(10,24,46,.94);border:1px solid rgba(116,164,226,.22);box-shadow:0 28px 90px rgba(0,0,0,.42),0 0 0 1px rgba(35,120,255,.05);color:#edf5ff;backdrop-filter:blur(18px)}
+.loginBrandMark{width:64px;height:64px;display:grid;place-items:center;margin:0 auto 18px;border-radius:19px;background:linear-gradient(145deg,#0879ff,#1843b8);box-shadow:0 8px 28px rgba(15,105,255,.35),inset 0 1px rgba(255,255,255,.25)}
+.loginBrandMark svg{width:34px;height:34px;fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.loginEyebrow{text-align:center;color:#6db8ff;font-size:10px;font-weight:800;letter-spacing:.2em;margin-bottom:10px}
+.loginScreen .login h1{text-align:center;color:#f4f8ff;font-size:clamp(22px,4vw,28px);letter-spacing:-.04em;margin:0 0 8px}
+.loginSubtitle{text-align:center!important;color:#a5b8d4!important;font-size:14px;margin:0 0 28px!important;line-height:1.7}
+.loginScreen .login form label{display:block;color:#dce8f9;font-size:13px;font-weight:700;margin:16px 0 7px}
+.loginInputWrap{display:flex;align-items:center;gap:10px;min-height:52px;padding:0 13px;border:1px solid #294365;border-radius:12px;background:#0b1a31;transition:border-color .2s,box-shadow .2s}
+.loginInputWrap:focus-within{border-color:#338bff;box-shadow:0 0 0 3px rgba(51,139,255,.14)}
+.loginInputWrap>svg{width:19px;height:19px;flex:0 0 auto;fill:none;stroke:#80a9d9;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.loginScreen .loginInputWrap input{min-width:0;width:100%;padding:14px 0;margin:0;border:0;outline:0;background:transparent;color:#f3f7ff;font-size:15px;box-shadow:none}
+.loginScreen .loginInputWrap input::placeholder{color:#6f86a7}
+.loginHint{font-size:11px;color:#7f96b8;margin-top:7px}
+.loginHint b{color:#9fc9ff;font-weight:700}
+.loginPasswordToggle{width:30px;min-width:30px;padding:4px;margin:0;background:transparent;color:#9cb4d5;font-size:17px}
+#loginBtn{display:flex;justify-content:center;align-items:center;gap:12px;margin-top:24px;min-height:51px;border-radius:12px;background:linear-gradient(100deg,#1767f5,#287fff);box-shadow:0 8px 22px rgba(22,103,245,.24);font-size:15px;transition:transform .15s,filter .15s}
+#loginBtn:hover{filter:brightness(1.08);transform:translateY(-1px)}
+#loginBtn:disabled{opacity:.7;cursor:wait}
+#loginBtn span{font-size:20px;line-height:1}
+.loginScreen .msg{margin-top:12px;color:#ff8b9b;font-size:13px;line-height:1.6;min-height:20px;text-align:center}
+.loginFooter{border-top:1px solid rgba(133,164,205,.15);padding-top:18px;margin-top:18px;text-align:center;color:#748bab;font-size:11px}
+.loginLock{color:#56d6b3;margin-right:5px}
+@media(max-width:480px){.loginScreen{padding:16px}.loginScreen .login{border-radius:20px}.loginBrandMark{width:58px;height:58px}}
