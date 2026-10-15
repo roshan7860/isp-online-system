@@ -18,23 +18,45 @@
 
 <div id="app" class="hidden">
   <header><h2>Customer Credit Manager</h2><div class="row headerActions"><button id="installAppBtn" class="secondary hidden" type="button">Install App</button><button id="settingsBtn" class="secondary" title="Account settings" aria-label="Account settings"><span class="iconSvg" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z"/><path d="M19.4 15l1.1 1-1.4 2.4-1.4-.6a7.9 7.9 0 0 1-1.5.9l-.2 1.5h-2.8l-.2-1.5a7.9 7.9 0 0 1-1.5-.9l-1.4.6-1.4-2.4 1.1-1a7.2 7.2 0 0 1 0-1.8l-1.1-.9 1.4-2.4 1.4.6a7.9 7.9 0 0 1 1.5-.9l.2-1.5h2.8l.2 1.5a7.9 7.9 0 0 1 1.5.9l1.4-.6 1.4 2.4-1.1.9a7.2 7.2 0 0 1 0 1.8Z"/></svg></span></button><button id="logoutBtn" class="secondary">Logout</button></div></header>
+  <nav class="mainNav" aria-label="Main navigation">
+    <button type="button" class="navItem active" data-page="dashboardView"><span>▦</span> Dashboard</button>
+    <button type="button" class="navItem" data-page="customersView"><span>♙</span> Customers</button>
+    <button type="button" class="navItem" data-page="settingsView"><span>⚙</span> Settings</button>
+  </nav>
   <main>
-    <section class="stats">
-      <div class="stat"><span>Customers</span><b id="customerCount">0</b></div>
-      <div class="stat"><span>Total Credit</span><b id="totalCredit">0</b></div>
-      <div class="stat"><span>Total Debit</span><b id="totalDebit">0</b></div>
-      <div class="stat"><span>Outstanding</span><b id="totalBalance">0</b></div>
+    <section id="dashboardView" class="pageView">
+      <div class="pageHeading"><div><h2>Dashboard</h2><p class="muted">Reports and financial overview</p></div><button id="dashboardAddCustomer" type="button">+ Customer</button></div>
+      <section class="stats">
+        <div class="stat"><span>Customers</span><b id="customerCount">0</b></div>
+        <div class="stat"><span>Total Credit</span><b id="totalCredit">0</b></div>
+        <div class="stat"><span>Total Debit</span><b id="totalDebit">0</b></div>
+        <div class="stat"><span>Outstanding</span><b id="totalBalance">0</b></div>
+      </section>
+      <section class="dashboardGrid">
+        <div class="card reportCard"><h3>Financial Overview</h3><p class="muted">Credit, debit and outstanding balance</p>
+          <div class="reportBars" aria-label="Financial overview chart">
+            <div class="reportBarRow"><span>Total Credit</span><div class="reportTrack"><div id="creditBar" class="reportFill creditFill"></div></div><b id="creditBarValue">0</b></div>
+            <div class="reportBarRow"><span>Total Debit</span><div class="reportTrack"><div id="debitBar" class="reportFill debitFill"></div></div><b id="debitBarValue">0</b></div>
+            <div class="reportBarRow"><span>Outstanding</span><div class="reportTrack"><div id="balanceBar" class="reportFill balanceFill"></div></div><b id="balanceBarValue">0</b></div>
+          </div>
+        </div>
+        <div class="card"><h3>Top 5 Debtors</h3><div id="topDebtors"></div></div>
+      </section>
     </section>
-
-    <section class="grid">
-      <div class="card">
-        <div class="row between"><h3>Top 5 Debtors</h3><button id="addCustomerBtn">+ Customer</button></div>
-        <div id="topDebtors"></div>
-      </div>
-      <div class="card">
-        <h3>Customers</h3>
-        <input id="search" placeholder="Search customer...">
-        <div id="customers"></div>
+    <section id="customersView" class="pageView hidden">
+      <div class="pageHeading"><div><h2>Customers</h2><p class="muted">Manage customer accounts and transactions</p></div><button id="addCustomerBtn" type="button">+ Customer</button></div>
+      <div class="card customerListCard"><input id="search" placeholder="Search customer..." aria-label="Search customer"><div id="customers"></div></div>
+    </section>
+    <section id="settingsView" class="pageView hidden">
+      <div class="pageHeading"><div><h2>Settings</h2><p class="muted">Account and security settings</p></div></div>
+      <div id="settingsModal" class="card settingsPageCard">
+        <div class="row between"><h3>Account Settings</h3></div>
+        <p class="muted">Change the email address or password for your signed-in account.</p>
+        <label for="settingsEmail">New email</label><input id="settingsEmail" type="email" placeholder="New email address">
+        <label for="settingsCurrentPassword">Current password (required to verify)</label><input id="settingsCurrentPassword" type="password" autocomplete="current-password" placeholder="Current password">
+        <label for="settingsNewPassword">New password (leave empty if unchanged)</label><input id="settingsNewPassword" type="password" autocomplete="new-password" placeholder="At least 6 characters">
+        <div class="row settingsActions"><button id="saveSettings">Save Settings</button><button id="closeSettings" class="secondary" type="button">Back to Dashboard</button></div>
+        <div id="settingsMsg" class="msg" role="status"></div>
       </div>
     </section>
   </main>
@@ -54,20 +76,7 @@
  </div>
 </div>
 
-<div id="settingsModal" class="modal hidden">
- <div class="card modalBox">
-  <div class="row between"><h3>Account Settings</h3><button id="closeSettings" class="secondary" aria-label="Close settings"><span class="iconSvg" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg></span></button></div>
-  <p class="muted">Change the email address or password for your signed-in account.</p>
-  <label for="settingsEmail">New email</label>
-  <input id="settingsEmail" type="email" placeholder="New email address">
-  <label for="settingsCurrentPassword">Current password (required to verify)</label>
-  <input id="settingsCurrentPassword" type="password" autocomplete="current-password" placeholder="Current password">
-  <label for="settingsNewPassword">New password (leave empty if unchanged)</label>
-  <input id="settingsNewPassword" type="password" autocomplete="new-password" placeholder="At least 6 characters">
-  <button id="saveSettings">Save Settings</button>
-  <div id="settingsMsg" class="msg" role="status"></div>
- </div>
-</div>
+
 
 <div id="customerPage" class="modal hidden">
  <div class="card detail">

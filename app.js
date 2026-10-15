@@ -127,16 +127,28 @@ $("logoutBtn").onclick = () => {
 
 };
 
+/* Separate dashboard, customers and settings pages. */
+function showPage(pageId) {
+  ["dashboardView", "customersView", "settingsView"].forEach(id => {
+    const node = $(id); if (node) node.classList.toggle("hidden", id !== pageId);
+  });
+  document.querySelectorAll(".navItem").forEach(btn => btn.classList.toggle("active", btn.dataset.page === pageId));
+  if (pageId === "customersView") setTimeout(() => $("search")?.focus(), 0);
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+document.querySelectorAll(".navItem").forEach(btn => btn.addEventListener("click", () => showPage(btn.dataset.page)));
+$("dashboardAddCustomer").onclick = () => $("addCustomerBtn").click();
 /* Account settings use Firebase Authentication; passwords are never stored in Firestore. */
-$("settingsBtn").onclick = () => {
+function openSettingsPage() {
   if (!currentUser) return;
   $("settingsEmail").value = currentUser.email || "";
   $("settingsCurrentPassword").value = "";
   $("settingsNewPassword").value = "";
   $("settingsMsg").textContent = "";
-  $("settingsModal").classList.remove("hidden");
-};
-$("closeSettings").onclick = () => $("settingsModal").classList.add("hidden");
+  showPage("settingsView");
+}
+$("settingsBtn").onclick = openSettingsPage;
+$("closeSettings").onclick = () => showPage("dashboardView");
 $("saveSettings").onclick = async () => {
   const user = auth.currentUser;
   const email = $("settingsEmail").value.trim();
@@ -740,6 +752,17 @@ function renderAll() {
 
       );
 
+
+  /* Dashboard report chart */
+  const creditTotal = customers.reduce((sum, c) => sum + (c.transactions || []).filter(t => t.type === "credit").reduce((a, t) => a + Number(t.amount || 0), 0), 0);
+  const debitTotal = customers.reduce((sum, c) => sum + (c.transactions || []).filter(t => t.type === "debit").reduce((a, t) => a + Number(t.amount || 0), 0), 0);
+  const balanceTotal = customers.reduce((sum, c) => sum + Number(c.balance || 0), 0);
+  const maxTotal = Math.max(creditTotal, debitTotal, balanceTotal, 1);
+  [["creditBar", "creditBarValue", creditTotal], ["debitBar", "debitBarValue", debitTotal], ["balanceBar", "balanceBarValue", balanceTotal]].forEach(([barId, valueId, value]) => {
+    const bar = $(barId), label = $(valueId);
+    if (bar) bar.style.width = `${Math.max(value > 0 ? 2 : 0, value / maxTotal * 100)}%`;
+    if (label) label.textContent = money(value);
+  });
 
   /* Top 5 debtors */
 
