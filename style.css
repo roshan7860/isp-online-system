@@ -1136,3 +1136,21 @@ button.recentCustomerRow{
 #app .mainNav button.navItem.active span{background:#e1e9f2!important;color:#3e5e83!important}
 #app .mainNav button.logoutNavItem{background:transparent!important;background-image:none!important;color:#875858!important}
 #app .mainNav button.logoutNavItem:hover{background:#fbf6f6!important;background-image:none!important}
+
+
+/* V12: consistent professional inline SVG navigation icons */
+.mainNav .navItem .navIcon{
+  width:28px!important;height:28px!important;min-width:28px!important;
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  border-radius:7px!important;background:#f0f3f7!important;color:#63758b!important;
+  flex:0 0 28px!important;
+}
+.mainNav .navItem .navIcon svg{
+  width:16px!important;height:16px!important;display:block!important;
+  fill:none!important;stroke:currentColor!important;stroke-width:1.7!important;
+  stroke-linecap:round!important;stroke-linejoin:round!important;
+}
+.mainNav .navItem.active .navIcon{background:#e1e9f2!important;color:#3e5e83!important}
+.mainNav .navItem:hover .navIcon{background:#e8edf4!important;color:#405b7b!important}
+.mainNav .logoutNavItem .navIcon{background:#f7eeee!important;color:#8c5c5c!important}
+.mainNav .logoutNavItem:hover .navIcon{background:#f3e4e4!important;color:#884848!important}

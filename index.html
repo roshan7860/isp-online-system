@@ -28,10 +28,10 @@
 
 <div id="app" class="hidden">
   <nav class="mainNav" aria-label="Main navigation">
-    <button type="button" class="navItem active" data-page="dashboardView"><span>▦</span> Dashboard</button>
-    <button type="button" class="navItem" data-page="customersView"><span>♙</span> Customers</button>
-    <button type="button" class="navItem" data-page="settingsView"><span>⚙</span> Settings</button>
-    <button type="button" class="navItem logoutNavItem" id="logoutBtn"><span aria-hidden="true">↪</span> Logout</button>
+    <button type="button" class="navItem active" data-page="dashboardView"><span class="navIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg></span> Dashboard</button>
+    <button type="button" class="navItem" data-page="customersView"><span class="navIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19.5v-1.3a5.5 5.5 0 0 1 11 0v1.3Z"/><path d="M16 5.2a3 3 0 0 1 0 5.7M17 14.5a4.5 4.5 0 0 1 3.5 4.4v.6h-4"/></svg></span> Customers</button>
+    <button type="button" class="navItem" data-page="settingsView"><span class="navIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="m19.4 15 .1.1 1.1.9-1.4 2.4-1.4-.6a7.9 7.9 0 0 1-1.5.9l-.2 1.5h-2.8l-.2-1.5a7.9 7.9 0 0 1-1.5-.9l-1.4.6-1.4-2.4 1.1-.9a7.2 7.2 0 0 1 0-1.8l-1.1-.9 1.4-2.4 1.4.6a7.9 7.9 0 0 1 1.5-.9l.2-1.5h2.8l.2 1.5a7.9 7.9 0 0 1 1.5.9l1.4-.6 1.4 2.4-1.1.9a7.2 7.2 0 0 1 0 1.8Z"/></svg></span> Settings</button>
+    <button type="button" class="navItem logoutNavItem" id="logoutBtn"><span class="navIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M10 5H5.5A1.5 1.5 0 0 0 4 6.5v11A1.5 1.5 0 0 0 5.5 19H10"/><path d="M14 8l4 4-4 4M8 12h10"/></svg></span> Logout</button>
   </nav>
   <main>
     <section id="dashboardView" class="pageView">
