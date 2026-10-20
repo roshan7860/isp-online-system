@@ -698,6 +698,36 @@ function renderRecentCustomers() {
   });
 }
 
+function renderRecentTransactions() {
+  const target = $("recentTransactions");
+  if (!target) return;
+  const all = customers.flatMap(c => (c.transactions || []).map(t => ({ ...t, customerName: c.name || "Unnamed customer", customerId: c.id })));
+  const sortValue = t => {
+    if (typeof t.transactionDate === "string" && /^\d{4}-\d{2}-\d{2}$/.test(t.transactionDate)) {
+      const day = new Date(t.transactionDate + "T00:00:00").getTime();
+      const created = t.createdAt?.toMillis?.() ?? 0;
+      return day + created % 86400000;
+    }
+    return t.createdAt?.toMillis?.() ?? 0;
+  };
+  const latest = all.sort((a, b) => sortValue(b) - sortValue(a)).slice(0, 5);
+  target.innerHTML = latest.length ? latest.map(t => {
+    const isLoan = t.type === "credit";
+    const typeLabel = isLoan ? "Loan / Credit" : "Payment Received";
+    const dateLabel = transactionDateLabel(t);
+    const note = t.note ? ` · ${esc(t.note)}` : "";
+    return `<button type="button" class="recentCustomerRow recentTransactionRow" data-customer-id="${esc(t.customerId)}">
+      <span class="transactionTypeMark ${isLoan ? "transactionLoan" : "transactionPayment"}" aria-hidden="true">${isLoan ? "+" : "−"}</span>
+      <span class="recentCustomerInfo"><b>${esc(t.customerName)}</b><small>${typeLabel} · ${esc(dateLabel)}${note}</small></span>
+      <span class="recentCustomerBalance ${isLoan ? "hasDebt" : "settled"}">${money(t.amount)} <small>AFN</small></span>
+      <span class="recentCustomerArrow" aria-hidden="true">›</span>
+    </button>`;
+  }).join("") : `<p class="muted recentEmpty">No transactions have been recorded yet.</p>`;
+  target.querySelectorAll(".recentTransactionRow").forEach(row => {
+    row.addEventListener("click", () => openCustomer(row.dataset.customerId));
+  });
+}
+
 function renderAll() {
 
   /* Customer count */
@@ -884,6 +914,7 @@ function renderAll() {
   renderDashboardAnalytics();
   renderCustomers();
   renderRecentCustomers();
+  renderRecentTransactions();
 
 }
 

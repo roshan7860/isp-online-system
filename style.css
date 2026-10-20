@@ -1248,3 +1248,12 @@ body:has(#app:not(.hidden)){padding-top:0!important}
   body:has(#app:not(.hidden)) .chartLegend {font-size:9px!important;gap:7px!important}
   body:has(#app:not(.hidden)) .barChart {min-width:0!important;width:100%!important}
 }
+
+
+/* Latest five transactions dashboard report */
+.recentTransactionsCard{grid-column:1 / -1;padding:20px!important}
+.transactionTypeMark{flex:0 0 36px;width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;border-radius:9px;font-size:22px;font-weight:750}
+.transactionLoan{background:#fbebeb;color:#b64b4b}
+.transactionPayment{background:#e8f5ee;color:#27825b}
+.recentTransactionRow .recentCustomerInfo small{white-space:normal}
+@media(max-width:600px){.recentTransactionsCard{padding:15px!important}.recentTransactionRow .transactionTypeMark{flex-basis:31px;width:31px;height:31px}.recentTransactionRow .recentCustomerInfo b{max-width:150px}}
