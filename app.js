@@ -49,6 +49,19 @@ const db = getFirestore(app);
 
 const $ = id => document.getElementById(id);
 
+/* Persistent light/dark appearance preference; stored locally, never in Firebase. */
+function applyTheme(theme) {
+  const dark = theme === "dark";
+  document.documentElement.dataset.theme = dark ? "dark" : "light";
+  const toggle = $("darkModeToggle");
+  if (toggle) toggle.checked = dark;
+  const metaTheme = document.querySelector('meta[name="theme-color"]');
+  if (metaTheme) metaTheme.setAttribute("content", dark ? "#0b1220" : "#f5f8fc");
+}
+let savedTheme = "light";
+try { savedTheme = localStorage.getItem("ccm-theme") === "dark" ? "dark" : "light"; } catch (_) {}
+applyTheme(savedTheme);
+
 /* Consistent lightweight outline icons (inline SVG; no external dependency). */
 const ICONS = {
   settings: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z"/><path d="m19.4 15 .1.1 1.1.9-1.4 2.4-1.4-.6a7.9 7.9 0 0 1-1.5.9l-.2 1.5h-2.8l-.2-1.5a7.9 7.9 0 0 1-1.5-.9l-1.4.6-1.4-2.4 1.1-.9a7.2 7.2 0 0 1 0-1.8l-1.1-.9 1.4-2.4 1.4.6a7.9 7.9 0 0 1 1.5-.9l.2-1.5h2.8l.2 1.5a7.9 7.9 0 0 1 1.5.9l1.4-.6 1.4 2.4-1.1.9a7.2 7.2 0 0 1 0 1.8Z"/></svg>',
@@ -158,6 +171,12 @@ function openSettingsPage() {
   showPage("settingsView");
 }
 const settingsShortcut = $("settingsBtn"); if (settingsShortcut) settingsShortcut.onclick = openSettingsPage;
+const darkModeToggle = $("darkModeToggle");
+if (darkModeToggle) darkModeToggle.addEventListener("change", () => {
+  const theme = darkModeToggle.checked ? "dark" : "light";
+  applyTheme(theme);
+  try { localStorage.setItem("ccm-theme", theme); } catch (_) {}
+});
 $("closeSettings").onclick = () => showPage("dashboardView");
 $("saveSettings").onclick = async () => {
   const user = auth.currentUser;

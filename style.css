@@ -1257,3 +1257,36 @@ body:has(#app:not(.hidden)){padding-top:0!important}
 .transactionPayment{background:#e8f5ee;color:#27825b}
 .recentTransactionRow .recentCustomerInfo small{white-space:normal}
 @media(max-width:600px){.recentTransactionsCard{padding:15px!important}.recentTransactionRow .transactionTypeMark{flex-basis:31px;width:31px;height:31px}.recentTransactionRow .recentCustomerInfo b{max-width:150px}}
+
+
+/* User-selectable dark mode (overrides the default light-theme rules above). */
+html[data-theme="dark"], html[data-theme="dark"] body, html[data-theme="dark"] body:has(#app) {background:#0b1220!important;color:#e5edf8!important;color-scheme:dark}
+html[data-theme="dark"] body:has(#app) #app, html[data-theme="dark"] body:has(#app) #app main, html[data-theme="dark"] body:has(#app) #app .content, html[data-theme="dark"] body:has(#app) #app .page, html[data-theme="dark"] body:has(#app) #app .pageContent, html[data-theme="dark"] body:has(#app) #app .dashboard, html[data-theme="dark"] body:has(#app) #app .customersPage, html[data-theme="dark"] body:has(#app) #app .settingsPage, html[data-theme="dark"] body:has(#app) #app .mainContent, html[data-theme="dark"] body:has(#app) #app .layout, html[data-theme="dark"] body:has(#app) #app .container {background:#0b1220!important;color:#e5edf8!important}
+html[data-theme="dark"] body:has(#app) #app header, html[data-theme="dark"] body:has(#app) #app nav, html[data-theme="dark"] body:has(#app) #app .mainNav, html[data-theme="dark"] body:has(#app) #app .sidebar, html[data-theme="dark"] body:has(#app) #app .topbar {background:#111c2e!important;color:#e5edf8!important;border-color:#26364d!important;box-shadow:none!important}
+html[data-theme="dark"] body:has(#app) #app .card, html[data-theme="dark"] body:has(#app) #app .stat, html[data-theme="dark"] body:has(#app) #app .analyticsCard, html[data-theme="dark"] body:has(#app) #app .reportCard, html[data-theme="dark"] body:has(#app) #app .customerListCard, html[data-theme="dark"] body:has(#app) #app .settingsPageCard, html[data-theme="dark"] body:has(#app) #app .themeSettingsCard, html[data-theme="dark"] body:has(#app) #app .panel, html[data-theme="dark"] body:has(#app) #app .modalBox, html[data-theme="dark"] body:has(#app) #app .detail, html[data-theme="dark"] body:has(#app) #app .customer, html[data-theme="dark"] body:has(#app) #app .debtor, html[data-theme="dark"] body:has(#app) #app .deltaCard, html[data-theme="dark"] body:has(#app) #app .transactionForm, html[data-theme="dark"] body:has(#app) #app .portalInfo {background:#111c2e!important;color:#e5edf8!important;border-color:#26364d!important;box-shadow:0 5px 18px #0003!important}
+html[data-theme="dark"] body:has(#app) #app h1, html[data-theme="dark"] body:has(#app) #app h2, html[data-theme="dark"] body:has(#app) #app h3, html[data-theme="dark"] body:has(#app) #app h4, html[data-theme="dark"] body:has(#app) #app label, html[data-theme="dark"] body:has(#app) #app strong, html[data-theme="dark"] body:has(#app) #app .stat b, html[data-theme="dark"] body:has(#app) #app .analyticsHeading h3, html[data-theme="dark"] body:has(#app) #app .chartTotals b, html[data-theme="dark"] body:has(#app) #app .compareRow>b {color:#e5edf8!important}
+html[data-theme="dark"] body:has(#app) #app p, html[data-theme="dark"] body:has(#app) #app small, html[data-theme="dark"] body:has(#app) #app .muted, html[data-theme="dark"] body:has(#app) #app .stat small, html[data-theme="dark"] body:has(#app) #app .chartColumn small, html[data-theme="dark"] body:has(#app) #app .chartTotals, html[data-theme="dark"] body:has(#app) #app .compareRow {color:#9fb0c8!important}
+html[data-theme="dark"] body:has(#app) #app input, html[data-theme="dark"] body:has(#app) #app select, html[data-theme="dark"] body:has(#app) #app textarea {background:#0b1424!important;color:#e5edf8!important;border-color:#34465f!important}
+html[data-theme="dark"] body:has(#app) #app input::placeholder, html[data-theme="dark"] body:has(#app) #app textarea::placeholder {color:#8496b0!important}
+html[data-theme="dark"] body:has(#app) #app .reportTrack, html[data-theme="dark"] body:has(#app) #app .compareTrack {background:#26364d!important}
+html[data-theme="dark"] body:has(#app) #app .navItem {color:#a9b9d0!important;background:transparent!important}
+html[data-theme="dark"] body:has(#app) #app .navItem.active {background:#1b3154!important;color:#7db2ff!important}
+html[data-theme="dark"] body:has(#app) #app .secondary, html[data-theme="dark"] body:has(#app) #app button.secondary, html[data-theme="dark"] body:has(#app) #app .iconBtn {background:#25344a!important;color:#e5edf8!important;border-color:#34465f!important}
+html[data-theme="dark"] .loginScreen {background:linear-gradient(135deg,#0b1220,#14213a)!important;color:#e5edf8!important}
+html[data-theme="dark"] .loginScreen .login {background:#111c2e!important;color:#e5edf8!important;border-color:#26364d!important}
+html[data-theme="dark"] .loginScreen .login h1, html[data-theme="dark"] .loginScreen .login form label {color:#e5edf8!important}
+html[data-theme="dark"] .loginSubtitle, html[data-theme="dark"] .loginHint, html[data-theme="dark"] .loginFooter {color:#9fb0c8!important}
+html[data-theme="dark"] .loginInputWrap {background:#0b1424!important;border-color:#34465f!important}
+html[data-theme="dark"] .loginScreen .loginInputWrap input {background:transparent!important;color:#e5edf8!important}
+.themeSettingsCard{max-width:760px;margin-bottom:16px;padding:20px}
+.themeSettingsCard h3{margin:0 0 5px}
+.themeSettingsCard p{margin:0}
+.themeSettingRow{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-top:16px;padding-top:15px;border-top:1px solid var(--line)}
+.themeSwitch{position:relative;display:inline-flex!important;align-items:center;flex-shrink:0;margin:0!important;cursor:pointer}
+.themeSwitch input{position:absolute;opacity:0;width:1px;height:1px}
+.themeSwitchTrack{width:48px;height:27px;border-radius:999px;background:#cbd5e1;transition:background .2s;position:relative}
+.themeSwitchTrack:after{content:"";position:absolute;left:3px;top:3px;width:21px;height:21px;border-radius:50%;background:#fff;box-shadow:0 1px 4px #0003;transition:transform .2s}
+.themeSwitch input:checked+.themeSwitchTrack{background:#246bfe}
+.themeSwitch input:checked+.themeSwitchTrack:after{transform:translateX(21px)}
+.themeSwitch input:focus-visible+.themeSwitchTrack{outline:3px solid #79aaff;outline-offset:3px}
+html[data-theme="dark"] .themeSettingRow{border-color:#26364d}
