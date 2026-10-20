@@ -27,6 +27,7 @@
 <div id="app" class="hidden">
   <nav class="mainNav" aria-label="Main navigation">
     <button type="button" class="navItem active" data-page="dashboardView"><span class="navIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg></span> Dashboard</button>
+    <button type="button" class="navItem" data-page="reportView"><span class="navIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 19.5h16M6.5 16V10M12 16V4.5M17.5 16v-7"/></svg></span> Reports</button>
     <button type="button" class="navItem" data-page="customersView"><span class="navIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19.5v-1.3a5.5 5.5 0 0 1 11 0v1.3Z"/><path d="M16 5.2a3 3 0 0 1 0 5.7M17 14.5a4.5 4.5 0 0 1 3.5 4.4v.6h-4"/></svg></span> Customers</button>
     <button type="button" class="navItem" data-page="settingsView"><span class="navIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="m19.4 15 .1.1 1.1.9-1.4 2.4-1.4-.6a7.9 7.9 0 0 1-1.5.9l-.2 1.5h-2.8l-.2-1.5a7.9 7.9 0 0 1-1.5-.9l-1.4.6-1.4-2.4 1.1-.9a7.2 7.2 0 0 1 0-1.8l-1.1-.9 1.4-2.4 1.4.6a7.9 7.9 0 0 1 1.5-.9l.2-1.5h2.8l.2 1.5a7.9 7.9 0 0 1 1.5.9l1.4-.6 1.4 2.4-1.1.9a7.2 7.2 0 0 1 0 1.8Z"/></svg></span> Settings</button>
     <button type="button" class="navItem logoutNavItem" id="logoutBtn"><span class="navIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M10 5H5.5A1.5 1.5 0 0 0 4 6.5v11A1.5 1.5 0 0 0 5.5 19H10"/><path d="M14 8l4 4-4 4M8 12h10"/></svg></span> Logout</button>
@@ -40,13 +41,7 @@
         <div class="stat kpiBalance"><span>Total Outstanding Debt</span><b id="totalBalance">0</b><small>Remaining customer balances</small></div>
         <div class="stat kpiCustomers"><span>Total Customers</span><b id="customerCount">0</b><small>Registered customer accounts</small></div>
       </section>
-      <section class="analyticsGrid">
-        <article class="card analyticsCard"><div class="analyticsHeading"><div><h3>Today's Credit vs Debit</h3><p class="muted" id="todayChartDate">Today</p></div><div class="chartLegend"><span class="legendCredit">Credit</span><span class="legendDebit">Debit</span></div></div><div id="todayChart" class="barChart" aria-label="Today's credit and debit graph"></div><div class="chartTotals"><span>Credit <b id="todayCreditTotal">0</b></span><span>Debit <b id="todayDebitTotal">0</b></span></div></article>
-        <article class="card analyticsCard"><div class="analyticsHeading"><div><h3>This Week's Credit vs Debit</h3><p class="muted">Monday to Sunday</p></div><div class="chartLegend"><span class="legendCredit">Credit</span><span class="legendDebit">Debit</span></div></div><div id="weekChart" class="barChart" aria-label="This week's credit and debit graph"></div><div class="chartTotals"><span>Credit <b id="weekCreditTotal">0</b></span><span>Debit <b id="weekDebitTotal">0</b></span></div></article>
-        <article class="card analyticsCard"><div class="analyticsHeading"><div><h3>This Month's Credit vs Debit</h3><p class="muted" id="monthChartLabel">Current month</p></div><div class="chartLegend"><span class="legendCredit">Credit</span><span class="legendDebit">Debit</span></div></div><div id="monthChart" class="barChart" aria-label="This month's credit and debit graph"></div><div class="chartTotals"><span>Credit <b id="monthCreditTotal">0</b></span><span>Debit <b id="monthDebitTotal">0</b></span></div></article>
-        <article class="card analyticsCard comparisonCard"><div class="analyticsHeading"><div><h3>Yesterday vs Today</h3><p class="muted">Daily financial comparison</p></div></div><div id="dayCompareChart" class="compareChart"></div><div id="dayCompareSummary" class="comparisonSummary"></div></article>
-        <article class="card analyticsCard comparisonCard"><div class="analyticsHeading"><div><h3>Last Month vs This Month</h3><p class="muted">Monthly financial comparison</p></div></div><div id="monthCompareChart" class="compareChart"></div><div id="monthCompareSummary" class="comparisonSummary"></div></article>
-      </section>
+
       <section class="dashboardGrid">
         <div class="card reportCard recentCustomersCard">
           <div class="recentCustomersHeading"><div><h3>Recently Added Customers</h3><p class="muted">Your 5 newest customer accounts</p></div><span class="recentCount">Latest 5</span></div>
@@ -57,6 +52,16 @@
           <div class="recentCustomersHeading"><div><h3>Latest 5 Transactions</h3><p class="muted">Recent loans and received payments</p></div><span class="recentCount">Latest 5</span></div>
           <div id="recentTransactions" class="recentCustomersList"><p class="muted recentEmpty">Loading transactions…</p></div>
         </div>
+      </section>
+    </section>
+    <section id="reportView" class="pageView hidden">
+      <div class="pageHeading"><div><h2>Reports</h2><p class="muted">Daily, weekly and monthly credit and debit analysis</p></div></div>
+      <section class="analyticsGrid">
+        <article class="card analyticsCard"><div class="analyticsHeading"><div><h3>Today's Credit vs Debit</h3><p class="muted" id="todayChartDate">Today</p></div><div class="chartLegend"><span class="legendCredit">Credit</span><span class="legendDebit">Debit</span></div></div><div id="todayChart" class="barChart" aria-label="Today's credit and debit graph"></div><div class="chartTotals"><span>Credit <b id="todayCreditTotal">0</b></span><span>Debit <b id="todayDebitTotal">0</b></span></div></article>
+        <article class="card analyticsCard"><div class="analyticsHeading"><div><h3>This Week's Credit vs Debit</h3><p class="muted">Monday to Sunday</p></div><div class="chartLegend"><span class="legendCredit">Credit</span><span class="legendDebit">Debit</span></div></div><div id="weekChart" class="barChart" aria-label="This week's credit and debit graph"></div><div class="chartTotals"><span>Credit <b id="weekCreditTotal">0</b></span><span>Debit <b id="weekDebitTotal">0</b></span></div></article>
+        <article class="card analyticsCard"><div class="analyticsHeading"><div><h3>This Month's Credit vs Debit</h3><p class="muted" id="monthChartLabel">Current month</p></div><div class="chartLegend"><span class="legendCredit">Credit</span><span class="legendDebit">Debit</span></div></div><div id="monthChart" class="barChart" aria-label="This month's credit and debit graph"></div><div class="chartTotals"><span>Credit <b id="monthCreditTotal">0</b></span><span>Debit <b id="monthDebitTotal">0</b></span></div></article>
+        <article class="card analyticsCard comparisonCard"><div class="analyticsHeading"><div><h3>Yesterday vs Today</h3><p class="muted">Daily financial comparison</p></div></div><div id="dayCompareChart" class="compareChart"></div><div id="dayCompareSummary" class="comparisonSummary"></div></article>
+        <article class="card analyticsCard comparisonCard"><div class="analyticsHeading"><div><h3>Last Month vs This Month</h3><p class="muted">Monthly financial comparison</p></div></div><div id="monthCompareChart" class="compareChart"></div><div id="monthCompareSummary" class="comparisonSummary"></div></article>
       </section>
     </section>
     <section id="customersView" class="pageView hidden">

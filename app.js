@@ -139,7 +139,7 @@ $("logoutBtn").onclick = () => {
 
 /* Separate dashboard, customers and settings pages. */
 function showPage(pageId) {
-  ["dashboardView", "customersView", "settingsView"].forEach(id => {
+  ["dashboardView", "reportView", "customersView", "settingsView"].forEach(id => {
     const node = $(id); if (node) node.classList.toggle("hidden", id !== pageId);
   });
   document.querySelectorAll(".navItem").forEach(btn => btn.classList.toggle("active", btn.dataset.page === pageId));
