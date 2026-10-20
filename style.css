@@ -1290,3 +1290,44 @@ html[data-theme="dark"] .loginScreen .loginInputWrap input {background:transpare
 .themeSwitch input:checked+.themeSwitchTrack:after{transform:translateX(21px)}
 .themeSwitch input:focus-visible+.themeSwitchTrack{outline:3px solid #79aaff;outline-offset:3px}
 html[data-theme="dark"] .themeSettingRow{border-color:#26364d}
+
+
+/* V21: complete dark-mode coverage for dashboard rows that were pinned to white by older light-theme overrides. */
+html[data-theme="dark"] body:has(#app) #app .recentCustomersCard,
+html[data-theme="dark"] body:has(#app) #app .recentCustomersList,
+html[data-theme="dark"] body:has(#app) #app .recentCustomerRow,
+html[data-theme="dark"] body:has(#app) #app button.recentCustomerRow,
+html[data-theme="dark"] body:has(#app) #app .recentCustomersList button.recentCustomerRow,
+html[data-theme="dark"] body:has(#app) #app .recentCustomerRow.recentTransactionRow {
+  background:#111c2e!important;
+  color:#e5edf8!important;
+  border-color:#26364d!important;
+}
+html[data-theme="dark"] body:has(#app) #app .recentCustomerRow:hover,
+html[data-theme="dark"] body:has(#app) #app button.recentCustomerRow:hover,
+html[data-theme="dark"] body:has(#app) #app .recentCustomersList .recentCustomerRow:hover {
+  background:#182841!important;
+}
+html[data-theme="dark"] body:has(#app) #app .recentCustomerInfo b,
+html[data-theme="dark"] body:has(#app) #app .recentCustomerBalance,
+html[data-theme="dark"] body:has(#app) #app .recentCustomerRow .recentCustomerInfo b {
+  color:#e5edf8!important;
+}
+html[data-theme="dark"] body:has(#app) #app .recentCustomerInfo small,
+html[data-theme="dark"] body:has(#app) #app .recentCustomerBalance small,
+html[data-theme="dark"] body:has(#app) #app .recentCustomerRow .recentCustomerInfo small {
+  color:#9fb0c8!important;
+}
+html[data-theme="dark"] body:has(#app) #app .recentCustomerAvatar {
+  background:#25344a!important;color:#c8d8ef!important;
+}
+html[data-theme="dark"] body:has(#app) #app .recentCustomerArrow {color:#9fb0c8!important}
+html[data-theme="dark"] body:has(#app) #app .recentCustomerBalance.hasDebt {color:#ff737d!important}
+html[data-theme="dark"] body:has(#app) #app .recentCustomerBalance.settled {color:#5fd6a1!important}
+html[data-theme="dark"] body:has(#app) #app .transactionTypeMark.transactionLoan {background:#48252d!important;color:#ff8a93!important}
+html[data-theme="dark"] body:has(#app) #app .transactionTypeMark.transactionPayment {background:#163d34!important;color:#6ee7b7!important}
+html[data-theme="dark"] body:has(#app) #app .debtor,
+html[data-theme="dark"] body:has(#app) #app .customer,
+html[data-theme="dark"] body:has(#app) #app .tx {border-color:#26364d!important;color:#e5edf8!important}
+html[data-theme="dark"] body:has(#app) #app .debtor:hover,
+html[data-theme="dark"] body:has(#app) #app .customer:hover {background:#182841!important}
