@@ -1386,3 +1386,25 @@ html[data-theme="dark"] body:has(#app) #customerPage .detail .iconBtn {
 html[data-theme="dark"] body:has(#app) #customerPage .detail .balance {
   color:#ff687c!important;
 }
+
+
+/* V23: improve sidebar brand title contrast in dark mode. */
+html[data-theme="dark"] body:has(#app) .mainNav::before,
+html[data-theme="dark"] body:has(#app) .mainNav:before,
+html[data-theme="dark"] body:has(#app) .mainNav .brand,
+html[data-theme="dark"] body:has(#app) .mainNav .brandName,
+html[data-theme="dark"] body:has(#app) .mainNav .sidebarTitle,
+html[data-theme="dark"] body:has(#app) .mainNav .appName,
+html[data-theme="dark"] body:has(#app) .mainNav h1,
+html[data-theme="dark"] body:has(#app) .mainNav h2,
+html[data-theme="dark"] body:has(#app) .mainNav h3 {
+  color:#e7f0ff!important;
+  opacity:1!important;
+  text-shadow:0 1px 10px rgba(75,145,255,.16)!important;
+}
+@media (max-width:750px) {
+  html[data-theme="dark"] body:has(#app:not(.hidden)) .mainNav:before {
+    color:#8bc5ff!important;
+    text-shadow:0 0 12px rgba(91,164,255,.28)!important;
+  }
+}
