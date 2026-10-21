@@ -1331,3 +1331,58 @@ html[data-theme="dark"] body:has(#app) #app .customer,
 html[data-theme="dark"] body:has(#app) #app .tx {border-color:#26364d!important;color:#e5edf8!important}
 html[data-theme="dark"] body:has(#app) #app .debtor:hover,
 html[data-theme="dark"] body:has(#app) #app .customer:hover {background:#182841!important}
+
+
+/* V22: dark theme for customer detail modal, transaction form and transaction history. */
+html[data-theme="dark"] body:has(#app) #customerPage .detail,
+html[data-theme="dark"] body:has(#app) #customerPage .detail.card {
+  background:#111c2e!important;
+  color:#e5edf8!important;
+  border-color:#26364d!important;
+}
+html[data-theme="dark"] body:has(#app) #customerPage .detail h3,
+html[data-theme="dark"] body:has(#app) #customerPage .detail h4,
+html[data-theme="dark"] body:has(#app) #customerPage .detail label,
+html[data-theme="dark"] body:has(#app) #customerPage .detail .tx b,
+html[data-theme="dark"] body:has(#app) #customerPage .detail .tx .txTypeLabel {
+  color:#e5edf8!important;
+}
+html[data-theme="dark"] body:has(#app) #customerPage .detail p,
+html[data-theme="dark"] body:has(#app) #customerPage .detail .note,
+html[data-theme="dark"] body:has(#app) #customerPage .detail .tx .muted,
+html[data-theme="dark"] body:has(#app) #customerPage .detail .tx small,
+html[data-theme="dark"] body:has(#app) #customerPage .detail .tx time {
+  color:#9fb0c8!important;
+}
+html[data-theme="dark"] body:has(#app) #customerPage .transactionForm {
+  background:#0b1424!important;
+  border-color:#26364d!important;
+}
+html[data-theme="dark"] body:has(#app) #customerPage .switchRow {
+  background:#17253a!important;
+  color:#e5edf8!important;
+  border-color:#34465f!important;
+}
+html[data-theme="dark"] body:has(#app) #customerPage #history .tx {
+  background:transparent!important;
+  color:#e5edf8!important;
+  border-bottom-color:#34465f!important;
+}
+html[data-theme="dark"] body:has(#app) #customerPage #history .txCredit b,
+html[data-theme="dark"] body:has(#app) #customerPage #history .txCredit .txTypeLabel {
+  color:#ff858d!important;
+}
+html[data-theme="dark"] body:has(#app) #customerPage #history .txDebit b,
+html[data-theme="dark"] body:has(#app) #customerPage #history .txDebit .txTypeLabel {
+  color:#62d6a5!important;
+}
+html[data-theme="dark"] body:has(#app) #customerPage .detail .secondary,
+html[data-theme="dark"] body:has(#app) #customerPage .detail button.secondary,
+html[data-theme="dark"] body:has(#app) #customerPage .detail .iconBtn {
+  background:#25344a!important;
+  color:#e5edf8!important;
+  border-color:#34465f!important;
+}
+html[data-theme="dark"] body:has(#app) #customerPage .detail .balance {
+  color:#ff687c!important;
+}
