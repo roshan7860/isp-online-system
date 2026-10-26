@@ -1460,121 +1460,66 @@ html[data-theme="dark"] body:has(#app) .mainNav h3 {
 }
 
 
-/* V25: refreshed premium sidebar + dashboard styling based on the approved mockup. */
-body:has(#app:not(.hidden)) {
-  --ccm-navy:#071329; --ccm-panel:#101f39; --ccm-line:#243b61;
-  --ccm-blue:#1594ff; --ccm-cyan:#18c8f5; --ccm-purple:#7c4dff;
+/* V26: restrained sidebar-only refinement to match the approved reference.
+   Preserve the existing app layout, data views, and page styling. */
+body:has(#app:not(.hidden)) .mainNav{
+  background:linear-gradient(180deg,#0b1b34 0%,#08152a 62%,#071225 100%)!important;
+  border:1px solid rgba(65,111,177,.22)!important;
+  border-right:1px solid rgba(65,140,255,.24)!important;
+  box-shadow:8px 0 30px rgba(0,8,24,.16),inset -1px 0 rgba(120,170,255,.04)!important;
 }
-body:has(#app:not(.hidden)) .mainNav {
-  width:270px!important; min-width:270px!important;
-  padding:22px 14px 20px!important; gap:9px!important;
-  background:linear-gradient(165deg,rgba(12,29,56,.98),rgba(5,13,29,.99) 75%)!important;
-  border-right:1px solid rgba(79,135,211,.26)!important;
-  box-shadow:12px 0 40px rgba(0,0,0,.18), inset -1px 0 rgba(255,255,255,.025)!important;
+body:has(#app:not(.hidden)) .mainNav:before{
+  color:#dceaff!important;
+  text-shadow:0 2px 16px rgba(44,139,255,.22)!important;
+  letter-spacing:-.025em!important;
 }
-body:has(#app:not(.hidden)) .mainNav:before {
-  content:"◈  Customer\\A    Credit Manager"!important; white-space:pre!important;
-  display:block!important; margin:0 2px 15px!important; padding:8px 10px 25px 62px!important;
-  min-height:66px!important; position:relative!important;
-  color:#e8f4ff!important; font-size:17px!important; font-weight:800!important;
-  line-height:1.32!important; letter-spacing:-.035em!important;
-  text-shadow:0 2px 20px rgba(40,150,255,.18)!important;
+body:has(#app:not(.hidden)) .mainNav .navItem,
+body:has(#app:not(.hidden)) .mainNav button.navItem{
+  color:#c0d2ee!important;
+  background:transparent!important;
+  background-image:none!important;
+  border:1px solid transparent!important;
+  border-radius:14px!important;
+  box-shadow:none!important;
+  min-height:46px!important;
+  transition:background .22s ease,border-color .22s ease,box-shadow .22s ease,color .22s ease!important;
 }
-body:has(#app:not(.hidden)) .mainNav:after {
-  content:""; pointer-events:none; position:fixed; left:0; bottom:0; width:268px; height:170px;
-  background:radial-gradient(ellipse at 55% 100%,rgba(13,109,217,.25),transparent 68%),
-             linear-gradient(145deg,transparent 55%,rgba(14,94,179,.12) 55%,transparent 76%);
-  opacity:.9; z-index:-1;
+body:has(#app:not(.hidden)) .mainNav .navItem .navIcon,
+body:has(#app:not(.hidden)) .mainNav .navItem span{
+  color:#b4caea!important;
+  background:rgba(129,166,222,.12)!important;
+  border:1px solid rgba(143,177,232,.12)!important;
+  border-radius:9px!important;
+  transition:background .22s ease,color .22s ease,border-color .22s ease!important;
 }
-body:has(#app:not(.hidden)) .navItem {
-  min-height:48px!important; padding:8px 11px!important; gap:12px!important;
-  border:1px solid transparent!important; border-radius:14px!important;
-  color:#b6c8e5!important; background:transparent!important;
-  font-size:13px!important; font-weight:650!important; letter-spacing:.005em!important;
-  transition:background .22s ease,border-color .22s ease,box-shadow .22s ease,transform .22s ease!important;
+body:has(#app:not(.hidden)) .mainNav .navItem:hover{
+  color:#fff!important;
+  background:rgba(38,94,170,.20)!important;
+  border-color:rgba(80,144,255,.28)!important;
+  box-shadow:0 4px 16px rgba(0,80,200,.10)!important;
 }
-body:has(#app:not(.hidden)) .navItem .navIcon {
-  display:inline-grid!important; place-items:center!important; width:36px!important; height:36px!important;
-  min-width:36px!important; flex:0 0 36px!important; border-radius:11px!important;
-  color:#a9c7f3!important; background:rgba(50,91,148,.22)!important;
-  border:1px solid rgba(100,150,216,.13)!important; transition:all .22s ease!important;
+body:has(#app:not(.hidden)) .mainNav .navItem.active{
+  color:#fff!important;
+  background:linear-gradient(105deg,#087bff 0%,#235ee8 58%,#603cf0 100%)!important;
+  border:1px solid rgba(95,168,255,.95)!important;
+  box-shadow:0 0 0 1px rgba(79,151,255,.12),0 7px 22px rgba(0,105,255,.27),inset 0 1px rgba(255,255,255,.17)!important;
 }
-body:has(#app:not(.hidden)) .navItem .navIcon svg {width:19px!important;height:19px!important;stroke:currentColor!important;fill:none!important;stroke-width:1.8!important;stroke-linecap:round!important;stroke-linejoin:round!important}
-body:has(#app:not(.hidden)) .navItem:hover {background:rgba(31,71,128,.32)!important;border-color:rgba(65,139,236,.24)!important;color:#fff!important;transform:translateX(2px)!important}
-body:has(#app:not(.hidden)) .navItem:hover .navIcon {color:#fff!important;background:rgba(20,127,255,.24)!important;border-color:rgba(81,171,255,.4)!important}
-body:has(#app:not(.hidden)) .navItem.active {
-  color:#fff!important; background:linear-gradient(105deg,rgba(0,132,255,.95),rgba(33,91,221,.78) 68%,rgba(115,58,255,.72))!important;
-  border-color:rgba(94,178,255,.95)!important;
-  box-shadow:0 0 0 1px rgba(36,139,255,.12),0 7px 24px rgba(0,106,255,.28),inset 0 1px rgba(255,255,255,.17)!important;
+body:has(#app:not(.hidden)) .mainNav .navItem.active .navIcon,
+body:has(#app:not(.hidden)) .mainNav .navItem.active span{
+  color:#fff!important;
+  background:rgba(255,255,255,.16)!important;
+  border-color:rgba(255,255,255,.22)!important;
 }
-body:has(#app:not(.hidden)) .navItem.active .navIcon {color:#fff!important;background:rgba(255,255,255,.17)!important;border-color:rgba(255,255,255,.24)!important}
-body:has(#app:not(.hidden)) .navItem.logoutNavItem {margin-top:auto!important;border-top:1px solid rgba(109,147,201,.17)!important;border-radius:0 0 12px 12px!important;padding-top:16px!important}
-body:has(#app:not(.hidden)) main {margin-left:270px!important;padding:30px 28px 38px!important}
-body:has(#app:not(.hidden)) .pageHeading {margin-bottom:23px!important}
-body:has(#app:not(.hidden)) .pageHeading h2 {font-size:29px!important;letter-spacing:-.045em!important}
-body:has(#app:not(.hidden)) .pageHeading p {font-size:13px!important}
-body:has(#app:not(.hidden)) .dashboardKpis {gap:15px!important;margin-bottom:20px!important}
-body:has(#app:not(.hidden)) .dashboardKpis .stat {
-  position:relative!important; overflow:hidden!important; border-radius:19px!important;
-  padding:22px 20px!important; min-height:138px!important;
-  border:1px solid rgba(80,130,198,.28)!important;
-  background:linear-gradient(145deg,rgba(19,39,73,.97),rgba(10,24,46,.97))!important;
-  box-shadow:0 12px 30px rgba(0,0,0,.14),inset 0 1px rgba(255,255,255,.035)!important;
+body:has(#app:not(.hidden)) .mainNav .logoutNavItem{
+  margin-top:10px!important;
+  border-top:1px solid rgba(128,163,214,.15)!important;
+  padding-top:15px!important;
 }
-body:has(#app:not(.hidden)) .dashboardKpis .stat:after {content:"";position:absolute;right:-35px;bottom:-50px;width:125px;height:100px;border-radius:50%;filter:blur(1px);background:radial-gradient(circle,rgba(21,148,255,.14),transparent 70%);pointer-events:none}
-body:has(#app:not(.hidden)) .dashboardKpis .stat span {color:#b8cce9!important;font-size:13px!important;font-weight:600!important}
-body:has(#app:not(.hidden)) .dashboardKpis .stat b {display:block;margin-top:10px!important;color:#f5f9ff!important;font-size:29px!important;letter-spacing:-.04em!important}
-body:has(#app:not(.hidden)) .dashboardKpis .stat small {color:#819bc0!important;font-size:11px!important}
-body:has(#app:not(.hidden)) .dashboardKpis .kpiCredit {border-top:2px solid #168cff!important}
-body:has(#app:not(.hidden)) .dashboardKpis .kpiDebit {border-top:2px solid #00c99a!important}
-body:has(#app:not(.hidden)) .dashboardKpis .kpiBalance {border-top:2px solid #8a5bff!important}
-body:has(#app:not(.hidden)) .dashboardKpis .kpiCustomers {border-top:2px solid #ff9b26!important}
-body:has(#app:not(.hidden)) .dashboardGrid {gap:18px!important}
-body:has(#app:not(.hidden)) .dashboardGrid > .card,
-body:has(#app:not(.hidden)) .analyticsGrid > .card,
-body:has(#app:not(.hidden)) .analyticsGrid > article {
-  border-radius:19px!important; border:1px solid rgba(79,130,195,.25)!important;
-  background:linear-gradient(150deg,rgba(17,34,63,.98),rgba(9,22,43,.98))!important;
-  box-shadow:0 14px 35px rgba(0,0,0,.13),inset 0 1px rgba(255,255,255,.035)!important;
+body:has(#app:not(.hidden)) .mainNav .logoutNavItem:hover{
+  background:rgba(230,67,92,.12)!important;
+  border-color:rgba(230,67,92,.22)!important;
 }
-body:has(#app:not(.hidden)) .dashboardGrid h3,
-body:has(#app:not(.hidden)) .analyticsGrid h3 {color:#edf5ff!important;font-size:15px!important;letter-spacing:-.02em!important}
-body:has(#app:not(.hidden)) .dashboardGrid .muted,
-body:has(#app:not(.hidden)) .analyticsGrid .muted {color:#90a9cc!important}
-body:has(#app:not(.hidden)) .recentCustomersHeading {margin-bottom:12px!important}
-body:has(#app:not(.hidden)) .recentCount {border:1px solid rgba(110,155,219,.22)!important;background:rgba(44,73,119,.45)!important;color:#c9dcf7!important;border-radius:12px!important;padding:8px 12px!important}
-body:has(#app:not(.hidden)) .recentCustomersList .customer,
-body:has(#app:not(.hidden)) .recentCustomersList .tx,
-body:has(#app:not(.hidden)) #topDebtors .debtor {
-  border-bottom:1px solid rgba(91,128,177,.18)!important; transition:background .2s ease!important;
-}
-body:has(#app:not(.hidden)) .recentCustomersList .customer:hover,
-body:has(#app:not(.hidden)) .recentCustomersList .tx:hover,
-body:has(#app:not(.hidden)) #topDebtors .debtor:hover {background:rgba(37,76,132,.2)!important}
-body:has(#app:not(.hidden)) .recentCustomersList .customer b,
-body:has(#app:not(.hidden)) .recentCustomersList .tx b,
-body:has(#app:not(.hidden)) #topDebtors .debtor b {color:#edf5ff!important}
-body:has(#app:not(.hidden)) .recentCustomersList small,
-body:has(#app:not(.hidden)) #topDebtors small {color:#91a9cb!important}
-body:has(#app:not(.hidden)) .amount.positive {color:#ff617c!important}
-body:has(#app:not(.hidden)) .amount.negative {color:#28d9a4!important}
-body:has(#app:not(.hidden)) .barChart {border-radius:13px!important}
-@media(max-width:1050px) and (min-width:751px) {
-  body:has(#app:not(.hidden)) .mainNav {width:225px!important;min-width:225px!important}
-  body:has(#app:not(.hidden)) main {margin-left:225px!important;padding:25px 18px 30px!important}
-  body:has(#app:not(.hidden)) .dashboardKpis {grid-template-columns:repeat(2,minmax(0,1fr))!important}
-}
-@media(max-width:750px) {
-  body:has(#app:not(.hidden)) .mainNav {width:66px!important;min-width:66px!important;max-width:66px!important;padding:12px 6px!important}
-  body:has(#app:not(.hidden)) .mainNav:before {content:"CCM"!important;white-space:normal!important;padding:12px 0 22px!important;min-height:0!important;font-size:12px!important;text-align:center!important;color:#8bc5ff!important}
-  body:has(#app:not(.hidden)) .mainNav:after {width:64px!important}
-  body:has(#app:not(.hidden)) .navItem {padding:8px 2px!important;justify-content:center!important;gap:0!important;font-size:0!important}
-  body:has(#app:not(.hidden)) .navItem .navIcon {width:34px!important;height:34px!important;min-width:34px!important;flex-basis:34px!important}
-  body:has(#app:not(.hidden)) main {margin-left:66px!important;padding:20px 10px 25px!important}
-  body:has(#app:not(.hidden)) .pageHeading h2 {font-size:23px!important}
-  body:has(#app:not(.hidden)) .dashboardKpis .stat {padding:15px 12px!important;min-height:112px!important}
-  body:has(#app:not(.hidden)) .dashboardKpis .stat b {font-size:22px!important}
-}
-@media(prefers-reduced-motion:reduce) {
-  body:has(#app:not(.hidden)) .navItem, body:has(#app:not(.hidden)) .navItem .navIcon {transition:none!important}
+@media(max-width:750px){
+  body:has(#app:not(.hidden)) .mainNav{box-shadow:4px 0 18px rgba(0,8,24,.20)!important}
+  body:has(#app:not(.hidden)) .mainNav .navItem.active{box-shadow:0 0 0 1px rgba(79,151,255,.12),0 5px 16px rgba(0,105,255,.22)!important}
 }
