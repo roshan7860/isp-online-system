@@ -2,8 +2,6 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebas
 
 import {
   getAuth,
-  setPersistence,
-  browserLocalPersistence,
   signInWithEmailAndPassword,
   onAuthStateChanged,
   signOut,
@@ -120,8 +118,6 @@ loginForm.onsubmit = async (event) => {
   loginButton.dataset.originalText = loginButton.textContent;
   loginButton.textContent = "Signing in…";
   try {
-    // Explicitly keep the authenticated session across refreshes in this browser.
-    await setPersistence(auth, browserLocalPersistence);
     await signInWithEmailAndPassword(auth, `${username}@gmail.com`, password);
   } catch (e) {
     console.error("Login error:", e);
@@ -253,36 +249,30 @@ onAuthStateChanged(
 
     currentUser = user;
 
-    const usernameEl = $("dashboardUsername");
-    if (usernameEl) {
-      const emailName = (user?.email || "User").split("@")[0].replace(/[._-]+/g, " ").trim();
-      usernameEl.textContent = emailName ? emailName.replace(/\b\w/g, ch => ch.toUpperCase()) : "User";
-      usernameEl.title = user?.email || "";
+    if (user) {
+
+      $("loginPage")
+        .classList
+        .add("hidden");
+
+      $("app")
+        .classList
+        .remove("hidden");
+
+      await loadCustomers();
+
+    } else {
+
+      $("app")
+        .classList
+        .add("hidden");
+
+      $("loginPage")
+        .classList
+        .remove("hidden");
+
     }
 
-    if (user) {
-      // Show the application immediately after Firebase confirms the session;
-      // a Firestore loading problem must not leave the user stuck on Login.
-      $("loginPage").classList.add("hidden");
-      $("app").classList.remove("hidden");
-      try {
-        await loadCustomers();
-      } catch (error) {
-        console.error("Post-login initialization error:", error);
-        const msg = $("loginMsg");
-        if (msg) msg.textContent = "Signed in, but customer data could not load. Check your connection and Firestore permissions.";
-      }
-    } else {
-      $("app").classList.add("hidden");
-      $("loginPage").classList.remove("hidden");
-    }
-  },
-  error => {
-    console.error("Firebase authentication state error:", error);
-    $("app").classList.add("hidden");
-    $("loginPage").classList.remove("hidden");
-    const msg = $("loginMsg");
-    if (msg) msg.textContent = "Could not verify your login. Check your internet connection and refresh the page.";
   }
 );
 
