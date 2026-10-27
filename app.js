@@ -239,6 +239,18 @@ $("search").oninput = () => {
 };
 
 
+function updateDashboardDate() {
+  const now = new Date();
+  const dayEl = $("dashboardDay");
+  const dateEl = $("dashboardDate");
+  if (dayEl) dayEl.textContent = new Intl.DateTimeFormat("en-US", { weekday: "long" }).format(now);
+  if (dateEl) dateEl.textContent = new Intl.DateTimeFormat("en-US", { month: "long", day: "numeric", year: "numeric" }).format(now);
+}
+
+// Refresh the date automatically while the dashboard remains open.
+updateDashboardDate();
+setInterval(updateDashboardDate, 60 * 1000);
+
 /* =========================================
    AUTH STATE
 ========================================= */

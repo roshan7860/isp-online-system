@@ -1616,3 +1616,12 @@ body:has(#app:not(.hidden)) .mainNav .navItem::after{content:attr(data-page-labe
   .welcomeUser { padding: 6px 9px; gap: 7px; font-size: 12px; }
   .welcomeUserIcon { width: 29px; height: 29px; }
 }
+
+
+/* Dashboard header: automatic date on the left and username only on the right. */
+.dashboardDate { display:flex; flex-direction:column; gap:4px; color:#7183a0; font-size:13px; }
+.dashboardDate span { font-size:13px; font-weight:600; color:#7486a2; }
+.dashboardDate strong { color:#1b2f52; font-size:21px; line-height:1.25; font-weight:750; }
+.welcomeUser { padding:6px 12px; }
+.welcomeUserText { font-weight:700; color:#233b63; }
+@media (max-width:600px) { .dashboardDate strong { font-size:17px; } .welcomeUser { padding:5px 8px; gap:7px; } }

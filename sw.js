@@ -1,4 +1,4 @@
-const CACHE_NAME = "customer-credit-manager-dashboard-user-v37";
+const CACHE_NAME = "customer-credit-manager-dashboard-date-user-v38";
 const BASE = "/isp-online-system/";
 const APP_SHELL = [
   BASE, BASE + "index.html", BASE + "customer.html", BASE + "style.css",
