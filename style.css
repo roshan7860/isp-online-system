@@ -1553,3 +1553,21 @@ body:has(#app:not(.hidden)) .mainNav .navItem::after{content:attr(data-page-labe
   body:has(#app:not(.hidden)) main{margin-left:68px!important;padding-left:12px!important;padding-right:12px!important}
   body:has(#app:not(.hidden)) .mainNav .navItem{width:50px!important;min-width:50px!important;height:46px!important;min-height:46px!important}
 }
+
+/* Settings navigation icon: polished, bright control sliders */
+.mainNav .navItem .navIcon.settingsNavIcon{
+  background:linear-gradient(145deg,#e9f2ff 0%,#eee9ff 100%)!important;
+  color:#5369e8!important;
+  border:1px solid rgba(104,120,244,.22)!important;
+  box-shadow:0 3px 9px rgba(82,103,220,.12)!important;
+  transition:background .2s ease,color .2s ease,box-shadow .2s ease,transform .2s ease!important;
+}
+.mainNav .navItem:hover .navIcon.settingsNavIcon,
+.mainNav .navItem.active .navIcon.settingsNavIcon{
+  background:linear-gradient(145deg,#5678ff 0%,#9362f5 100%)!important;
+  color:#fff!important;
+  border-color:transparent!important;
+  box-shadow:0 5px 13px rgba(94,91,230,.3)!important;
+  transform:translateY(-1px);
+}
+.mainNav .navItem .navIcon.settingsNavIcon svg{width:18px!important;height:18px!important;stroke-width:1.9!important}
