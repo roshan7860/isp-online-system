@@ -2,6 +2,8 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebas
 
 import {
   getAuth,
+  setPersistence,
+  browserLocalPersistence,
   signInWithEmailAndPassword,
   onAuthStateChanged,
   signOut,
@@ -118,6 +120,8 @@ loginForm.onsubmit = async (event) => {
   loginButton.dataset.originalText = loginButton.textContent;
   loginButton.textContent = "Signing in…";
   try {
+    // Explicitly keep the authenticated session across refreshes in this browser.
+    await setPersistence(auth, browserLocalPersistence);
     await signInWithEmailAndPassword(auth, `${username}@gmail.com`, password);
   } catch (e) {
     console.error("Login error:", e);
@@ -257,29 +261,28 @@ onAuthStateChanged(
     }
 
     if (user) {
-
-      $("loginPage")
-        .classList
-        .add("hidden");
-
-      $("app")
-        .classList
-        .remove("hidden");
-
-      await loadCustomers();
-
+      // Show the application immediately after Firebase confirms the session;
+      // a Firestore loading problem must not leave the user stuck on Login.
+      $("loginPage").classList.add("hidden");
+      $("app").classList.remove("hidden");
+      try {
+        await loadCustomers();
+      } catch (error) {
+        console.error("Post-login initialization error:", error);
+        const msg = $("loginMsg");
+        if (msg) msg.textContent = "Signed in, but customer data could not load. Check your connection and Firestore permissions.";
+      }
     } else {
-
-      $("app")
-        .classList
-        .add("hidden");
-
-      $("loginPage")
-        .classList
-        .remove("hidden");
-
+      $("app").classList.add("hidden");
+      $("loginPage").classList.remove("hidden");
     }
-
+  },
+  error => {
+    console.error("Firebase authentication state error:", error);
+    $("app").classList.add("hidden");
+    $("loginPage").classList.remove("hidden");
+    const msg = $("loginMsg");
+    if (msg) msg.textContent = "Could not verify your login. Check your internet connection and refresh the page.";
   }
 );
 
