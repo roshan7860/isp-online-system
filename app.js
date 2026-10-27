@@ -160,7 +160,7 @@ function showPage(pageId) {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 document.querySelectorAll(".navItem").forEach(btn => btn.addEventListener("click", () => showPage(btn.dataset.page)));
-$("dashboardAddCustomer").onclick = () => $("addCustomerBtn").click();
+// Dashboard greeting shows the signed-in username; customer creation remains on the Customers page.
 /* Account settings use Firebase Authentication; passwords are never stored in Firestore. */
 function openSettingsPage() {
   if (!currentUser) return;
@@ -251,6 +251,17 @@ onAuthStateChanged(
 
     if (user) {
 
+      const usernameEl = $("dashboardUsername");
+      if (usernameEl) {
+        const emailName = (user.email || "").split("@")[0].replace(/[._-]+/g, " ").trim();
+        const displayName = emailName
+          .split(/\\s+/)
+          .filter(Boolean)
+          .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+          .join(" ");
+        usernameEl.textContent = displayName || "User";
+      }
+
       $("loginPage")
         .classList
         .add("hidden");
@@ -258,13 +269,6 @@ onAuthStateChanged(
       $("app")
         .classList
         .remove("hidden");
-
-      const rawUsername = (user.email || "user@example.com").split("@")[0];
-      const displayUsername = rawUsername
-        .replace(/[._-]+/g, " ")
-        .replace(/\b\w/g, letter => letter.toUpperCase());
-      $("welcomeUsername").textContent = displayUsername || "User";
-      $("headerUsername").textContent = displayUsername || "User";
 
       await loadCustomers();
 
