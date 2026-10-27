@@ -172,6 +172,7 @@ function openSettingsPage() {
   $("settingsCurrentPassword").value = "";
   $("settingsNewPassword").value = "";
   $("settingsMsg").textContent = "";
+  loadWhatsappTemplate();
   showPage("settingsView");
 }
 const settingsShortcut = $("settingsBtn"); if (settingsShortcut) settingsShortcut.onclick = openSettingsPage;
@@ -1736,21 +1737,70 @@ function sendReminder(c) {
 
 
 /* =========================================
-   PASHTO WHATSAPP MESSAGE
+   EDITABLE WHATSAPP MESSAGE TEMPLATE
 ========================================= */
 
-function buildPashtoMessage(c) {
-  return `السلام علیکم، محترم *${c.name}*!
+const DEFAULT_WHATSAPP_TEMPLATE = `السلام علیکم، محترم *{name}*!
 
 ستاسو د حساب تازه معلومات:
 
-💰 *پاتې پیسې:* ${money(c.balance)} افغانۍ
+💰 *پاتې پیسې:* {balance} افغانۍ
 
 مهرباني وکړئ د پاتې پیسو د تصفیې لپاره اقدام وکړئ.
 
-📋 *د خپل حساب د بشپړو معلوماتو لپاره لاندې لینک پانیزئ:*
+📋 *د خپل حساب د بشپړو معلوماتو لپاره لاندې لینک پرانیزئ:*
 
-${portalUrl(c.publicToken)}`;
+{link}`;
+
+function whatsappTemplateStorageKey() {
+  return `ccm-whatsapp-template-${currentUser?.uid || "default"}`;
+}
+
+function getWhatsappTemplate() {
+  try { return localStorage.getItem(whatsappTemplateStorageKey()) || DEFAULT_WHATSAPP_TEMPLATE; }
+  catch (_) { return DEFAULT_WHATSAPP_TEMPLATE; }
+}
+
+function loadWhatsappTemplate() {
+  const field = $("whatsappMessageTemplate");
+  const msg = $("whatsappTemplateMsg");
+  if (field) field.value = getWhatsappTemplate();
+  if (msg) { msg.textContent = ""; msg.className = "msg"; }
+}
+
+const saveWhatsappTemplateBtn = $("saveWhatsappTemplate");
+if (saveWhatsappTemplateBtn) saveWhatsappTemplateBtn.addEventListener("click", () => {
+  const field = $("whatsappMessageTemplate");
+  const msg = $("whatsappTemplateMsg");
+  const template = field.value.trim();
+  msg.textContent = ""; msg.className = "msg";
+  if (!template) { msg.textContent = "Please enter a WhatsApp message."; msg.classList.add("error"); return; }
+  try {
+    localStorage.setItem(whatsappTemplateStorageKey(), template);
+    msg.textContent = "WhatsApp message saved. New messages will use this template.";
+    msg.classList.add("success");
+  } catch (_) {
+    msg.textContent = "Could not save the template in this browser.";
+    msg.classList.add("error");
+  }
+});
+
+const resetWhatsappTemplateBtn = $("resetWhatsappTemplate");
+if (resetWhatsappTemplateBtn) resetWhatsappTemplateBtn.addEventListener("click", () => {
+  const field = $("whatsappMessageTemplate");
+  const msg = $("whatsappTemplateMsg");
+  field.value = DEFAULT_WHATSAPP_TEMPLATE;
+  try { localStorage.removeItem(whatsappTemplateStorageKey()); } catch (_) {}
+  msg.textContent = "Default message restored."; msg.className = "msg success";
+});
+
+function buildPashtoMessage(c) {
+  const values = {
+    name: c.name || "مشتري",
+    balance: money(c.balance),
+    link: portalUrl(c.publicToken)
+  };
+  return getWhatsappTemplate().replace(/\{(name|balance|link)\}/g, (_, key) => values[key]);
 }
 
 

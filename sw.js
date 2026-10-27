@@ -1,4 +1,4 @@
-const CACHE_NAME = "customer-credit-manager-settings-users-theme-v42";
+const CACHE_NAME = "customer-credit-manager-whatsapp-template-v43";
 const BASE = "/isp-online-system/";
 const APP_SHELL = [
   BASE, BASE + "index.html", BASE + "customer.html", BASE + "style.css",

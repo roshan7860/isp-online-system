@@ -108,6 +108,11 @@
           <div id="addUserMsg" class="msg" role="status" aria-live="polite"></div>
         </form>
       </div>
+      <div class="card whatsappTemplateSettingsCard settingsPanel">
+        <div class="settingsPanelHeading"><span class="settingsPanelIcon whatsappTemplateIcon" aria-hidden="true">✉</span><div><h3>WhatsApp message template</h3><p class="muted">Edit the message sent to customers when you record a transaction or send a reminder.</p></div></div>
+        <div class="whatsappTemplateField"><label for="whatsappMessageTemplate">Customer message</label><textarea id="whatsappMessageTemplate" rows="9" spellcheck="false" placeholder="Write the WhatsApp message here..."></textarea><small>Use these placeholders where needed: <code>{name}</code> = customer name, <code>{balance}</code> = outstanding balance, <code>{link}</code> = customer account link.</small></div>
+        <div class="whatsappTemplateActions"><button id="saveWhatsappTemplate" type="button">Save message</button><button id="resetWhatsappTemplate" type="button" class="secondary">Restore default</button><span id="whatsappTemplateMsg" class="msg" role="status" aria-live="polite"></span></div>
+      </div>
       <div id="settingsModal" class="card settingsPageCard settingsPanel">
         <div class="row between"><h3>Account Settings</h3></div>
         <p class="muted">Change the email address or password for your signed-in account.</p>

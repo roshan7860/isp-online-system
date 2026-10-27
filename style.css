@@ -1819,3 +1819,26 @@ html[data-theme="dark"] .themeSwitchTrack{background:#34445d!important;border-co
 html[data-theme="dark"] .themeSwitch input:checked+.themeSwitchTrack{background:#315ff0!important;border-color:#4776f5!important}
 html[data-theme="dark"] .settingsPageCard{background:#111c2e!important}
 @media(max-width:650px){.settingsPanel{padding:18px!important}.settingsPanelHeading{align-items:flex-start}.settingsPanelIcon{flex-basis:40px;width:40px;height:40px;border-radius:12px}.themeSettingRow{align-items:flex-start!important;flex-direction:column}.themePicker{width:100%;box-sizing:border-box;justify-content:space-between}.addUserForm{grid-template-columns:minmax(0,1fr)}.addUserActions{align-items:stretch;flex-direction:column}.addUserActions button{width:100%}}
+
+
+/* V43 — editable WhatsApp customer message template */
+.whatsappTemplateField{display:flex;flex-direction:column;gap:9px;min-width:0}
+.whatsappTemplateField label{font-size:12px;font-weight:800;letter-spacing:.025em;color:#465773}
+.whatsappTemplateField textarea{box-sizing:border-box;width:100%;min-height:190px;resize:vertical;padding:14px 15px;border:1px solid #d5dfec;border-radius:12px;background:#fbfcff;color:#1b2c47;font:inherit;line-height:1.65;outline:none;transition:border-color .18s,box-shadow .18s}
+.whatsappTemplateField textarea:focus{border-color:#4776f5;box-shadow:0 0 0 4px #4776f51c;background:#fff}
+.whatsappTemplateField small{font-size:11px;line-height:1.6;color:#7888a0}
+.whatsappTemplateField code{padding:2px 5px;border-radius:5px;background:#edf2ff;color:#315fe9}
+.whatsappTemplateActions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.whatsappTemplateActions button{min-height:42px;padding:0 16px;border-radius:10px;font-weight:800}
+#whatsappTemplateMsg{margin:0;font-size:12px;line-height:1.5}
+#whatsappTemplateMsg.success{color:#13865d}
+#whatsappTemplateMsg.error{color:#d33b51}
+.whatsappTemplateIcon{background:#e6f8ef;color:#14875a;border-color:#c9eedb}
+html[data-theme="dark"] .whatsappTemplateField label{color:#e5edf8}
+html[data-theme="dark"] .whatsappTemplateField textarea{background:#0b1424!important;color:#e5edf8!important;border-color:#34465f!important}
+html[data-theme="dark"] .whatsappTemplateField textarea:focus{background:#0d192b!important;border-color:#5a8cff!important}
+html[data-theme="dark"] .whatsappTemplateField small{color:#9fb0c8}
+html[data-theme="dark"] .whatsappTemplateField code{background:#1b3154;color:#a8c5ff}
+html[data-theme="dark"] .whatsappTemplateIcon{background:#173b34;border-color:#245d4d;color:#7be0b0}
+html[data-theme="dark"] #whatsappTemplateMsg.success{color:#6ee7b7!important}
+html[data-theme="dark"] #whatsappTemplateMsg.error{color:#ff9aa5!important}
