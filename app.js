@@ -249,6 +249,13 @@ onAuthStateChanged(
 
     currentUser = user;
 
+    // Show the signed-in user's name in the dashboard profile header.
+    const dashboardUserName = $("dashboardUserName");
+    if (dashboardUserName) {
+      const displayName = user && (user.displayName || (user.email || "").split("@")[0]);
+      dashboardUserName.textContent = displayName || "Account";
+    }
+
     if (user) {
 
       $("loginPage")
