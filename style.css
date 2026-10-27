@@ -1661,3 +1661,59 @@ body:has(#app:not(.hidden)) .mainNav .navItem::after{content:attr(data-page-labe
 .transactionsEmpty{text-align:center!important;padding:34px 18px!important;color:#8a99ae!important}
 @media(max-width:900px){.transactionsFilters{grid-template-columns:repeat(2,minmax(0,1fr))!important}.transactionsFilters button{width:100%!important}.transactionsSummaryGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
 @media(max-width:600px){.dashboardPageHeading{padding:12px!important;gap:8px!important}.dashboardDate{gap:8px!important}.dashboardDate strong{font-size:15px!important}.dashboardDate span{font-size:10px!important}.welcomeUser{min-height:40px!important;padding:5px 8px!important;gap:6px!important}.welcomeUserIcon{width:29px!important;height:29px!important}.welcomeUserText{font-size:12px!important}.transactionsFilters{grid-template-columns:1fr!important}.transactionsSummaryGrid{gap:9px!important}.transactionsSummaryGrid .stat{padding:13px!important}.transactionsFilterCard{padding:15px!important}.transactionsTableHeading{padding:16px!important}}
+
+/* V40: keep dashboard identity bar and transaction ledger consistent in dark mode. */
+html[data-theme="dark"] body:has(#app) #app .dashboardPageHeading {
+  background: linear-gradient(135deg,#111f33 0%,#15243a 100%) !important;
+  border: 1px solid #2a3c55 !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,.18) !important;
+}
+html[data-theme="dark"] body:has(#app) #app .dashboardDate,
+html[data-theme="dark"] body:has(#app) #app .dashboardDate span { color:#9fb3d0 !important; }
+html[data-theme="dark"] body:has(#app) #app .dashboardDate strong { color:#f0f5ff !important; }
+html[data-theme="dark"] body:has(#app) #app .welcomeUser {
+  background:linear-gradient(135deg,#1a2b43,#17263b) !important;
+  border-color:#344a68 !important;
+  box-shadow:0 5px 16px rgba(0,0,0,.22) !important;
+  color:#edf4ff !important;
+}
+html[data-theme="dark"] body:has(#app) #app .welcomeUserText { color:#edf4ff !important; }
+html[data-theme="dark"] body:has(#app) #transactionsView .transactionsFilterCard,
+html[data-theme="dark"] body:has(#app) #transactionsView .transactionHistoryCard {
+  background:#111e31 !important;
+  border-color:#2a3b53 !important;
+  box-shadow:0 8px 24px rgba(0,0,0,.16) !important;
+}
+html[data-theme="dark"] body:has(#app) #transactionsView .transactionsFilterTitle h3,
+html[data-theme="dark"] body:has(#app) #transactionsView .transactionsTableHeading h3 { color:#edf4ff !important; }
+html[data-theme="dark"] body:has(#app) #transactionsView .transactionsFilterTitle p,
+html[data-theme="dark"] body:has(#app) #transactionsView .transactionsFilters label { color:#9fb1cb !important; }
+html[data-theme="dark"] body:has(#app) #transactionsView .transactionsFilters input {
+  background:#0c1728 !important;
+  border-color:#344761 !important;
+  color:#e5edf8 !important;
+  color-scheme:dark;
+}
+html[data-theme="dark"] body:has(#app) #transactionsView .transactionsSummaryGrid .stat {
+  background:#111e31 !important;
+  border-color:#2a3b53 !important;
+  box-shadow:0 6px 20px rgba(0,0,0,.15) !important;
+}
+html[data-theme="dark"] body:has(#app) #transactionsView .transactionsSummaryGrid .stat span,
+html[data-theme="dark"] body:has(#app) #transactionsView .transactionsSummaryGrid .stat small { color:#9fb1cb !important; }
+html[data-theme="dark"] body:has(#app) #transactionsView .transactionsSummaryGrid .stat b { color:#edf4ff !important; }
+html[data-theme="dark"] body:has(#app) #transactionsView .transactionsTableHeading { border-bottom-color:#2a3b53 !important; }
+html[data-theme="dark"] body:has(#app) #transactionsView .transactionsTable th {
+  background:#1b2b42 !important;
+  color:#b8c9e2 !important;
+  border-bottom-color:#344761 !important;
+}
+html[data-theme="dark"] body:has(#app) #transactionsView .transactionsTable td {
+  background:#111e31 !important;
+  color:#c5d3e7 !important;
+  border-bottom-color:#2a3b53 !important;
+}
+html[data-theme="dark"] body:has(#app) #transactionsView .transactionsTable tbody tr:hover td { background:#192a41 !important; }
+html[data-theme="dark"] body:has(#app) #transactionsView .transactionCustomerLink { color:#8bb8ff !important; }
+html[data-theme="dark"] body:has(#app) #transactionsView .transactionsEmpty { color:#8ea3c0 !important; }
+html[data-theme="dark"] body:has(#app) #transactionsView .recentCount { background:#1b2b42 !important; color:#c5d3e7 !important; border-color:#344761 !important; }
