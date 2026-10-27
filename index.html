@@ -94,11 +94,21 @@
     </section>
     <section id="settingsView" class="pageView hidden">
       <div class="pageHeading"><div><h2>Settings</h2><p class="muted">Account and security settings</p></div></div>
-      <div class="card themeSettingsCard">
-        <div><h3>Appearance</h3><p class="muted">Choose the system color theme.</p></div>
-        <div class="themeSettingRow"><div><strong>Dark Mode</strong><p class="muted">Switch the entire system to a dark appearance.</p></div><label class="themeSwitch" for="darkModeToggle"><input id="darkModeToggle" type="checkbox" aria-label="Enable dark mode"><span class="themeSwitchTrack"></span></label></div>
+      <div class="card themeSettingsCard settingsPanel">
+        <div class="settingsPanelHeading"><span class="settingsPanelIcon appearanceIcon" aria-hidden="true">◐</span><div><h3>Appearance</h3><p class="muted">Personalize how Customer Credit Manager looks on this device.</p></div></div>
+        <div class="themeSettingRow"><div class="themeChoiceCopy"><strong>Color theme</strong><p class="muted">Choose the appearance that feels best for you.</p></div><div class="themePicker"><span class="themeModeLabel" id="lightModeLabel">☀ Light</span><label class="themeSwitch" for="darkModeToggle"><input id="darkModeToggle" type="checkbox" aria-label="Enable dark mode"><span class="themeSwitchTrack"></span></label><span class="themeModeLabel" id="darkModeLabel">☾ Dark</span></div></div>
       </div>
-      <div id="settingsModal" class="card settingsPageCard">
+      <div class="card addUserSettingsCard settingsPanel">
+        <div class="settingsPanelHeading"><span class="settingsPanelIcon addUserIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M3 20v-1.2a6 6 0 0 1 12 0V20M18 8v7M14.5 11.5h7"/></svg></span><div><h3>Add another user</h3><p class="muted">Create a separate sign-in for another staff member. Each user has their own account data.</p></div></div>
+        <form id="addUserForm" class="addUserForm" autocomplete="off">
+          <div class="addUserField"><label for="newUsername">Username</label><div class="usernameInputWrap"><span aria-hidden="true">@</span><input id="newUsername" name="newUsername" type="text" placeholder="e.g. ahmadkhan" autocapitalize="none" spellcheck="false" required></div><small>Use the Gmail username only, without @gmail.com.</small></div>
+          <div class="addUserField"><label for="newUserPassword">Temporary password</label><input id="newUserPassword" name="newUserPassword" type="password" placeholder="At least 6 characters" minlength="6" autocomplete="new-password" required></div>
+          <div class="addUserField"><label for="confirmNewUserPassword">Confirm password</label><input id="confirmNewUserPassword" name="confirmNewUserPassword" type="password" placeholder="Enter the password again" minlength="6" autocomplete="new-password" required></div>
+          <div class="addUserActions"><button id="createUserBtn" type="submit"><span aria-hidden="true">＋</span> Create user</button><span class="muted addUserHint">The new user can sign in with this username and password.</span></div>
+          <div id="addUserMsg" class="msg" role="status" aria-live="polite"></div>
+        </form>
+      </div>
+      <div id="settingsModal" class="card settingsPageCard settingsPanel">
         <div class="row between"><h3>Account Settings</h3></div>
         <p class="muted">Change the email address or password for your signed-in account.</p>
         <label for="settingsEmail">New email</label><input id="settingsEmail" type="email" placeholder="New email address">

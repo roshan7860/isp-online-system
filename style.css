@@ -1717,3 +1717,105 @@ html[data-theme="dark"] body:has(#app) #transactionsView .transactionsTable tbod
 html[data-theme="dark"] body:has(#app) #transactionsView .transactionCustomerLink { color:#8bb8ff !important; }
 html[data-theme="dark"] body:has(#app) #transactionsView .transactionsEmpty { color:#8ea3c0 !important; }
 html[data-theme="dark"] body:has(#app) #transactionsView .recentCount { background:#1b2b42 !important; color:#c5d3e7 !important; border-color:#344761 !important; }
+
+/* V41: refine transaction customer and type badges for readable dark mode. */
+html[data-theme="dark"] body:has(#app) #transactionsView .transactionsTable .transactionCustomerLink {
+  display:inline-flex !important;
+  align-items:center !important;
+  max-width:100% !important;
+  min-height:30px !important;
+  padding:6px 10px !important;
+  border:1px solid #344b68 !important;
+  border-radius:9px !important;
+  background:#1b2c43 !important;
+  color:#f0f6ff !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.035) !important;
+  font-size:12px !important;
+  font-weight:750 !important;
+  line-height:1.35 !important;
+  text-decoration:none !important;
+  opacity:1 !important;
+}
+html[data-theme="dark"] body:has(#app) #transactionsView .transactionsTable .transactionCustomerLink:hover {
+  background:#243b59 !important;
+  border-color:#52739c !important;
+  color:#ffffff !important;
+}
+html[data-theme="dark"] body:has(#app) #transactionsView .transactionsTable .transactionPill {
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  min-height:25px !important;
+  padding:5px 10px !important;
+  border:1px solid transparent !important;
+  border-radius:999px !important;
+  font-size:10px !important;
+  font-weight:800 !important;
+  line-height:1.2 !important;
+  letter-spacing:.01em !important;
+  opacity:1 !important;
+  box-shadow:none !important;
+}
+html[data-theme="dark"] body:has(#app) #transactionsView .transactionsTable .transactionPill.creditPill {
+  background:#173d35 !important;
+  border-color:#286553 !important;
+  color:#8af0c3 !important;
+}
+html[data-theme="dark"] body:has(#app) #transactionsView .transactionsTable .transactionPill.debitPill {
+  background:#482832 !important;
+  border-color:#75404b !important;
+  color:#ffadb5 !important;
+}
+
+/* V42 — polished settings panels, accessible theme picker, and add-user form. */
+.settingsPanel{position:relative;overflow:hidden;max-width:900px!important;margin:0 0 18px!important;padding:24px!important;border:1px solid var(--line,#dce5f1)!important;border-radius:18px!important;box-shadow:0 10px 28px rgba(20,40,75,.07)!important;gap:20px!important}
+.settingsPanelHeading{display:flex;align-items:center;gap:14px;min-width:0}
+.settingsPanelHeading>div{min-width:0}
+.settingsPanelHeading h3{margin:0 0 5px!important;font-size:17px;letter-spacing:-.02em}
+.settingsPanelHeading p{margin:0!important;line-height:1.55}
+.settingsPanelIcon{display:grid;place-items:center;flex:0 0 46px;width:46px;height:46px;border-radius:14px;font-size:25px;font-weight:700;background:#eaf1ff;color:#315fe9;border:1px solid #d5e1ff}
+.settingsPanelIcon svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.themeSettingsCard .themeSettingRow{margin-top:0;padding-top:18px;border-top:1px solid #e6ebf3}
+.themePicker{display:flex;align-items:center;justify-content:flex-end;gap:12px;flex-shrink:0;padding:9px 12px;border:1px solid #dce5f1;background:#f7f9fd;border-radius:14px}
+.themeModeLabel{font-size:12px;font-weight:750;color:#62718a;white-space:nowrap}
+.themeModeLabel:first-child{color:#345fe0}
+.themeSwitchTrack{width:46px;height:26px;background:#b9c5d6!important;border:1px solid #aab8cc;box-shadow:inset 0 1px 2px #0001}
+.themeSwitchTrack:after{width:18px;height:18px;left:3px;top:3px;background:#fff;box-shadow:0 2px 5px #172b4d33}
+.themeSwitch input:checked+.themeSwitchTrack{background:#315ff0!important;border-color:#315ff0}
+.themeSwitch input:checked+.themeSwitchTrack:after{transform:translateX(20px)}
+.addUserSettingsCard{gap:22px!important}
+.addUserForm{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 16px}
+.addUserField{display:flex;flex-direction:column;gap:8px;min-width:0}
+.addUserField label{margin:0!important;font-size:12px;font-weight:800;letter-spacing:.025em;color:#465773}
+.addUserField input{width:100%;min-height:46px;box-sizing:border-box;border:1px solid #d5dfec;border-radius:11px;padding:11px 13px;background:#fbfcff;color:#1b2c47;font:inherit;outline:none;transition:border-color .18s,box-shadow .18s,background .18s}
+.addUserField input:focus{border-color:#4776f5;box-shadow:0 0 0 4px #4776f51c;background:#fff}
+.addUserField small{font-size:11px;color:#7888a0;line-height:1.45}
+.usernameInputWrap{display:flex;align-items:center;min-height:46px;border:1px solid #d5dfec;border-radius:11px;background:#fbfcff;overflow:hidden;transition:border-color .18s,box-shadow .18s}
+.usernameInputWrap:focus-within{border-color:#4776f5;box-shadow:0 0 0 4px #4776f51c;background:#fff}
+.usernameInputWrap>span{display:grid;place-items:center;align-self:stretch;width:42px;flex-shrink:0;background:#edf2ff;color:#315fe9;font-weight:800;border-right:1px solid #dbe4f4}
+.usernameInputWrap input{border:0!important;box-shadow:none!important;background:transparent!important;min-width:0}
+.addUserActions{grid-column:1/-1;display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:2px}
+.addUserActions button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 19px;border-radius:11px;font-weight:800;box-shadow:0 5px 13px #315fe923}
+.addUserActions button:disabled{opacity:.65;cursor:wait}
+.addUserHint{font-size:11px;line-height:1.5}
+#addUserMsg{grid-column:1/-1;margin:0;padding:0;font-size:13px;line-height:1.5}
+#addUserMsg.success{color:#13865d}
+#addUserMsg.error{color:#d33b51}
+html[data-theme="dark"] .settingsPanel{background:#111c2e!important;border-color:#26364d!important;color:#e5edf8!important;box-shadow:0 10px 28px #0002!important}
+html[data-theme="dark"] .settingsPanelHeading h3,html[data-theme="dark"] .settingsPanelHeading strong,html[data-theme="dark"] .addUserField label{color:#e5edf8!important}
+html[data-theme="dark"] .settingsPanelHeading p,html[data-theme="dark"] .addUserField small,html[data-theme="dark"] .addUserHint{color:#9fb0c8!important}
+html[data-theme="dark"] .settingsPanelIcon{background:#1b3154!important;border-color:#2b4c7d!important;color:#91b8ff!important}
+html[data-theme="dark"] .themeSettingsCard .themeSettingRow{border-color:#26364d!important}
+html[data-theme="dark"] .themePicker{background:#0b1424!important;border-color:#34465f!important}
+html[data-theme="dark"] .themeModeLabel{color:#9fb0c8!important}
+html[data-theme="dark"] #darkModeLabel{color:#a8c5ff!important}
+html[data-theme="dark"] #lightModeLabel{color:#9fb0c8!important}
+html[data-theme="dark"] .addUserField input,html[data-theme="dark"] .usernameInputWrap{background:#0b1424!important;border-color:#34465f!important;color:#e5edf8!important}
+html[data-theme="dark"] .addUserField input:focus,html[data-theme="dark"] .usernameInputWrap:focus-within{background:#0d192b!important;border-color:#5a8cff!important}
+html[data-theme="dark"] .usernameInputWrap>span{background:#1b3154!important;color:#a8c5ff!important;border-color:#34465f!important}
+html[data-theme="dark"] #addUserMsg.success{color:#6ee7b7!important}
+html[data-theme="dark"] #addUserMsg.error{color:#ff9aa5!important}
+html[data-theme="dark"] .themeSwitchTrack{background:#34445d!important;border-color:#53647e!important}
+html[data-theme="dark"] .themeSwitch input:checked+.themeSwitchTrack{background:#315ff0!important;border-color:#4776f5!important}
+html[data-theme="dark"] .settingsPageCard{background:#111c2e!important}
+@media(max-width:650px){.settingsPanel{padding:18px!important}.settingsPanelHeading{align-items:flex-start}.settingsPanelIcon{flex-basis:40px;width:40px;height:40px;border-radius:12px}.themeSettingRow{align-items:flex-start!important;flex-direction:column}.themePicker{width:100%;box-sizing:border-box;justify-content:space-between}.addUserForm{grid-template-columns:minmax(0,1fr)}.addUserActions{align-items:stretch;flex-direction:column}.addUserActions button{width:100%}}

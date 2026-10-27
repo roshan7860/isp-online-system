@@ -1,4 +1,4 @@
-const CACHE_NAME = "customer-credit-manager-darkmode-fix-v40";
+const CACHE_NAME = "customer-credit-manager-settings-users-theme-v42";
 const BASE = "/isp-online-system/";
 const APP_SHELL = [
   BASE, BASE + "index.html", BASE + "customer.html", BASE + "style.css",

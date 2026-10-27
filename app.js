@@ -3,6 +3,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebas
 import {
   getAuth,
   signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
   onAuthStateChanged,
   signOut,
   updateEmail,
@@ -44,6 +45,9 @@ if (txDateInput) {
 }
 
 const auth = getAuth(app);
+// Use a secondary Firebase app for user creation so the current user stays signed in.
+const userCreationApp = initializeApp(firebaseConfig, "ccm-user-creation");
+const userCreationAuth = getAuth(userCreationApp);
 
 const db = getFirestore(app);
 
@@ -171,6 +175,42 @@ function openSettingsPage() {
   showPage("settingsView");
 }
 const settingsShortcut = $("settingsBtn"); if (settingsShortcut) settingsShortcut.onclick = openSettingsPage;
+const addUserForm = $("addUserForm");
+if (addUserForm) addUserForm.addEventListener("submit", async event => {
+  event.preventDefault();
+  const usernameInput = $("newUsername");
+  const username = usernameInput.value.trim().toLowerCase();
+  const password = $("newUserPassword").value;
+  const confirmPassword = $("confirmNewUserPassword").value;
+  const msg = $("addUserMsg");
+  const button = $("createUserBtn");
+  msg.textContent = "";
+  msg.className = "msg";
+  if (!/^[a-z0-9._-]{3,30}$/.test(username)) {
+    msg.textContent = "Username must be 3–30 characters and use only letters, numbers, dots, underscores or hyphens.";
+    msg.classList.add("error"); return;
+  }
+  if (password.length < 6) { msg.textContent = "Password must be at least 6 characters."; msg.classList.add("error"); return; }
+  if (password !== confirmPassword) { msg.textContent = "The passwords do not match."; msg.classList.add("error"); return; }
+  button.disabled = true;
+  button.classList.add("isLoading");
+  try {
+    await createUserWithEmailAndPassword(userCreationAuth, `${username}@gmail.com`, password);
+    addUserForm.reset();
+    msg.textContent = `User “${username}” created successfully. They can now sign in with this username and password.`;
+    msg.classList.add("success");
+  } catch (e) {
+    console.error("Create user error:", e);
+    const messages = {
+      "auth/email-already-in-use": "This username already exists. Please choose another username.",
+      "auth/weak-password": "Please choose a stronger password with at least 6 characters.",
+      "auth/operation-not-allowed": "Email/Password sign-in is not enabled in Firebase Authentication.",
+      "auth/network-request-failed": "Network error. Check your internet connection and try again."
+    };
+    msg.textContent = messages[e.code] || e.message || "Could not create user.";
+    msg.classList.add("error");
+  } finally { button.disabled = false; button.classList.remove("isLoading"); }
+});
 const darkModeToggle = $("darkModeToggle");
 if (darkModeToggle) darkModeToggle.addEventListener("change", () => {
   const theme = darkModeToggle.checked ? "dark" : "light";
