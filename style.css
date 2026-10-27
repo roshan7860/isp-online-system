@@ -1523,3 +1523,33 @@ body:has(#app:not(.hidden)) .mainNav .logoutNavItem:hover{
   body:has(#app:not(.hidden)) .mainNav{box-shadow:4px 0 18px rgba(0,8,24,.20)!important}
   body:has(#app:not(.hidden)) .mainNav .navItem.active{box-shadow:0 0 0 1px rgba(79,151,255,.12),0 5px 16px rgba(0,105,255,.22)!important}
 }
+
+
+/* V27: icon-only compact sidebar, matching the supplied video reference. */
+body:has(#app:not(.hidden)) .mainNav:before{content:none!important;display:none!important}
+body:has(#app:not(.hidden)) .mainNav{
+  width:76px!important;box-sizing:border-box!important;padding:20px 10px!important;
+  align-items:center!important;gap:10px!important;overflow-x:hidden!important;
+}
+body:has(#app:not(.hidden)) header{left:76px!important}
+body:has(#app:not(.hidden)) main{margin-left:76px!important}
+body:has(#app:not(.hidden)) .mainNav .navItem,
+body:has(#app:not(.hidden)) .mainNav button.navItem{
+  width:54px!important;min-width:54px!important;height:48px!important;min-height:48px!important;
+  padding:8px!important;margin:0!important;gap:0!important;justify-content:center!important;
+  border-radius:12px!important;overflow:hidden!important;font-size:0!important;white-space:nowrap!important;
+}
+body:has(#app:not(.hidden)) .mainNav .navItem .navLabel{display:none!important}
+body:has(#app:not(.hidden)) .mainNav .navItem .navIcon,
+body:has(#app:not(.hidden)) .mainNav .navItem span:not(.navLabel){
+  display:inline-grid!important;place-items:center!important;width:30px!important;height:30px!important;
+  min-width:30px!important;flex:0 0 30px!important;margin:0!important;font-size:18px!important;
+}
+body:has(#app:not(.hidden)) .mainNav .logoutNavItem{margin-top:12px!important;padding-top:8px!important;border-top:0!important}
+body:has(#app:not(.hidden)) .mainNav .navItem::after{content:attr(data-page-label);display:none}
+@media(max-width:750px){
+  body:has(#app:not(.hidden)) .mainNav{width:68px!important;padding:16px 7px!important;gap:8px!important}
+  body:has(#app:not(.hidden)) header{left:68px!important}
+  body:has(#app:not(.hidden)) main{margin-left:68px!important;padding-left:12px!important;padding-right:12px!important}
+  body:has(#app:not(.hidden)) .mainNav .navItem{width:50px!important;min-width:50px!important;height:46px!important;min-height:46px!important}
+}
