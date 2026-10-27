@@ -259,13 +259,6 @@ onAuthStateChanged(
         .classList
         .remove("hidden");
 
-      const rawUsername = (user.email || "user@example.com").split("@")[0];
-      const displayUsername = rawUsername
-        .replace(/[._-]+/g, " ")
-        .replace(/\b\w/g, letter => letter.toUpperCase());
-      $("welcomeUsername").textContent = displayUsername || "User";
-      $("headerUsername").textContent = displayUsername || "User";
-
       await loadCustomers();
 
     } else {

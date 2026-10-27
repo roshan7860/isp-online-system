@@ -1554,12 +1554,20 @@ body:has(#app:not(.hidden)) .mainNav .navItem::after{content:attr(data-page-labe
   body:has(#app:not(.hidden)) .mainNav .navItem{width:50px!important;min-width:50px!important;height:46px!important;min-height:46px!important}
 }
 
-
-/* Dashboard welcome bar: replaces the old title and wide add-customer button. */
-.dashboardWelcomeBar{display:flex;align-items:center;justify-content:space-between;gap:18px;margin:0 0 22px;padding:2px 0 10px;min-height:58px}
-.welcomeMessage h2{margin:0 0 5px;font-size:25px;font-weight:800;letter-spacing:-.045em;color:#192f53}
-.welcomeMessage p{margin:0;font-size:12px;color:#7b8eaa}
-.userProfilePill{display:flex;align-items:center;gap:10px;padding:8px 14px 8px 9px;border:1px solid #dce6f5;border-radius:999px;background:#fff;color:#243b60;font-size:13px;font-weight:750;box-shadow:0 5px 16px rgba(34,70,125,.07);white-space:nowrap}
-.userProfileIcon{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#2468f2,#7655f5);color:white}
-.userProfileIcon svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-@media(max-width:600px){.dashboardWelcomeBar{min-height:48px;margin-bottom:15px;gap:8px}.welcomeMessage h2{font-size:18px}.welcomeMessage p{font-size:10px}.userProfilePill{gap:6px;padding:5px 9px 5px 5px;font-size:11px}.userProfileIcon{width:29px;height:29px}}
+/* Settings navigation icon: polished, bright control sliders */
+.mainNav .navItem .navIcon.settingsNavIcon{
+  background:linear-gradient(145deg,#e9f2ff 0%,#eee9ff 100%)!important;
+  color:#5369e8!important;
+  border:1px solid rgba(104,120,244,.22)!important;
+  box-shadow:0 3px 9px rgba(82,103,220,.12)!important;
+  transition:background .2s ease,color .2s ease,box-shadow .2s ease,transform .2s ease!important;
+}
+.mainNav .navItem:hover .navIcon.settingsNavIcon,
+.mainNav .navItem.active .navIcon.settingsNavIcon{
+  background:linear-gradient(145deg,#5678ff 0%,#9362f5 100%)!important;
+  color:#fff!important;
+  border-color:transparent!important;
+  box-shadow:0 5px 13px rgba(94,91,230,.3)!important;
+  transform:translateY(-1px);
+}
+.mainNav .navItem .navIcon.settingsNavIcon svg{width:18px!important;height:18px!important;stroke-width:1.9!important}
