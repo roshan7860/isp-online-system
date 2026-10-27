@@ -29,6 +29,7 @@
     <button type="button" class="navItem active" data-page="dashboardView"><span class="navIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg></span> <span class="navLabel">Dashboard</span></button>
     <button type="button" class="navItem" data-page="reportView"><span class="navIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 19.5h16M6.5 16V10M12 16V4.5M17.5 16v-7"/></svg></span> <span class="navLabel">Reports</span></button>
     <button type="button" class="navItem" data-page="customersView"><span class="navIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19.5v-1.3a5.5 5.5 0 0 1 11 0v1.3Z"/><path d="M16 5.2a3 3 0 0 1 0 5.7M17 14.5a4.5 4.5 0 0 1 3.5 4.4v.6h-4"/></svg></span> <span class="navLabel">Customers</span></button>
+    <button type="button" class="navItem" data-page="transactionsView"><span class="navIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 4.5h10M7 8.5h10M7 12.5h6M5 3.5h14a1 1 0 0 1 1 1v15l-3-2-3 2-3-2-3 2-3-2V4.5a1 1 0 0 1 1-1Z"/></svg></span> <span class="navLabel">Transactions</span></button>
     <button type="button" class="navItem" data-page="settingsView"><span class="navIcon settingsNavIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 6h7M15 6h5M4 12h3M11 12h9M4 18h9M17 18h3"/><circle cx="13" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="15" cy="18" r="2"/></svg></span> <span class="navLabel">Settings</span></button>
     <button type="button" class="navItem logoutNavItem" id="logoutBtn"><span class="navIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M10 5H5.5A1.5 1.5 0 0 0 4 6.5v11A1.5 1.5 0 0 0 5.5 19H10"/><path d="M14 8l4 4-4 4M8 12h10"/></svg></span> <span class="navLabel">Logout</span></button>
   </nav>
@@ -67,6 +68,29 @@
     <section id="customersView" class="pageView hidden">
       <div class="pageHeading"><div><h2>Customers</h2><p class="muted">Manage customer accounts and transactions</p></div><button id="addCustomerBtn" type="button">+ Customer</button></div>
       <div class="card customerListCard"><input id="search" placeholder="Search customer..." aria-label="Search customer"><div id="customers"></div></div>
+    </section>
+    <section id="transactionsView" class="pageView hidden">
+      <div class="pageHeading"><div><h2>Transactions</h2><p class="muted">Complete history of all customer account transactions</p></div></div>
+      <div class="card transactionsFilterCard">
+        <div class="transactionsFilterTitle"><div><h3>Filter transaction history</h3><p class="muted">Choose a start date and an end date to view the report for that period.</p></div></div>
+        <div class="transactionsFilters">
+          <label>From date<input id="transactionsFromDate" type="date"></label>
+          <label>To date<input id="transactionsToDate" type="date"></label>
+          <button id="filterTransactionsBtn" type="button">Show Report</button>
+          <button id="clearTransactionsFilterBtn" type="button" class="secondary">Clear</button>
+        </div>
+        <div id="transactionsFilterMsg" class="msg" role="status"></div>
+      </div>
+      <div class="transactionsSummaryGrid">
+        <div class="stat kpiCredit"><span>Total Credit</span><b id="filteredCreditTotal">0</b></div>
+        <div class="stat kpiDebit"><span>Total Debit</span><b id="filteredDebitTotal">0</b></div>
+        <div class="stat kpiBalance"><span>Net Change</span><b id="filteredNetTotal">0</b></div>
+        <div class="stat kpiCustomers"><span>Transactions</span><b id="filteredTransactionCount">0</b></div>
+      </div>
+      <div class="card transactionHistoryCard">
+        <div class="transactionsTableHeading"><h3>Transaction History</h3><span id="transactionsPeriodLabel" class="recentCount">All dates</span></div>
+        <div class="transactionsTableWrap"><table class="transactionsTable"><thead><tr><th>Date</th><th>Customer</th><th>Type</th><th>Note</th><th class="amountCell">Amount (AFN)</th><th>Account Balance</th></tr></thead><tbody id="transactionsHistoryBody"><tr><td colspan="6" class="transactionsEmpty">No transactions loaded.</td></tr></tbody></table></div>
+      </div>
     </section>
     <section id="settingsView" class="pageView hidden">
       <div class="pageHeading"><div><h2>Settings</h2><p class="muted">Account and security settings</p></div></div>

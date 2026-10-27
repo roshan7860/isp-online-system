@@ -152,7 +152,7 @@ $("logoutBtn").onclick = () => {
 
 /* Separate dashboard, customers and settings pages. */
 function showPage(pageId) {
-  ["dashboardView", "reportView", "customersView", "settingsView"].forEach(id => {
+  ["dashboardView", "reportView", "customersView", "transactionsView", "settingsView"].forEach(id => {
     const node = $(id); if (node) node.classList.toggle("hidden", id !== pageId);
   });
   document.querySelectorAll(".navItem").forEach(btn => btn.classList.toggle("active", btn.dataset.page === pageId));
@@ -250,6 +250,52 @@ function updateDashboardDate() {
 // Refresh the date automatically while the dashboard remains open.
 updateDashboardDate();
 setInterval(updateDashboardDate, 60 * 1000);
+
+/* Complete transaction history page with inclusive date-range filtering. */
+function transactionSortDate(t) {
+  if (typeof t.transactionDate === "string" && /^\d{4}-\d{2}-\d{2}$/.test(t.transactionDate)) return t.transactionDate;
+  const stamp = t.createdAt?.toDate?.() || (t.createdAt?.seconds ? new Date(t.createdAt.seconds * 1000) : null);
+  if (stamp && !Number.isNaN(stamp.getTime())) {
+    return `${stamp.getFullYear()}-${String(stamp.getMonth()+1).padStart(2,"0")}-${String(stamp.getDate()).padStart(2,"0")}`;
+  }
+  return "";
+}
+function getAllTransactions() {
+  return customers.flatMap(c => (c.transactions || []).map(t => ({...t, customerName:c.name || "Unnamed customer", customerId:c.id, dateKey:transactionSortDate(t)})))
+    .sort((a,b) => (b.dateKey || "").localeCompare(a.dateKey || "") || ((b.createdAt?.toMillis?.() ?? 0) - (a.createdAt?.toMillis?.() ?? 0)));
+}
+function renderTransactionsHistory() {
+  const from = $("transactionsFromDate")?.value || "";
+  const to = $("transactionsToDate")?.value || "";
+  const msg = $("transactionsFilterMsg");
+  if (from && to && from > to) {
+    if (msg) msg.textContent = "The start date must be on or before the end date.";
+    return;
+  }
+  if (msg) msg.textContent = "";
+  const all = getAllTransactions();
+  const filtered = all.filter(t => (!from || (t.dateKey && t.dateKey >= from)) && (!to || (t.dateKey && t.dateKey <= to)));
+  const credit = filtered.filter(t => t.type === "credit").reduce((sum,t)=>sum+Number(t.amount||0),0);
+  const debit = filtered.filter(t => t.type === "debit").reduce((sum,t)=>sum+Number(t.amount||0),0);
+  $("filteredCreditTotal").textContent = money(credit);
+  $("filteredDebitTotal").textContent = money(debit);
+  $("filteredNetTotal").textContent = money(credit-debit);
+  $("filteredTransactionCount").textContent = String(filtered.length);
+  $("transactionsPeriodLabel").textContent = from || to ? `${from || "Beginning"} — ${to || "Today"}` : "All dates";
+  const body = $("transactionsHistoryBody");
+  if (!filtered.length) {
+    body.innerHTML = '<tr><td colspan="6" class="transactionsEmpty">No transactions found for the selected date range.</td></tr>';
+    return;
+  }
+  body.innerHTML = filtered.map(t => {
+    const isCredit = t.type === "credit";
+    const balance = customers.find(c=>c.id===t.customerId)?.balance ?? 0;
+    return `<tr><td>${esc(t.dateKey || "—")}</td><td><button type="button" class="transactionCustomerLink" data-customer-id="${esc(t.customerId)}">${esc(t.customerName)}</button></td><td><span class="transactionPill ${isCredit?"creditPill":"debitPill"}">${isCredit?"Credit":"Debit / Payment"}</span></td><td>${esc(t.note || "—")}</td><td class="amountCell ${isCredit?"hasDebt":"settled"}">${isCredit?"+":"−"}${money(t.amount)}</td><td>${money(balance)}</td></tr>`;
+  }).join("");
+  body.querySelectorAll(".transactionCustomerLink").forEach(btn=>btn.addEventListener("click",()=>openCustomer(btn.dataset.customerId)));
+}
+$("filterTransactionsBtn")?.addEventListener("click", renderTransactionsHistory);
+$("clearTransactionsFilterBtn")?.addEventListener("click", () => { $("transactionsFromDate").value=""; $("transactionsToDate").value=""; renderTransactionsHistory(); });
 
 /* =========================================
    AUTH STATE
@@ -958,6 +1004,7 @@ function renderAll() {
   renderRecentCustomers();
   renderRecentTransactions();
 
+  renderTransactionsHistory();
 }
 
 

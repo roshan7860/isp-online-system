@@ -1625,3 +1625,39 @@ body:has(#app:not(.hidden)) .mainNav .navItem::after{content:attr(data-page-labe
 .welcomeUser { padding:6px 12px; }
 .welcomeUserText { font-weight:700; color:#233b63; }
 @media (max-width:600px) { .dashboardDate strong { font-size:17px; } .welcomeUser { padding:5px 8px; gap:7px; } }
+
+
+/* V39: professional transaction ledger and refined dashboard identity/date header */
+.dashboardPageHeading{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:20px!important;margin-bottom:24px!important;padding:16px 20px!important;border:1px solid #e1e9f5!important;border-radius:18px!important;background:linear-gradient(115deg,#fff 0%,#f5f8ff 100%)!important;box-shadow:0 8px 24px rgba(29,62,112,.055)!important}
+.dashboardDate{display:flex!important;flex-direction:row!important;align-items:center!important;gap:12px!important;color:#62748f!important}
+.dashboardDate:before{content:"";display:block;width:4px;height:42px;border-radius:6px;background:linear-gradient(180deg,#3478f6,#8b5cf6)}
+.dashboardDate span{display:block!important;font-size:12px!important;text-transform:uppercase!important;letter-spacing:.09em!important;font-weight:800!important;color:#7285a4!important}
+.dashboardDate strong{display:block!important;font-size:20px!important;line-height:1.2!important;font-weight:800!important;color:#172b4d!important}
+.welcomeUser{display:inline-flex!important;align-items:center!important;gap:10px!important;padding:7px 14px 7px 8px!important;min-height:48px!important;border:1px solid #dce7f8!important;border-radius:15px!important;background:#fff!important;box-shadow:0 5px 16px rgba(32,72,140,.08)!important;color:#20375c!important}
+.welcomeUserIcon{width:34px!important;height:34px!important;border-radius:11px!important;background:linear-gradient(135deg,#2563eb,#7655ed)!important;box-shadow:0 4px 10px rgba(37,99,235,.23)!important}
+.welcomeUserText{font-size:14px!important;font-weight:800!important;color:#20375c!important}
+.transactionsFilterCard{margin-bottom:18px!important;padding:22px!important;border:1px solid #e0e8f4!important;border-radius:18px!important;box-shadow:0 8px 24px rgba(28,56,100,.045)!important}
+.transactionsFilterTitle h3,.transactionsTableHeading h3{margin:0 0 5px!important;color:#1b3155!important;font-weight:800!important}
+.transactionsFilterTitle p{margin:0!important}
+.transactionsFilters{display:grid!important;grid-template-columns:repeat(2,minmax(160px,1fr)) auto auto!important;align-items:end!important;gap:14px!important;margin-top:18px!important}
+.transactionsFilters label{display:flex!important;flex-direction:column!important;gap:7px!important;color:#61738e!important;font-size:12px!important;font-weight:750!important}
+.transactionsFilters input{width:100%!important;min-height:44px!important;padding:10px 12px!important;border:1px solid #d7e1ef!important;border-radius:11px!important;background:#fbfdff!important;color:#243958!important;box-sizing:border-box!important}
+.transactionsFilters button{min-height:44px!important;border-radius:11px!important;white-space:nowrap!important}
+.transactionsSummaryGrid{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:14px!important;margin-bottom:18px!important}
+.transactionsSummaryGrid .stat{min-width:0!important;padding:17px 19px!important;border:1px solid #e0e8f4!important;border-radius:15px!important;background:#fff!important;box-shadow:0 6px 20px rgba(28,56,100,.04)!important}
+.transactionHistoryCard{padding:0!important;overflow:hidden!important;border:1px solid #e0e8f4!important;border-radius:18px!important;box-shadow:0 8px 24px rgba(28,56,100,.045)!important}
+.transactionsTableHeading{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:12px!important;padding:20px 22px!important;border-bottom:1px solid #e8eef7!important}
+.transactionsTableWrap{width:100%!important;overflow-x:auto!important}
+.transactionsTable{width:100%!important;border-collapse:separate!important;border-spacing:0!important;min-width:780px!important;font-size:13px!important}
+.transactionsTable th{padding:14px 16px!important;text-align:left!important;background:#f6f8fc!important;color:#71819b!important;font-size:11px!important;text-transform:uppercase!important;letter-spacing:.055em!important;font-weight:800!important;white-space:nowrap!important;border-bottom:1px solid #e5ebf4!important}
+.transactionsTable td{padding:15px 16px!important;color:#304563!important;border-bottom:1px solid #edf1f7!important;vertical-align:middle!important}
+.transactionsTable tbody tr:hover{background:#f9fbff!important}
+.transactionsTable tbody tr:last-child td{border-bottom:0!important}
+.transactionsTable .amountCell{text-align:right!important;font-weight:800!important;white-space:nowrap!important}
+.transactionCustomerLink{padding:0!important;border:0!important;background:none!important;color:#245bc2!important;font-weight:800!important;text-align:left!important;cursor:pointer!important}
+.transactionPill{display:inline-flex!important;padding:5px 9px!important;border-radius:999px!important;font-size:11px!important;font-weight:800!important;white-space:nowrap!important}
+.creditPill{background:#e9f8ef!important;color:#16834a!important}
+.debitPill{background:#fff0f1!important;color:#d33e4c!important}
+.transactionsEmpty{text-align:center!important;padding:34px 18px!important;color:#8a99ae!important}
+@media(max-width:900px){.transactionsFilters{grid-template-columns:repeat(2,minmax(0,1fr))!important}.transactionsFilters button{width:100%!important}.transactionsSummaryGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media(max-width:600px){.dashboardPageHeading{padding:12px!important;gap:8px!important}.dashboardDate{gap:8px!important}.dashboardDate strong{font-size:15px!important}.dashboardDate span{font-size:10px!important}.welcomeUser{min-height:40px!important;padding:5px 8px!important;gap:6px!important}.welcomeUserIcon{width:29px!important;height:29px!important}.welcomeUserText{font-size:12px!important}.transactionsFilters{grid-template-columns:1fr!important}.transactionsSummaryGrid{gap:9px!important}.transactionsSummaryGrid .stat{padding:13px!important}.transactionsFilterCard{padding:15px!important}.transactionsTableHeading{padding:16px!important}}
