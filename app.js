@@ -249,6 +249,13 @@ onAuthStateChanged(
 
     currentUser = user;
 
+    const usernameEl = $("dashboardUsername");
+    if (usernameEl) {
+      const emailName = (user?.email || "User").split("@")[0].replace(/[._-]+/g, " ").trim();
+      usernameEl.textContent = emailName ? emailName.replace(/\b\w/g, ch => ch.toUpperCase()) : "User";
+      usernameEl.title = user?.email || "";
+    }
+
     if (user) {
 
       $("loginPage")

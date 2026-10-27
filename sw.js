@@ -1,4 +1,4 @@
-const CACHE_NAME = "customer-credit-manager-icon-sidebar-v27";
+const CACHE_NAME = "customer-credit-manager-settings-icon-v29";
 const BASE = "/isp-online-system/";
 const APP_SHELL = [
   BASE, BASE + "index.html", BASE + "customer.html", BASE + "style.css",
